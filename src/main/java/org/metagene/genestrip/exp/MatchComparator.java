@@ -4,6 +4,7 @@ import org.metagene.genestrip.GSCommon;
 import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.GSMaker;
 import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.goals.MatchGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
 import org.metagene.genestrip.match.MatchingResult;
@@ -70,22 +71,30 @@ public class MatchComparator {
         return rank;
     }
 
-    public Map<String, long[]> compareResults(String dbName1, String dbName2, String key, String... pathsOrURLs) throws IOException {
-        MatchingResult res1 = match(dbName1, key, pathsOrURLs);
-        MatchingResult res2 = match(dbName1, key, pathsOrURLs);
+    public Map<String, Map<String, long[]>> compareResults(String dbName1, String dbName2, String csvFile) throws IOException {
+        Map<String, MatchingResult> matches1 = match(dbName1, csvFile);
+        Map<String, MatchingResult> matches2 = match(dbName1, csvFile);
 
-        if (res1.getTotalKMers() != res2.getTotalKMers()) {
-            throw new RuntimeException("Match results do not match");
+        Map<String, Map<String, long[]>> allResults = new HashMap<>();
+
+        for (String key : matches1.keySet()) {
+            MatchingResult res1 = matches1.get(key);
+            MatchingResult res2 = matches2.get(key);
+            if (res1.getTotalKMers() != res2.getTotalKMers()) {
+                throw new RuntimeException("Match results do not match");
+            }
+
+            Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
+            Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
+
+            Map<String, long[]> combinedRes = new HashMap<>();
+            fillMap(combinedRes, stats1, 0);
+            fillMap(combinedRes, stats2, 2);
+
+            allResults.put(key, combinedRes);
         }
 
-        Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
-        Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
-
-        Map<String, long[]> combinedRes = new HashMap<>();
-        fillMap(combinedRes, stats1, 0);
-        fillMap(combinedRes, stats2, 2);
-
-        return combinedRes;
+        return allResults;
     }
 
     private void fillMap(Map<String, long[]> combinedRes, Map<String, CountsPerTaxid> stats, int base) {
@@ -101,37 +110,49 @@ public class MatchComparator {
         }
     }
 
-    public MatchingResult match(String dbName, String key, String... pathsOrURLs) throws IOException {
+    public Map<String, MatchingResult> match(String dbName, String csvFile) throws IOException {
         GSCommon config = new GSCommon(baseDir);
 
-        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, "64320,12637+",
+        GSProject project = new GSProject(config, dbName, null, null, csvFile, null, null, false, "64320,12637+",
                 null, null, null, false);
 
         GSMaker maker = new GSMaker(project);
 
-        return maker.match(true, key, pathsOrURLs);
+        MatchGoal matchGoal = (MatchGoal) maker.getGoal(GSGoalKey.MATCHLR);
+        matchGoal.make();
+        return matchGoal.getMatchResults();
     }
 
-    public static void main(String[] args) throws IOException {
-        File baseDir = new File(args[0]);
+    public void writeCompleteReport(File baseDir, String dbName1, String dbName2, String csvFile) throws IOException {
         MatchComparator comparator = new MatchComparator(baseDir);
 
-        Map<String, long[]> results = comparator.compareResults(args[1], args[2], args[3], args[4]);
-        comparator.reportComparisonForScatterPlot(new File(baseDir,  args[3] + "_kmer_scatter.out"), false, results);
-        comparator.reportComparisonForScatterPlot(new File(baseDir,  args[3] + "_ukmer_scatter.out"), true, results);
+        GSCommon config = new GSCommon(baseDir);
 
-        String[] maxResults = comparator.getMaxResults(results, 1, 10);
+        GSProject project = new GSProject(config, dbName1, null, null, csvFile, null, null, false, "64320,12637+",
+                null, null, null, false);
+        File outDir = project.getKrakenOutDir();
 
-        for (int i = 0; i < maxResults.length; i++) {
-            String taxid = maxResults[i];
-            long[] counts = results.get(taxid);
-            System.out.println("Taxid: " + taxid);
-            System.out.println("Old Rank: " + i);
-            System.out.println("Old unique k-mers: " + counts[1]);
-            System.out.println("New unique k-mers: " + counts[3]);
-            System.out.println("New Rank: " + comparator.getRank(taxid, results, 3));
-            System.out.println("Unique k-mers change %: " + 100d * counts[3] / counts[1]);
-            System.out.println();
+        Map<String, Map<String, long[]>> allResults = comparator.compareResults(dbName1, dbName2, csvFile);
+        for (String key : allResults.keySet()) {
+            Map<String, long[]> results = allResults.get(key);
+            comparator.reportComparisonForScatterPlot(new File(outDir,  key + "_kmer_scatter.out"), false, results);
+            comparator.reportComparisonForScatterPlot(new File(outDir,  key + "_ukmer_scatter.out"), true, results);
+
+            String[] maxResults = comparator.getMaxResults(results, 1, 10);
+
+            // TODO: Write this to a file...
+            for (int i = 0; i < maxResults.length; i++) {
+                String taxid = maxResults[i];
+                long[] counts = results.get(taxid);
+                System.out.println("Key: " + key);
+                System.out.println("Taxid: " + taxid);
+                System.out.println("Old Rank: " + i);
+                System.out.println("Old unique k-mers: " + counts[1]);
+                System.out.println("New unique k-mers: " + counts[3]);
+                System.out.println("New Rank: " + comparator.getRank(taxid, results, 3));
+                System.out.println("Unique k-mers change %: " + 100d * counts[3] / counts[1]);
+                System.out.println();
+            }
         }
     }
 }

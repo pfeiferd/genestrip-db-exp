@@ -60,6 +60,7 @@ public class DatabaseComparator {
 
         long movedKMers = compareDBs(store1, store2);
 
+        // TODO: Write this to a file
         System.out.println("Database 1: " + db1Name);
         System.out.println("Database 2: " + db2Name);
         System.out.println("Total KMers: " + store1.getEntries());
