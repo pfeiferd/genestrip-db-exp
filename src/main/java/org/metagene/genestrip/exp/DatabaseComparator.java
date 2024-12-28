@@ -53,7 +53,7 @@ public class DatabaseComparator {
         for (String taxId : sortedTaxIds) {
             if (taxId != null) {
                 SmallTaxTree.SmallTaxIdNode taxNode = taxTree.getNodeByTaxId(taxId);
-                if (taxNode != null) {
+                if (taxNode != null && taxNode.getRank() != null) {
                     countsPerRank[taxNode.getRank().ordinal()]++;
                 }
             }
@@ -64,11 +64,11 @@ public class DatabaseComparator {
     public void reportComparisons(String[] db1Name1, String[] db2Names) throws IOException {
         File file = new File(baseDir, "dbs_comp.csv");
         try (PrintStream out = new PrintStream(new FileOutputStream(file))) {
-            out.println("db 1; temp; db 2; total kmers; moved kmers; move kmers %;");
+            out.println("db 1; temp; db 2; total kmers; moved kmers; moved kmers %;");
             int i = 0;
             for (String dbName : db1Name1) {
                 reportComparison(dbName, false, db2Names[i], out);
-                reportComparison(dbName, true, db2Names[i], out);
+                //reportComparison(dbName, true, db2Names[i], out);
                 i++;
             }
         }
@@ -90,7 +90,7 @@ public class DatabaseComparator {
         out.print(";");
         out.print(movedKMers);
         out.print(";");
-        out.print((double)(movedKMers / store1.getEntries()) * 100);
+        out.print((((double) movedKMers) / store1.getEntries()) * 100);
         out.println(";");
     }
 
@@ -104,7 +104,7 @@ public class DatabaseComparator {
             public void nextValue(KMerSortedArray<String> trie, long kmer, short index, long i) {
                 String taxId1 = store1.getValueForIndex(index);
                 String taxId2 = store2.getLong(kmer, null);
-                if (taxId1 != null || taxId2 != null) {
+                if (taxId1 == null || taxId2 == null) {
                     throw new RuntimeException("Inconsistent databases");
                 }
 

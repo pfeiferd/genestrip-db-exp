@@ -2,9 +2,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.metagene</groupId>
 	<artifactId>genestrip-db-exp</artifactId>
-	<version>1.4.2</version>
-	<packaging>pom</packaging>
-	
+	<version>1.4.3</version>
+
 	<properties>
 		<gs.project.name>${name}</gs.project.name>
 		<gs.project.goal>${goal}</gs.project.goal>
@@ -44,7 +43,7 @@
 		<dependency>
 			<groupId>org.genestrip</groupId>
 			<artifactId>genestrip</artifactId>
-			<version>1.4.2</version>
+			<version>1.4.3</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -100,6 +99,23 @@
 								<argument>${gs.project.fqmap}</argument>
 								<argument>${gs.project.name}</argument>
 								<argument>${gs.project.goal}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>exp</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>java</executable>
+							<includeProjectDependencies>true</includeProjectDependencies>
+							<includePluginDependencies>true</includePluginDependencies>
+							<arguments>
+								<argument>-Xmx24G</argument>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>org.metagene.genestrip.exp.ExperimentRunner</argument>
 							</arguments>
 						</configuration>
 					</execution>

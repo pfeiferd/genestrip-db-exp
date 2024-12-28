@@ -152,7 +152,7 @@ public class MatchComparator {
                     out.print(';');
                     out.print(getRank(taxid, results, 3));
                     out.print(';');
-                    out.print(100d * counts[3] / counts[1]);
+                    out.print((100d * counts[3]) / counts[1]);
                     out.println(';');
                 }
             }
