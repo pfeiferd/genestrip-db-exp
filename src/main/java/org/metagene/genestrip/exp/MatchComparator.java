@@ -28,12 +28,13 @@ public class MatchComparator {
     public void reportComparisonForScatterPlot(File out, boolean unique, Map<String, long[]> results) throws IOException {
         int base = unique ? 0 : 2;
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
+            ps.println("kmers 1; kmers 2;");
             for (String taxid : results.keySet()) {
                 long[] counts = results.get(taxid);
-                ps.print(base + counts[0]);
-                ps.print('\t');
-                ps.print(base + counts[1]);
-                ps.println();
+                ps.print(counts[base + 0]);
+                ps.print(';');
+                ps.print(counts[base + 1]);
+                ps.println(';');
             }
         }
     }
@@ -123,36 +124,45 @@ public class MatchComparator {
         return matchGoal.getMatchResults();
     }
 
-    public void writeCompleteReport(File baseDir, String dbName1, String dbName2, String csvFile) throws IOException {
-        MatchComparator comparator = new MatchComparator(baseDir);
-
-        GSCommon config = new GSCommon(baseDir);
-
-        GSProject project = new GSProject(config, dbName1, null, null, csvFile, null, null, false, "64320,12637+",
-                null, null, null, false);
-        File outDir = project.getKrakenOutDir();
-
-        Map<String, Map<String, long[]>> allResults = comparator.compareResults(dbName1, dbName2, csvFile);
+    public void writeCompleteReport(String dbName1, String dbName2, String csvFile) throws IOException {
+        File outDir = getOutDir(dbName1);
+        Map<String, Map<String, long[]>> allResults = compareResults(dbName1, dbName2, csvFile);
         for (String key : allResults.keySet()) {
             Map<String, long[]> results = allResults.get(key);
-            comparator.reportComparisonForScatterPlot(new File(outDir,  key + "_kmer_scatter.out"), false, results);
-            comparator.reportComparisonForScatterPlot(new File(outDir,  key + "_ukmer_scatter.out"), true, results);
+            reportComparisonForScatterPlot(new File(outDir,  key + "_kmer_scatter.csv"), false, results);
+            reportComparisonForScatterPlot(new File(outDir,  key + "_ukmer_scatter.csv"), true, results);
 
-            String[] maxResults = comparator.getMaxResults(results, 1, 10);
+            String[] maxResults = getMaxResults(results, 1, 10);
 
-            // TODO: Write this to a file...
-            for (int i = 0; i < maxResults.length; i++) {
-                String taxid = maxResults[i];
-                long[] counts = results.get(taxid);
-                System.out.println("Key: " + key);
-                System.out.println("Taxid: " + taxid);
-                System.out.println("Old Rank: " + i);
-                System.out.println("Old unique k-mers: " + counts[1]);
-                System.out.println("New unique k-mers: " + counts[3]);
-                System.out.println("New Rank: " + comparator.getRank(taxid, results, 3));
-                System.out.println("Unique k-mers change %: " + 100d * counts[3] / counts[1]);
-                System.out.println();
+            File file = new File(outDir,  key + "_kmer_changes.csv");
+            try (PrintStream out = new PrintStream(new FileOutputStream(file))) {
+                out.println("key; taxid; old rank; old unique kmers; new unique kmers; new rank, unique kmer change %");
+                for (int i = 0; i < maxResults.length; i++) {
+                    String taxid = maxResults[i];
+                    long[] counts = results.get(taxid);
+                    out.print(key);
+                    out.print(';');
+                    out.print(taxid);
+                    out.print(';');
+                    out.print(i);
+                    out.print(';');
+                    out.print(counts[1]);
+                    out.print(';');
+                    out.print(counts[3]);
+                    out.print(';');
+                    out.print(getRank(taxid, results, 3));
+                    out.print(';');
+                    out.print(100d * counts[3] / counts[1]);
+                    out.println(';');
+                }
             }
         }
+    }
+
+    protected File getOutDir(String dbName) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, null,
+                null, null, null, false);
+        return project.getResultsDir();
     }
 }

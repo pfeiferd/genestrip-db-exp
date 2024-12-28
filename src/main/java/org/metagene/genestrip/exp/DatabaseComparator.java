@@ -12,7 +12,9 @@ import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +26,17 @@ public class DatabaseComparator {
     }
 
     public void reportRankCounts(String dbName) throws IOException {
-        int[] counts = getRankCounts(dbName);
+        File file = new File(getOutDir(dbName),  dbName + "_ranks.csv");
+        try (PrintStream out = new PrintStream(new FileOutputStream(file))) {
+            int[] counts = getRankCounts(dbName);
+            out.println("rank; nodes;");
 
-        for (Rank rank : Rank.values()) {
-            System.out.println("Rank: " + rank + " Nodes: " + counts[rank.ordinal()]);
+            for (Rank rank : Rank.values()) {
+                out.print(rank);
+                out.print(";");
+                out.print(counts[rank.ordinal()]);
+                out.println(";");
+            }
         }
     }
 
@@ -52,20 +61,37 @@ public class DatabaseComparator {
         return countsPerRank;
     }
 
-    public void reportComparison(String db1Name, boolean temp, String db2Name)  throws IOException {
-        File baseDir = null; // APITest.getBaseDir();
+    public void reportComparisons(String[] db1Name1, String[] db2Names) throws IOException {
+        File file = new File(baseDir, "dbs_comp.csv");
+        try (PrintStream out = new PrintStream(new FileOutputStream(file))) {
+            out.println("db 1; temp; db 2; total kmers; moved kmers; move kmers %;");
+            int i = 0;
+            for (String dbName : db1Name1) {
+                reportComparison(dbName, false, db2Names[i], out);
+                reportComparison(dbName, true, db2Names[i], out);
+                i++;
+            }
+        }
+    }
 
+    public void reportComparison(String db1Name, boolean temp, String db2Name, PrintStream out)  throws IOException {
         KMerSortedArray<String> store1 = getDatabase(db1Name, temp).getKmerStore();
         KMerSortedArray<String> store2 = getDatabase(db2Name, false).getKmerStore();
 
         long movedKMers = compareDBs(store1, store2);
 
-        // TODO: Write this to a file
-        System.out.println("Database 1: " + db1Name);
-        System.out.println("Database 2: " + db2Name);
-        System.out.println("Total KMers: " + store1.getEntries());
-        System.out.println("Moved KMers: " + movedKMers);
-        System.out.println("Moved KMers %: " + (double)(movedKMers / store1.getEntries()) * 100);
+        out.print(db1Name);
+        out.print(";");
+        out.print(temp);
+        out.print(";");
+        out.print(db2Name);
+        out.print(";");
+        out.print(store1.getEntries());
+        out.print(";");
+        out.print(movedKMers);
+        out.print(";");
+        out.print((double)(movedKMers / store1.getEntries()) * 100);
+        out.println(";");
     }
 
     public long compareDBs(final KMerSortedArray<String> store1, final KMerSortedArray<String> store2)  {
@@ -93,7 +119,7 @@ public class DatabaseComparator {
     protected Database getDatabase(String dbName, boolean temp) throws IOException {
         GSCommon config = new GSCommon(baseDir);
 
-        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, "64320,12637+",
+        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, null,
                 null, null, null, false);
 
         GSMaker maker = new GSMaker(project);
@@ -102,9 +128,10 @@ public class DatabaseComparator {
         return storeGoal.get();
     }
 
-    public static void main(String[] args) throws Exception {
-        DatabaseComparator comparator = new DatabaseComparator(new File("."));
-        comparator.reportRankCounts(args[0]);
-        comparator.reportComparison(args[0], false, args[1]);
+    protected File getOutDir(String dbName) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, null,
+                null, null, null, false);
+        return project.getResultsDir();
     }
 }
