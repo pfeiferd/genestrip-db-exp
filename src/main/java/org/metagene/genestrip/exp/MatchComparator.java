@@ -26,14 +26,14 @@ public class MatchComparator {
     }
 
     public void reportComparisonForScatterPlot(File out, boolean unique, Map<String, long[]> results) throws IOException {
-        int base = unique ? 0 : 2;
+        int base = unique ? 1 : 0;
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("kmers 1; kmers 2;");
             for (String taxid : results.keySet()) {
                 long[] counts = results.get(taxid);
                 ps.print(counts[base + 0]);
                 ps.print(';');
-                ps.print(counts[base + 1]);
+                ps.print(counts[base + 2]);
                 ps.println(';');
             }
         }
@@ -47,9 +47,9 @@ public class MatchComparator {
             long[] counts = results.get(taxid);
             for (int i = 0; i < maxCounts.length; i++) {
                 if (counts[index] > maxCounts[i]) {
-                    for (int j = i; j < maxCounts.length - 1; j++) {
-                        maxResults[j + 1] = maxResults[j];
-                        maxCounts[j + 1] = maxCounts[j];
+                    for (int j = maxCounts.length - 1; j > i; j--) {
+                        maxResults[j] = maxResults[j - 1];
+                        maxCounts[j] = maxCounts[j - 1];
                     }
                     maxCounts[i] = counts[index];
                     maxResults[i] = taxid;
@@ -74,7 +74,7 @@ public class MatchComparator {
 
     public Map<String, Map<String, long[]>> compareResults(String dbName1, String dbName2, String csvFile) throws IOException {
         Map<String, MatchingResult> matches1 = match(dbName1, csvFile);
-        Map<String, MatchingResult> matches2 = match(dbName1, csvFile);
+        Map<String, MatchingResult> matches2 = match(dbName2, csvFile);
 
         Map<String, Map<String, long[]>> allResults = new HashMap<>();
 
@@ -114,13 +114,15 @@ public class MatchComparator {
     public Map<String, MatchingResult> match(String dbName, String csvFile) throws IOException {
         GSCommon config = new GSCommon(baseDir);
 
-        GSProject project = new GSProject(config, dbName, null, null, csvFile, null, null, false, "64320,12637+",
+        GSProject project = new GSProject(config, dbName, null, null, csvFile, null, null, false, null,
                 null, null, null, false);
 
         GSMaker maker = new GSMaker(project);
 
-        MatchGoal matchGoal = (MatchGoal) maker.getGoal(GSGoalKey.MATCHLR);
+        MatchGoal matchGoal = (MatchGoal) maker.getGoal(GSGoalKey.MATCH);
+        matchGoal.cleanThis();
         matchGoal.make();
+        maker.dumpAll();
         return matchGoal.getMatchResults();
     }
 
@@ -152,7 +154,7 @@ public class MatchComparator {
                     out.print(';');
                     out.print(getRank(taxid, results, 3));
                     out.print(';');
-                    out.print((100d * counts[3]) / counts[1]);
+                    out.print((100d * (counts[3] - counts[1])) / counts[1]);
                     out.println(';');
                 }
             }
