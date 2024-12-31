@@ -15,10 +15,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseComparator {
+    private static final DecimalFormat DF = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
+
     private final File baseDir;
 
     public DatabaseComparator(File baseDir) {
@@ -61,25 +67,27 @@ public class DatabaseComparator {
         return countsPerRank;
     }
 
-    public void reportComparisons(String[] db1Name1, String[] db2Names) throws IOException {
+    public void reportComparisons(String[] offNames, String[] db1Name1, String[] db2Names) throws IOException {
         File file = new File(baseDir, "dbs_comp.csv");
         try (PrintStream out = new PrintStream(new FileOutputStream(file))) {
-            out.println("db 1; temp; db 2; total kmers; moved kmers; moved kmers %;");
+            out.println("name; db 1; temp; db 2; total kmers; moved kmers; moved kmers percent;");
             int i = 0;
             for (String dbName : db1Name1) {
-                reportComparison(dbName, false, db2Names[i], out);
+                reportComparison(offNames[i], dbName, false, db2Names[i], out);
                 //reportComparison(dbName, true, db2Names[i], out);
                 i++;
             }
         }
     }
 
-    public void reportComparison(String db1Name, boolean temp, String db2Name, PrintStream out)  throws IOException {
+    public void reportComparison(String offName, String db1Name, boolean temp, String db2Name, PrintStream out)  throws IOException {
         KMerSortedArray<String> store1 = getDatabase(db1Name, temp).getKmerStore();
         KMerSortedArray<String> store2 = getDatabase(db2Name, false).getKmerStore();
 
         long movedKMers = compareDBs(store1, store2);
 
+        out.print(offName);
+        out.print(";");
         out.print(db1Name);
         out.print(";");
         out.print(temp);
@@ -90,7 +98,7 @@ public class DatabaseComparator {
         out.print(";");
         out.print(movedKMers);
         out.print(";");
-        out.print((((double) movedKMers) / store1.getEntries()) * 100);
+        out.print(DF.format((100d * movedKMers) / store1.getEntries()));
         out.println(";");
     }
 

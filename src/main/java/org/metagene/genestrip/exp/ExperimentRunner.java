@@ -5,19 +5,22 @@ import java.io.IOException;
 
 public class ExperimentRunner {
     public static final String[] DB_NAMES = new String[] { "chronicb" };
+    public static final String[] OFF_NAMES = new String[] { "Tick Borne" };
 
     private final File baseDir;
+    private final String[] offNames;
     private final String[] dbBaseNames;
 
-    public ExperimentRunner(File baseDir, String[] dbBaseNames) {
+    public ExperimentRunner(File baseDir, String[] offNames, String[] dbBaseNames) {
         this.baseDir = baseDir;
         this.dbBaseNames = dbBaseNames;
+        this.offNames = offNames;
     }
 
     public void runMatchComparison(String dbName, String csvFile) throws IOException {
         String dbName2 = getMinUpdateDBName(dbName);
         File ticksCSVFile = new File(baseDir, csvFile);
-        new MatchComparator(baseDir).writeCompleteReport(dbName, dbName2, ticksCSVFile.getAbsolutePath());
+        new MatchComparator(baseDir).writeCompleteReport(dbName2, dbName, ticksCSVFile.getAbsolutePath());
     }
 
     public void runDatabaseComparisons() throws IOException {
@@ -31,7 +34,7 @@ public class ExperimentRunner {
             minUpdateDBNames[i++] = getMinUpdateDBName(dbBaseName);
             i++;
         }
-        comparator.reportComparisons(dbBaseNames, minUpdateDBNames);
+        comparator.reportComparisons(offNames, dbBaseNames, minUpdateDBNames);
     }
 
     protected String getMinUpdateDBName(String dbBaseName) {
@@ -39,8 +42,8 @@ public class ExperimentRunner {
     }
 
     public static void main(String[] args) throws IOException {
-        ExperimentRunner runner = new ExperimentRunner(new File("./data"), DB_NAMES);
-     //   runner.runDatabaseComparisons();
-        runner.runMatchComparison("chronicb", "fastq/ticks.txt");
+        ExperimentRunner runner = new ExperimentRunner(new File("./data"), OFF_NAMES, DB_NAMES);
+        runner.runDatabaseComparisons();
+        //runner.runMatchComparison("chronicb", "fastq/ticks.txt");
     }
 }

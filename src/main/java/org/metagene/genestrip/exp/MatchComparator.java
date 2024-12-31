@@ -9,16 +9,22 @@ import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
 import org.metagene.genestrip.match.MatchingResult;
 import org.metagene.genestrip.store.Database;
+import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 
 public class MatchComparator {
+    private static final DecimalFormat DF = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
+
     private final File baseDir;
 
     public MatchComparator(File baseDir) {
@@ -72,9 +78,9 @@ public class MatchComparator {
         return rank;
     }
 
-    public Map<String, Map<String, long[]>> compareResults(String dbName1, String dbName2, String csvFile) throws IOException {
-        Map<String, MatchingResult> matches1 = match(dbName1, csvFile);
-        Map<String, MatchingResult> matches2 = match(dbName2, csvFile);
+    public Map<String, Map<String, long[]>> compareResults(String dbName1, String dbName2, String csvFile, Map<String,String> nameMap) throws IOException {
+        Map<String, MatchingResult> matches1 = match(dbName1, csvFile, nameMap);
+        Map<String, MatchingResult> matches2 = match(dbName2, csvFile, nameMap);
 
         Map<String, Map<String, long[]>> allResults = new HashMap<>();
 
@@ -111,7 +117,7 @@ public class MatchComparator {
         }
     }
 
-    public Map<String, MatchingResult> match(String dbName, String csvFile) throws IOException {
+    public Map<String, MatchingResult> match(String dbName, String csvFile, Map<String,String> nameMap) throws IOException {
         GSCommon config = new GSCommon(baseDir);
 
         GSProject project = new GSProject(config, dbName, null, null, csvFile, null, null, false, null,
@@ -122,23 +128,34 @@ public class MatchComparator {
         MatchGoal matchGoal = (MatchGoal) maker.getGoal(GSGoalKey.MATCH);
         matchGoal.cleanThis();
         matchGoal.make();
+        Map<String, MatchingResult> matches = matchGoal.getMatchResults();
+        if (nameMap != null) {
+            SmallTaxTree tree = ((ObjectGoal<Database, GSProject>) maker.getGoal(GSGoalKey.LOAD_DB)).get().getTaxTree();
+            for (String res : matches.keySet()) {
+                MatchingResult res1 = matches.get(res);
+                for (String taxid : res1.getTaxid2Stats().keySet()) {
+                    nameMap.put(taxid, tree.getNodeByTaxId(taxid).getName());
+                }
+            }
+        }
         maker.dumpAll();
-        return matchGoal.getMatchResults();
+        return matches;
     }
 
     public void writeCompleteReport(String dbName1, String dbName2, String csvFile) throws IOException {
         File outDir = getOutDir(dbName1);
-        Map<String, Map<String, long[]>> allResults = compareResults(dbName1, dbName2, csvFile);
+        Map<String,String> nameMap = new HashMap<>();
+        Map<String, Map<String, long[]>> allResults = compareResults(dbName1, dbName2, csvFile, nameMap);
         for (String key : allResults.keySet()) {
             Map<String, long[]> results = allResults.get(key);
             reportComparisonForScatterPlot(new File(outDir,  key + "_kmer_scatter.csv"), false, results);
             reportComparisonForScatterPlot(new File(outDir,  key + "_ukmer_scatter.csv"), true, results);
 
-            String[] maxResults = getMaxResults(results, 1, 10);
+            String[] maxResults = getMaxResults(results, 3, 10);
 
             File file = new File(outDir,  key + "_kmer_changes.csv");
             try (PrintStream out = new PrintStream(new FileOutputStream(file))) {
-                out.println("key; taxid; old rank; old unique kmers; new unique kmers; new rank, unique kmer change %");
+                out.println("key; taxid; name; old rank; old unique kmers; new unique kmers; new rank; unique kmer change percent;");
                 for (int i = 0; i < maxResults.length; i++) {
                     String taxid = maxResults[i];
                     long[] counts = results.get(taxid);
@@ -146,15 +163,18 @@ public class MatchComparator {
                     out.print(';');
                     out.print(taxid);
                     out.print(';');
-                    out.print(i);
+                    String name = nameMap.get(taxid);
+                    out.print(name == null ? "" : name);
+                    out.print(';');
+                    out.print(getRank(taxid, results, 1) + 1);
                     out.print(';');
                     out.print(counts[1]);
                     out.print(';');
                     out.print(counts[3]);
                     out.print(';');
-                    out.print(getRank(taxid, results, 3));
+                    out.print(i + 1);
                     out.print(';');
-                    out.print((100d * (counts[3] - counts[1])) / counts[1]);
+                    out.print(DF.format(100d * (counts[3] - counts[1]) / counts[1]));
                     out.println(';');
                 }
             }
