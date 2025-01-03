@@ -132,7 +132,7 @@ public class DatabaseComparator {
 
         GSMaker maker = new GSMaker(project);
 
-        ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker.getGoal(temp ? GSGoalKey.TEMPDB : GSGoalKey.LOAD_DB);
+        ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker.getGoal(temp ? GSGoalKey.LOAD_TEMPDB : GSGoalKey.LOAD_DB);
         return storeGoal.get();
     }
 
