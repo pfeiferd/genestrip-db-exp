@@ -81,7 +81,7 @@ public class DatabaseComparator {
     }
 
     public void reportComparison(String offName, String db1Name, boolean temp, String db2Name, PrintStream out)  throws IOException {
-        KMerSortedArray<String> store1 = getDatabase(db1Name, temp).getKmerStore();
+        KMerSortedArray<String> store1 = (temp ? getDatabase(db2Name, true) : getDatabase(db1Name, false)).getKmerStore();
         KMerSortedArray<String> store2 = getDatabase(db2Name, false).getKmerStore();
 
         long movedKMers = compareDBs(store1, store2);
