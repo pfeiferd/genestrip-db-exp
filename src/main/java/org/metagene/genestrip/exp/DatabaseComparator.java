@@ -74,7 +74,7 @@ public class DatabaseComparator {
             int i = 0;
             for (String dbName : db1Name1) {
                 reportComparison(offNames[i], dbName, false, db2Names[i], out);
-                //reportComparison(dbName, true, db2Names[i], out);
+                reportComparison(offNames[i], dbName, true, db2Names[i], out);
                 i++;
             }
         }
