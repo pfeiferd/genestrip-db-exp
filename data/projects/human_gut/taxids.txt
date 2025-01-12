@@ -1,0 +1,112 @@
+#
+# Taken from
+# https://www.frontiersin.org/journals/microbiology/articles/10.3389/fmicb.2023.1148466/full#supplementary-material
+#
+# Acidibacter
+1549619
+# Anaerococcus
+165779
+# Bacillus
+1386
+# Bacteroides
+816
+# Bifidobacterium
+1678
+# Blautia
+572511
+# Citrobacter
+544
+# Clostridioides
+1870884
+# Clostridium
+1485
+# Corynebacterium
+1716
+# Coxiella
+776
+# Cronobacter
+413496
+# Cutibacterium
+1912216
+# Dermabacter
+36739
+# Eggerthella
+84111
+# Enterobacter
+547
+# Enterococcus
+1350
+# Erythrobacter
+1041
+# Escherichia
+561
+# Haemophilus
+724
+# Flavobacterium
+237
+# Finegoldia
+150022
+# Klebsiella
+570
+# Kluyvera
+579
+# Lacticaseibacillus
+2759736
+# Lactobacillus
+1578
+# Lactococcus
+1357
+# Limosilactobacillus
+2742598
+# Luteimonas
+83614
+# Neobacillus
+2675232
+# Nitrosospira
+35798
+# Ohtaekwangia
+1210119
+# Paraburkholderia
+1822464
+# Parabacteroides
+375288
+# Peptoniphilus
+162289
+# Peribacillus
+2675229
+# Phocaeicola
+909656
+# Prevotella
+838
+# Raoultella
+160674
+# Rhodococcus
+1827
+# Rothia
+32207
+# Rummeliibacillus
+648802
+# Sphingomonas
+13687
+# Salmonella
+590
+# Serratia
+613
+# Staphylococcus
+1279
+# Streptococcus
+1301
+# Ureaplasma
+2129
+# Veillonella
+29465
+# Vicinamibacter
+1847386
+
+
+
+
+
+
+
+
