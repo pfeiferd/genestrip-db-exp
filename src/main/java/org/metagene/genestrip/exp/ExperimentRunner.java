@@ -4,8 +4,16 @@ import java.io.File;
 import java.io.IOException;
 
 public class ExperimentRunner {
-    public static final String[] DB_NAMES = new String[] { "chronicb" };
-    public static final String[] OFF_NAMES = new String[] { "Tick Borne" };
+    public static final String[] DB_NAMES = new String[] { "babesia",
+            "borrelia",
+            "borrelia_plasmid",
+            "chronicb",
+            "human_virus2",
+    "parasites",
+    "plasmopara",
+    "protozoa",
+    "vineyard"};
+    public static final String[] OFF_NAMES = DB_NAMES;
 
     private final File baseDir;
     private final String[] offNames;
