@@ -40,7 +40,6 @@ public class ExperimentRunner {
         int i = 0;
         for (String dbBaseName : dbBaseNames) {
             minUpdateDBNames[i++] = getMinUpdateDBName(dbBaseName);
-            i++;
         }
         comparator.reportComparisons(offNames, dbBaseNames, minUpdateDBNames);
     }
