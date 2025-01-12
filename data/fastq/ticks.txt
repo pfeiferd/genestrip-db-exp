@@ -16,3 +16,8 @@ tick5 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR172811
 #tick5Control https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281110
 
 tick6 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281099
+
+tick7 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRS11356466
+
+tick8 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRS11356467
+
