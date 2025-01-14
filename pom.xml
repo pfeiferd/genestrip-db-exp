@@ -72,7 +72,7 @@
 							<includeProjectDependencies>true</includeProjectDependencies>
 							<includePluginDependencies>true</includePluginDependencies>
 							<arguments>
-								<argument>-Xmx48G</argument>
+								<argument>-Xmx64G</argument>
 								<argument>-classpath</argument>
 								<classpath />
 								<argument>org.metagene.genestrip.Main</argument>
