@@ -1,0 +1,24 @@
+# From https://www.sciencedirect.com/science/article/pii/S1438422121000199
+# Candida albicans
+5476
+# Nakaseomyces glabratus
+5478
+# Candida parapsilosis
+5480
+# Rhodotorula mucilaginosa
+5537
+# Pichia kudriavzevii
+4909
+# Malassezia restricta
+76775
+# Saccharomyces
+4930
+# Cryptococcus neoformans
+# Not in the gut, but in the mock community for abundance test
+# 5207
+
+
+
+
+
+
