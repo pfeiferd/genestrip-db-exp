@@ -2,6 +2,6 @@
 # PB_ATCC https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR11606871
 
 # From https://zenodo.org/records/7213115/files/09_zymo_pacbio.fastq.zip?download=1
-PB_Zymo  09_zymo_pacbio.fastq
+PB_Zymo 09_zymo_pacbio.fastq
 # From https://zenodo.org/records/7213115/files/10_zymo_ont.fastq.zip?download=1
 ONT_Zymo 10_zymo_ont.fastq
