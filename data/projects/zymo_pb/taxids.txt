@@ -1,0 +1,34 @@
+# Veillonella rogosae
+423477
+# Faecalibacterium prausnitzii
+853
+# Roseburia hominis
+301301
+# Limosilactobacillus fermentum
+1613
+# Bifidobacterium adolescentis
+1680
+# Escherichia coli
+562
+# Bacteroides fragilis
+817
+# Fusobacterium nucleatum
+851
+# Prevotella corporis
+28128
+# Akkermansia muciniphila
+239935
+# Clostridioides difficile
+1496
+# Saccharomyces cerevisiae
+4932
+# Candida albicans
+5476
+# Methanobrevibacter smithii
+2173
+# Salmonella enterica
+28901
+# Enterococcus faecalis
+1351
+# Clostridium perfringens
+1502
