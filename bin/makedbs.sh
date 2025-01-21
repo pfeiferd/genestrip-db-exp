@@ -35,4 +35,5 @@ mvn exec:exec@db -Dname=chronicb-rna -Dgoal=$goal
 mvn exec:exec@db -Dname=chronicb-rna-minupdate -Dgoal=$goal
 mvn exec:exec@db -Dname=plasmopara -Dgoal=$goal
 mvn exec:exec@db -Dname=plasmopara-minupdate -Dgoal=$goal
+mvn exec:exec@db -Dname=human_gut -Dgoal=$goal
 
