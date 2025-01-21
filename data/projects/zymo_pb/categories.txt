@@ -1,1 +1,2 @@
-bacteria, fungi
+bacteria
+fungi
