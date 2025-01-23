@@ -1,0 +1,20 @@
+# Limosilactobacillus fermentum
+1613
+# Staphylococcus aureus
+1280
+# Enterococcus faecalis
+1351
+# Listeria monocytogenes
+1639
+# Bacillus subtilis
+1423
+# Salmonella enterica
+28901
+# Escherichia coli
+562
+# Pseudomonas aeruginosa
+287
+# Saccharomyces cerevisiae
+4932
+# Cryptococcus neoformans
+5207
