@@ -1,3 +1,5 @@
+# From https://github.com/lbcb-sci/MetagenomicsBenchmark/blob/master/genome_sizes.txt
+# Paper: https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-024-05634-8
 29292
 1006005
 73913
