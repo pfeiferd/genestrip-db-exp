@@ -1,5 +1,10 @@
 # From https://github.com/lbcb-sci/MetagenomicsBenchmark/blob/master/genome_sizes.txt
 # Paper: https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-024-05634-8
+# Exluded:
+# Drosophile m.
+# 7227
+# Homo Sapiens
+# 9606
 29292
 1006005
 73913
@@ -5700,8 +5705,6 @@
 1703970
 464
 723
-7227
-9606
 40091
 69825
 335972
