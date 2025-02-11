@@ -119,6 +119,22 @@
 							</arguments>
 						</configuration>
 					</execution>
+					<execution>
+						<id>genmbenchmark</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>java</executable>
+							<includeProjectDependencies>true</includeProjectDependencies>
+							<includePluginDependencies>true</includePluginDependencies>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>org.metagene.genestrip.mbenchmark.GenerateAdditionalFileForBenchmark</argument>
+							</arguments>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 		</plugins>
