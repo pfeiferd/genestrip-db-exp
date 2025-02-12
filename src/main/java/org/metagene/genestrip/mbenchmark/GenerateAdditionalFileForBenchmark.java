@@ -57,7 +57,7 @@ public class GenerateAdditionalFileForBenchmark {
                     String name = record.get(17);
                     String ftp = record.get(19);
                     AssemblySummaryReader.FTPEntryQuality quality = AssemblySummaryReader.FTPEntryQuality.fromString(complete, latest);
-                    AssemblySummaryReader.FTPEntryWithQuality ewq = new AssemblySummaryReader.FTPEntryWithQuality(ftp, quality, null, false);
+                    AssemblySummaryReader.FTPEntryWithQuality ewq = new AssemblySummaryReader.FTPEntryWithQuality(taxid, ftp, quality, null, false, speciesTaxid);
                     if (files.contains(name)) {
                         found.add(name);
                         ps.print(taxid);
