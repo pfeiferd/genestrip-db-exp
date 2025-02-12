@@ -8,9 +8,7 @@ import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.GSMaker;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.genbank.AssemblySummaryReader;
-import org.metagene.genestrip.io.BufferedLineReader;
 import org.metagene.genestrip.io.StreamProvider;
-import org.metagene.genestrip.tax.TaxTree;
 
 import java.io.*;
 import java.util.*;
