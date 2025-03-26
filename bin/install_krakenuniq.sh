@@ -15,11 +15,5 @@ cd krakenuniq
 
 ./install_krakenuniq.sh -j .
 
-# Create a viral database
-mkdir ../viral_db
-./krakenuniq-download --db ../viral_db refseq/viral
-./krakenuniq-download --db ../viral_db taxonomy
-./krakenuniq-build --db ../viral_db
-
 
 
