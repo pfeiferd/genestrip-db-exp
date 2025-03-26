@@ -7,7 +7,7 @@ cd $scriptdir/..
 
 if [ -z "$1" ]
   then
-	goal=matchlr
+	goal=match
   else
   	goal=$1
 fi
