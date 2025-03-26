@@ -13,7 +13,7 @@ git clone https://github.com/fbreitwieser/krakenuniq.git
 
 cd krakenuniq
 
-./install_krakenuniq -j .
+./install_krakenuniq.sh -j .
 
 # Create a viral database
 mkdir ../viral_db
