@@ -5,6 +5,7 @@ import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.GSMaker;
 import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.goals.MatchGoal;
+import org.metagene.genestrip.goals.MatchResultGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
 import org.metagene.genestrip.match.MatchingResult;
@@ -87,7 +88,7 @@ public class MatchComparator {
         for (String key : matches1.keySet()) {
             MatchingResult res1 = matches1.get(key);
             MatchingResult res2 = matches2.get(key);
-            if (res1.getTotalKMers() != res2.getTotalKMers()) {
+            if (res1.getGlobalStats().getKMers() != res2.getGlobalStats().getKMers()) {
                 throw new RuntimeException("Match results do not match");
             }
 
@@ -125,10 +126,10 @@ public class MatchComparator {
 
         GSMaker maker = new GSMaker(project);
 
-        MatchGoal matchGoal = (MatchGoal) maker.getGoal(GSGoalKey.MATCH);
+        MatchResultGoal matchGoal = (MatchResultGoal) maker.getGoal(GSGoalKey.MATCHRES);
         matchGoal.cleanThis();
         matchGoal.make();
-        Map<String, MatchingResult> matches = matchGoal.getMatchResults();
+        Map<String, MatchingResult> matches = matchGoal.get();
         if (nameMap != null) {
             SmallTaxTree tree = ((ObjectGoal<Database, GSProject>) maker.getGoal(GSGoalKey.LOAD_DB)).get().getTaxTree();
             for (String res : matches.keySet()) {

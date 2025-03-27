@@ -76,8 +76,8 @@ public class GenerateAdditionalFileForBenchmark {
                     String complete = record.get(11);
                     String name = record.get(17);
                     String ftp = record.get(19);
-                    AssemblySummaryReader.FTPEntryQuality quality = AssemblySummaryReader.FTPEntryQuality.fromString(complete, latest);
-                    AssemblySummaryReader.FTPEntryWithQuality ewq = new AssemblySummaryReader.FTPEntryWithQuality(taxid, ftp, quality, null, false, speciesTaxid);
+                    AssemblySummaryReader.AssemblyQuality quality = AssemblySummaryReader.AssemblyQuality.fromString(complete, latest);
+                    AssemblySummaryReader.AssemblyEntry ewq = new AssemblySummaryReader.AssemblyEntry(taxid, ftp, quality, null, false, speciesTaxid);
                     TaxTree.TaxIdNode node = tree.getNodeByTaxId(taxid);
                     if (!withShortList || containsNodeOrSupernode(tree, nodes, node)) {
                         if (files.contains(name)) {

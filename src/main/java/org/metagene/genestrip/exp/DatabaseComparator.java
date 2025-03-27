@@ -25,7 +25,7 @@ import java.util.Locale;
 public class DatabaseComparator {
     private static final DecimalFormat DF = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
-    private final File baseDir;
+    protected final File baseDir;
 
     public DatabaseComparator(File baseDir) {
         this.baseDir = baseDir;
