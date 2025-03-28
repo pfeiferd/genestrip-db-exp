@@ -12,4 +12,4 @@ mkdir ../bacteria_db
 
 export JELLYFISH_BIN=$scriptdir/../ku/krakenuniq/jellyfish-install/bin/jellyfish
 
-./krakenuniq-build --db ../bacterial_db --threads 10 --work-on-disk
+./krakenuniq-build --db ../bacteria_db --threads 10 --work-on-disk
