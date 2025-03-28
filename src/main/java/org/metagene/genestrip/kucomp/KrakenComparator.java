@@ -44,7 +44,7 @@ public class KrakenComparator extends DatabaseComparator {
     public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer) {
         Object2LongMap<String> stats = database.getStats();
 
-        out.println("name;rank;taxid;genestrip stored kmers; ku stored kmers;");
+        out.println("name;rank;taxid;genestrip stored kmers;ku stored kmers;");
 
         /*
         out.print("TOTAL;");
@@ -64,25 +64,35 @@ public class KrakenComparator extends DatabaseComparator {
             if (taxId != null) {
                 SmallTaxTree.SmallTaxIdNode taxNode = taxTree.getNodeByTaxId(taxId);
                 if (taxNode != null) {
-                    if (taxNode.getRank().isBelow(Rank.GENUS)) {
-                        out.print(taxNode.getName());
-                        out.print(';');
-                        out.print(taxNode.getRank());
-                        out.print(';');
-                        out.print(taxNode.getTaxId());
-                        out.print(';');
-                        out.print(stats.getLong(taxId));
-                        out.print(';');
+                    if (taxNode.getRank() != null && taxNode.getRank().isBelow(Rank.GENUS)) {
                         Long l = kuTaxid2KMer.get(taxId);
-                        out.print(l == null ? "0" : l);
-                        out.println(';');
+                        if (l != null) {
+                            System.out.println(taxId);
+                        }
+                            out.print(taxNode.getName());
+                            out.print(';');
+                            out.print(taxNode.getRank());
+                            out.print(';');
+                            out.print(taxNode.getTaxId());
+                            out.print(';');
+                            out.print(stats.getLong(taxId));
+                            out.print(';');
+                            out.print(l == null ? "0" : l);
+                            out.println(';');
                     }
+                    /*
+                    else if (taxNode.getRank() == null) {
+                        System.out.println(taxNode.getTaxId());
+                    }
+                    */
                 }
             }
         }
     }
 
     public static void main(String[] args) throws IOException {
-        new KrakenComparator(new File("./data")).reportKMerComparisons("human_virus", false, "viral_db");
+        KrakenComparator c= new KrakenComparator(new File("./data"));
+        //c.reportKMerComparisons("human_virus", false, "viral_db");
+        c.reportKMerComparisons("chronicb", false, "standard_db");
     }
 }
