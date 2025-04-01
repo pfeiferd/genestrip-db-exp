@@ -10,6 +10,6 @@ mkdir ../viral_db
 ./krakenuniq-download --db ../viral_db refseq/viral/Any
 ./krakenuniq-download --db ../viral_db taxonomy
 
-export JELLYFISH_BIN=$scriptdir/../ku/krakenuniq/jellyfish-install/bin/jellyfish
+export JELLYFISH_BIN=$(pwd)/jellyfish-install/bin/jellyfish
 
 ./krakenuniq-build --db ../viral_db
