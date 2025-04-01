@@ -3,7 +3,6 @@ package org.metagene.genestrip.kucomp;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.exp.DatabaseComparator;
 import org.metagene.genestrip.store.Database;
-import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.io.*;
@@ -42,57 +41,79 @@ public class KrakenComparator extends DatabaseComparator {
     }
 
     public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer) {
-        Object2LongMap<String> stats = database.getStats();
 
         out.println("name;rank;taxid;genestrip stored kmers;ku stored kmers;");
 
-        /*
-        out.print("TOTAL;");
-        out.print(Rank.NO_RANK);
-        out.print(';');
-        out.print("1;");
-        out.print(stats.getLong(null));
-        out.println(';');
-        out.println('0;');
-         */
+        visit(database.getTaxTree().getNodeByTaxId("1"), database.getStats(), out, kuTaxid2KMer);
 
-        List<String> sortedTaxIds = new ArrayList<>(stats.keySet());
-        SmallTaxTree taxTree = database.getTaxTree();
-        taxTree.sortTaxidsViaTree(sortedTaxIds);
+        System.out.println("Absolute error: " + err);
+        System.out.println("Entries: " + entries);
+        System.out.println("Absolute in data error: " + inDataErr);
+        System.out.println("In data entries: " + inDataEntries);
+        System.out.println("Mean absolute error: " + ((double) err) / entries);
+        System.out.println("Mean absolute in data error: " + ((double) inDataErr) / inDataEntries);
+        System.out.println("Tax ids of genomes in KrakenUniq but not in Genestrip:");
+        System.out.println(kuTaxid2KMer.size());
+        System.out.println(kuTaxid2KMer);
+        System.out.println("Tax ids of genomes in Genestrip but not in KrakenUniq:");
+        System.out.println(missingNodesInKu.size());
+        System.out.println(missingNodesInKu);
+        System.out.println("Differences:");
+        System.out.println(differences.size());
+        System.out.println(differences);
+    }
 
-        for (String taxId : sortedTaxIds) {
-            if (taxId != null) {
-                SmallTaxTree.SmallTaxIdNode taxNode = taxTree.getNodeByTaxId(taxId);
-                if (taxNode != null) {
-                    if (taxNode.getRank() != null && taxNode.getRank().isBelow(Rank.GENUS)) {
-                        Long l = kuTaxid2KMer.get(taxId);
-                        if (l != null) {
-                            System.out.println(taxId);
-                        }
-                            out.print(taxNode.getName());
-                            out.print(';');
-                            out.print(taxNode.getRank());
-                            out.print(';');
-                            out.print(taxNode.getTaxId());
-                            out.print(';');
-                            out.print(stats.getLong(taxId));
-                            out.print(';');
-                            out.print(l == null ? "0" : l);
-                            out.println(';');
-                    }
-                    /*
-                    else if (taxNode.getRank() == null) {
-                        System.out.println(taxNode.getTaxId());
-                    }
-                    */
-                }
+    protected void visit(SmallTaxTree.SmallTaxIdNode node, Object2LongMap<String> stats, PrintStream out, Map<String, Long> kuTaxid2KMer) {
+        handleNode(node, stats, out, kuTaxid2KMer);
+        if (node.getSubNodes() != null) {
+            for (SmallTaxTree.SmallTaxIdNode subNode : node.getSubNodes()) {
+                visit(subNode, stats, out, kuTaxid2KMer);
             }
         }
     }
 
+    private long inDataErr;
+    private long inDataEntries;
+    private long err;
+    private long entries;
+    private List<SmallTaxTree.SmallTaxIdNode> missingNodesInKu = new ArrayList<>();
+    private Map<SmallTaxTree.SmallTaxIdNode, Long> differences = new HashMap<>();
+
+    protected void handleNode(SmallTaxTree.SmallTaxIdNode taxNode, Object2LongMap<String> stats, PrintStream out, Map<String, Long> kuTaxid2KMer) {
+        String taxId = taxNode.getTaxId();
+        Long l = kuTaxid2KMer.get(taxId);
+        long h = l == null ? 0 : l;
+        long g = stats.getLong(taxId);
+        long diff = Math.abs(h - g);
+        if (l == null && g > 0) {
+            missingNodesInKu.add(taxNode);
+        }
+        else {
+            inDataErr += diff;
+            inDataEntries ++;
+        }
+        if (l != null && diff > 0) {
+            differences.put(taxNode, diff);
+        }
+        err += diff;
+        entries ++;
+
+        out.print(taxNode.getName());
+        out.print(';');
+        out.print(taxNode.getRank());
+        out.print(';');
+        out.print(taxNode.getTaxId());
+        out.print(';');
+        out.print(g);
+        out.print(';');
+        out.print(h);
+        out.println(';');
+        kuTaxid2KMer.remove(taxId);
+    }
+
     public static void main(String[] args) throws IOException {
-        KrakenComparator c= new KrakenComparator(new File("./data"));
-        //c.reportKMerComparisons("human_virus", false, "viral_db");
-        c.reportKMerComparisons("chronicb", false, "standard_db");
+        KrakenComparator c = new KrakenComparator(new File("./data"));
+        c.reportKMerComparisons("viral", false, "viral_db");
+        //       c.reportKMerComparisons("chronicb", false, "standard_db");
     }
 }
