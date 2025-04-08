@@ -1,0 +1,1 @@
+fasta1 https://zenodo.org/records/10886947/files/simulated_viral_fragments_mean_2000_std_500_min_1500_number_61550.fasta?download=1

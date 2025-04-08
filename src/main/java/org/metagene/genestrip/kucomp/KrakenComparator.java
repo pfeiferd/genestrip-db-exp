@@ -3,6 +3,7 @@ package org.metagene.genestrip.kucomp;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.exp.DatabaseComparator;
 import org.metagene.genestrip.store.Database;
+import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.io.*;
@@ -80,6 +81,9 @@ public class KrakenComparator extends DatabaseComparator {
     private Map<SmallTaxTree.SmallTaxIdNode, Long> differences = new HashMap<>();
 
     protected void handleNode(SmallTaxTree.SmallTaxIdNode taxNode, Object2LongMap<String> stats, PrintStream out, Map<String, Long> kuTaxid2KMer) {
+        if (taxNode == null || taxNode.getRank() == null || !taxNode.getRank().isBelow(Rank.GENUS)) {
+            return;
+        }
         String taxId = taxNode.getTaxId();
         Long l = kuTaxid2KMer.get(taxId);
         long h = l == null ? 0 : l;
@@ -114,6 +118,6 @@ public class KrakenComparator extends DatabaseComparator {
     public static void main(String[] args) throws IOException {
         KrakenComparator c = new KrakenComparator(new File("./data"));
         c.reportKMerComparisons("viral", false, "viral_db");
-        //       c.reportKMerComparisons("chronicb", false, "standard_db");
+        //c.reportKMerComparisons("chronicb_std_ku", false, "standard_db");
     }
 }

@@ -26,7 +26,7 @@ import java.util.SortedMap;
 public class MatchComparator {
     private static final DecimalFormat DF = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 
-    private final File baseDir;
+    protected final File baseDir;
 
     public MatchComparator(File baseDir) {
         this.baseDir = baseDir;
