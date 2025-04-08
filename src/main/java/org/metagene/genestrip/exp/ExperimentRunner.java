@@ -1,5 +1,7 @@
 package org.metagene.genestrip.exp;
 
+import org.metagene.genestrip.kucomp.KrakenMatchComparator;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -49,8 +51,12 @@ public class ExperimentRunner {
     }
 
     public static void main(String[] args) throws IOException {
+        /*
         ExperimentRunner runner = new ExperimentRunner(new File("./data"), OFF_NAMES, DB_NAMES);
         runner.runDatabaseComparisons();
-        //runner.runMatchComparison("chronicb", "fastq/ticks.txt");
+        runner.runMatchComparison("chronicb", "fastq/ticks.txt");
+         */
+        KrakenMatchComparator c = new KrakenMatchComparator(new File("./data"));
+        c.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt");
     }
 }
