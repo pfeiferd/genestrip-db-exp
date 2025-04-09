@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,18 +45,36 @@ public class KrakenMatchComparator {
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
 
         List<KrakenResCountGoal.KrakenResStats> list = stats.get(keys[0]);
-        MatchingResult match = matchResult.get(keys[0]);
+        Map<String, CountsPerTaxid> gstats = new HashMap<>(matchResult.get(keys[0]).getTaxid2Stats());
 
         File out = new File(project.getResultsDir(), keys[0] + ".csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-            ps.println("taxid; genestrip kmers; ku kmers;");
+            ps.println("taxid; genestrip kmers; ku kmers; genestrip reads; ku reads");
             for (KrakenResCountGoal.KrakenResStats kustats : list) {
-                CountsPerTaxid gcounts = match.getTaxid2Stats().get(kustats.getTaxid());
+                CountsPerTaxid gcounts = gstats.get(kustats.getTaxid());
                 ps.print(kustats.getTaxid());
+                ps.print(';');
+                ps.print(gcounts == null ? 0 : gcounts.getKMers());
+                ps.print(';');
+                ps.print(kustats.getKmers());
+                ps.print(';');
+                ps.print(gcounts == null ? 0 : gcounts.getReads());
+                ps.print(';');
+                ps.print(kustats.getReads());
+                ps.println(';');
+                gstats.remove(kustats.getTaxid());
+            }
+
+            for (CountsPerTaxid gcounts : gstats.values()) {
+                ps.print(gcounts.getTaxid());
                 ps.print(';');
                 ps.print(gcounts.getKMers());
                 ps.print(';');
-                ps.print(kustats.getKmers());
+                ps.print(0);
+                ps.print(';');
+                ps.print(gcounts.getReads());
+                ps.print(';');
+                ps.print(0);
                 ps.println(';');
             }
         }
