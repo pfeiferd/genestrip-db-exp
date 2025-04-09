@@ -4,8 +4,6 @@ import org.metagene.genestrip.GSCommon;
 import org.metagene.genestrip.GSGoalKey;
 import org.metagene.genestrip.GSMaker;
 import org.metagene.genestrip.GSProject;
-import org.metagene.genestrip.exp.MatchComparator;
-import org.metagene.genestrip.goals.MatchResultGoal;
 import org.metagene.genestrip.goals.kraken.KrakenResCountGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
@@ -32,6 +30,7 @@ public class KrakenMatchComparator {
                 null, null, null, false);
         GSMaker maker = new GSMaker(project);
         maker.getGoal(GSGoalKey.FASTA2FASTQ).make();
+        maker.dump();
 
         GSProject project2 = new GSProject(config, db, null, null, csvFile2, null, null, false, null,
                 null, null, null, false);
@@ -43,6 +42,7 @@ public class KrakenMatchComparator {
         ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal =
                 (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
+        maker2.dump();
 
         List<KrakenResCountGoal.KrakenResStats> list = stats.get(keys[0]);
         Map<String, CountsPerTaxid> gstats = new HashMap<>(matchResult.get(keys[0]).getTaxid2Stats());
@@ -66,16 +66,18 @@ public class KrakenMatchComparator {
             }
 
             for (CountsPerTaxid gcounts : gstats.values()) {
-                ps.print(gcounts.getTaxid());
-                ps.print(';');
-                ps.print(gcounts.getKMers());
-                ps.print(';');
-                ps.print(0);
-                ps.print(';');
-                ps.print(gcounts.getReads());
-                ps.print(';');
-                ps.print(0);
-                ps.println(';');
+                if (gcounts.getTaxid() != null) {
+                    ps.print(gcounts.getTaxid());
+                    ps.print(';');
+                    ps.print(gcounts.getKMers());
+                    ps.print(';');
+                    ps.print(0);
+                    ps.print(';');
+                    ps.print(gcounts.getReads());
+                    ps.print(';');
+                    ps.print(0);
+                    ps.println(';');
+                }
             }
         }
     }
