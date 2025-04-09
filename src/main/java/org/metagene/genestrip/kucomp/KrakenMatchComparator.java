@@ -30,7 +30,7 @@ public class KrakenMatchComparator {
                 null, null, null, false);
         GSMaker maker = new GSMaker(project);
         maker.getGoal(GSGoalKey.FASTA2FASTQ).make();
-        maker.dump();
+        maker.dumpAll();
 
         GSProject project2 = new GSProject(config, db, null, null, csvFile2, null, null, false, null,
                 null, null, null, false);
@@ -42,10 +42,13 @@ public class KrakenMatchComparator {
         ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal =
                 (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
-        maker2.dump();
+        maker2.dumpAll();
 
         List<KrakenResCountGoal.KrakenResStats> list = stats.get(keys[0]);
         Map<String, CountsPerTaxid> gstats = new HashMap<>(matchResult.get(keys[0]).getTaxid2Stats());
+
+        int differentKMerValues = 0;
+        int differentReadValues = 0;
 
         File out = new File(project.getResultsDir(), keys[0] + ".csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
@@ -54,15 +57,23 @@ public class KrakenMatchComparator {
                 CountsPerTaxid gcounts = gstats.get(kustats.getTaxid());
                 ps.print(kustats.getTaxid());
                 ps.print(';');
-                ps.print(gcounts == null ? 0 : gcounts.getKMers());
+                long gkmers = gcounts == null ? 0 : gcounts.getKMers();
+                ps.print(gkmers);
                 ps.print(';');
                 ps.print(kustats.getKmers());
                 ps.print(';');
-                ps.print(gcounts == null ? 0 : gcounts.getReads());
+                long greads = gcounts == null ? 0 : gcounts.getReads();
+                ps.print(greads);
                 ps.print(';');
                 ps.print(kustats.getReads());
                 ps.println(';');
                 gstats.remove(kustats.getTaxid());
+                if (kustats.getKmers() != gkmers) {
+                    differentKMerValues++;
+                }
+                if (kustats.getReads() != greads) {
+                    differentReadValues++;
+                }
             }
 
             for (CountsPerTaxid gcounts : gstats.values()) {
@@ -77,9 +88,18 @@ public class KrakenMatchComparator {
                     ps.print(';');
                     ps.print(0);
                     ps.println(';');
+                    if (gcounts.getKMers() != 0) {
+                        differentKMerValues++;
+                    }
+                    if (gcounts.getReads() != 0) {
+                        differentReadValues++;
+                    }
                 }
             }
         }
+
+        System.out.println("Different kmer values: " + differentKMerValues);
+        System.out.println("Different read values: " + differentReadValues);
     }
 
     public static void main(String[] args) throws IOException {
