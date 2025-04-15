@@ -1,9 +1,6 @@
 package org.metagene.genestrip.kucomp;
 
-import org.metagene.genestrip.GSCommon;
-import org.metagene.genestrip.GSGoalKey;
-import org.metagene.genestrip.GSMaker;
-import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.*;
 import org.metagene.genestrip.goals.kraken.KrakenResCountGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
@@ -26,14 +23,15 @@ public class KrakenMatchComparator {
 
     public void compareWithKUResults(String db, String csvFile1, String csvFile2, String[] keys) throws IOException {
         GSCommon config = new GSCommon(baseDir);
-        GSProject project = new GSProject(config, db, null, null, csvFile1, null, null, false, null,
+        GSProject project = new GSProject(config, db, null, null, csvFile1, null, null,  null,
                 null, null, null, false);
         GSMaker maker = new GSMaker(project);
         maker.getGoal(GSGoalKey.FASTA2FASTQ).make();
         maker.dumpAll();
 
-        GSProject project2 = new GSProject(config, db, null, null, csvFile2, null, null, false, null,
+        GSProject project2 = new GSProject(config, db, null, null, csvFile2, null, null,  null,
                 null, null, null, false);
+        project2.initConfigParam(GSConfigKey.KRAKEN_STYLE_MATCH, true);
 
         GSMaker maker2 = new GSMaker(project2);
         ObjectGoal<Map<String, MatchingResult>, GSProject> matchResGoal = (ObjectGoal<Map<String, MatchingResult>, GSProject>) maker2.getGoal(GSGoalKey.MATCHRES);

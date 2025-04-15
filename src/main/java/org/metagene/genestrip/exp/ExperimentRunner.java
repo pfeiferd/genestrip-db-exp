@@ -57,6 +57,6 @@ public class ExperimentRunner {
         runner.runMatchComparison("chronicb", "fastq/ticks.txt");
          */
         KrakenMatchComparator c = new KrakenMatchComparator(new File("./data"));
-        c.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
+        c.compareWithKUResults("viral16", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
     }
 }
