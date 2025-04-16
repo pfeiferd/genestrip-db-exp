@@ -127,7 +127,7 @@ public class DatabaseComparator {
     protected Database getDatabase(String dbName, boolean temp) throws IOException {
         GSCommon config = new GSCommon(baseDir);
 
-        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, null,
+        GSProject project = new GSProject(config, dbName, null, null, null, null, null, null,
                 null, null, null, false);
 
         GSMaker maker = new GSMaker(project);
@@ -138,7 +138,7 @@ public class DatabaseComparator {
 
     protected File getOutDir(String dbName) throws IOException {
         GSCommon config = new GSCommon(baseDir);
-        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, null,
+        GSProject project = new GSProject(config, dbName, null, null, null, null, null, null,
                 null, null, null, false);
         return project.getResultsDir();
     }
