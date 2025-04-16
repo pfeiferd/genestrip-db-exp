@@ -121,7 +121,7 @@ public class MatchComparator {
     public Map<String, MatchingResult> match(String dbName, String csvFile, Map<String,String> nameMap) throws IOException {
         GSCommon config = new GSCommon(baseDir);
 
-        GSProject project = new GSProject(config, dbName, null, null, csvFile, null, null, false, null,
+        GSProject project = new GSProject(config, dbName, null, null, csvFile, null, null, null,
                 null, null, null, false);
 
         GSMaker maker = new GSMaker(project);
@@ -184,7 +184,7 @@ public class MatchComparator {
 
     protected File getOutDir(String dbName) throws IOException {
         GSCommon config = new GSCommon(baseDir);
-        GSProject project = new GSProject(config, dbName, null, null, null, null, null, false, null,
+        GSProject project = new GSProject(config, dbName, null, null, null, null, null, null,
                 null, null, null, false);
         return project.getResultsDir();
     }
