@@ -1,1 +1,1 @@
-fastq1 viral_fasta2fastq_fasta1.fastq.gz
+fastq1 viral16_fasta2fastq_fasta1.fastq.gz
