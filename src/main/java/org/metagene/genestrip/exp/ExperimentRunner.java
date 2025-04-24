@@ -1,5 +1,6 @@
 package org.metagene.genestrip.exp;
 
+import org.metagene.genestrip.kucomp.KrakenComparator;
 import org.metagene.genestrip.kucomp.KrakenMatchComparator;
 
 import java.io.File;
@@ -56,7 +57,10 @@ public class ExperimentRunner {
         runner.runDatabaseComparisons();
         runner.runMatchComparison("chronicb", "fastq/ticks.txt");
          */
-        KrakenMatchComparator c = new KrakenMatchComparator(new File("./data"));
-        c.compareWithKUResults("viral16", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
+        KrakenComparator c = new KrakenComparator(new File("./data"));
+        c.reportKMerComparisons("viral", false, "viral_db");
+
+        KrakenMatchComparator c2 = new KrakenMatchComparator(new File("./data"));
+        c2.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
     }
 }
