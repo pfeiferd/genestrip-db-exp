@@ -45,7 +45,7 @@ public class KrakenComparator extends DatabaseComparator {
 
         out.println("name;rank;taxid;genestrip stored kmers;ku stored kmers;");
 
-        visit(database.getTaxTree().getNodeByTaxId("1"), database.getStats(), out, kuTaxid2KMer);
+        visit(database.getTaxTree().getRoot(), database.getStats(), out, kuTaxid2KMer);
 
         System.out.println("Absolute error: " + err);
         System.out.println("Entries: " + entries);
@@ -81,7 +81,7 @@ public class KrakenComparator extends DatabaseComparator {
     private Map<SmallTaxTree.SmallTaxIdNode, Long> differences = new HashMap<>();
 
     protected void handleNode(SmallTaxTree.SmallTaxIdNode taxNode, Object2LongMap<String> stats, PrintStream out, Map<String, Long> kuTaxid2KMer) {
-        if (taxNode == null || taxNode.getRank() == null || !taxNode.getRank().isBelow(Rank.GENUS)) {
+        if (taxNode == null || taxNode.getRank() == null /* || !taxNode.getRank().isBelow(Rank.GENUS)*/) {
             return;
         }
         String taxId = taxNode.getTaxId();
