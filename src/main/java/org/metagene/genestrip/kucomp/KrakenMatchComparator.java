@@ -81,21 +81,25 @@ public class KrakenMatchComparator {
 
             for (CountsPerTaxid gcounts : gstats.values()) {
                 if (gcounts.getTaxid() != null) {
-                    ps.print(gcounts.getTaxid());
-                    ps.print(';');
-                    ps.print(gcounts.getKMers());
-                    ps.print(';');
-                    ps.print(0);
-                    ps.print(';');
-                    ps.print(gcounts.getReads());
-                    ps.print(';');
-                    ps.print(0);
-                    ps.println(';');
-                    if (gcounts.getKMers() != 0) {
-                        differentKMerValues++;
-                    }
-                    if (gcounts.getReads() != 0) {
-                        differentReadValues++;
+                    if (gcounts.getKMers() != 0 || gcounts.getReads() != 0) {
+                        ps.print(gcounts.getTaxid());
+                        ps.print(';');
+                        ps.print(gcounts.getRank());
+                        ps.print(';');
+                        ps.print(gcounts.getKMers());
+                        ps.print(';');
+                        ps.print(0);
+                        ps.print(';');
+                        ps.print(gcounts.getReads());
+                        ps.print(';');
+                        ps.print(0);
+                        ps.println(';');
+                        if (gcounts.getKMers() != 0) {
+                            differentKMerValues++;
+                        }
+                        if (gcounts.getReads() != 0) {
+                            differentReadValues++;
+                        }
                     }
                 }
             }
