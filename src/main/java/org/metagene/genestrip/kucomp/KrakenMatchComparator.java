@@ -5,6 +5,8 @@ import org.metagene.genestrip.goals.kraken.KrakenResCountGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
 import org.metagene.genestrip.match.MatchingResult;
+import org.metagene.genestrip.store.Database;
+import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,6 +39,7 @@ public class KrakenMatchComparator {
         ObjectGoal<Map<String, MatchingResult>, GSProject> matchResGoal = (ObjectGoal<Map<String, MatchingResult>, GSProject>) maker2.getGoal(GSGoalKey.MATCHRES);
         Map<String, MatchingResult> matchResult = matchResGoal.get();
 
+
         ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal =
                 (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
@@ -50,10 +53,12 @@ public class KrakenMatchComparator {
 
         File out = new File(project.getResultsDir(), keys[0] + ".csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-            ps.println("taxid; genestrip kmers; ku kmers; genestrip reads; ku reads");
+            ps.println("taxid; rank; genestrip kmers; ku kmers; genestrip reads; ku reads");
             for (KrakenResCountGoal.KrakenResStats kustats : list) {
                 CountsPerTaxid gcounts = gstats.get(kustats.getTaxid());
                 ps.print(kustats.getTaxid());
+                ps.print(';');
+                ps.print(gcounts == null ? "" : gcounts.getRank());
                 ps.print(';');
                 long gkmers = gcounts == null ? 0 : gcounts.getKMers();
                 ps.print(gkmers);
