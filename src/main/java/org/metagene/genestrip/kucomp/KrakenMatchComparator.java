@@ -61,14 +61,14 @@ public class KrakenMatchComparator {
                 ps.print(gcounts == null ? "" : gcounts.getRank());
                 ps.print(';');
                 long gkmers = gcounts == null ? 0 : gcounts.getKMers();
-                ps.print(gkmers);
+                ps.print(correctV(gkmers));
                 ps.print(';');
-                ps.print(kustats.getKmers());
+                ps.print(correctV(kustats.getKmers()));
                 ps.print(';');
                 long greads = gcounts == null ? 0 : gcounts.getReads();
-                ps.print(greads);
+                ps.print(correctV(greads));
                 ps.print(';');
-                ps.print(kustats.getReads());
+                ps.print(correctV(kustats.getReads()));
                 ps.println(';');
                 gstats.remove(kustats.getTaxid());
                 if (kustats.getKmers() != gkmers) {
@@ -86,13 +86,13 @@ public class KrakenMatchComparator {
                         ps.print(';');
                         ps.print(gcounts.getRank());
                         ps.print(';');
-                        ps.print(gcounts.getKMers());
+                        ps.print(correctV(gcounts.getKMers()));
                         ps.print(';');
-                        ps.print(0);
+                        ps.print(correctV(0));
                         ps.print(';');
-                        ps.print(gcounts.getReads());
+                        ps.print(correctV(gcounts.getReads()));
                         ps.print(';');
-                        ps.print(0);
+                        ps.print(correctV(0));
                         ps.println(';');
                         if (gcounts.getKMers() != 0) {
                             differentKMerValues++;
@@ -107,6 +107,10 @@ public class KrakenMatchComparator {
 
         System.out.println("Different kmer values: " + differentKMerValues);
         System.out.println("Different read values: " + differentReadValues);
+    }
+
+    protected long correctV(long v) {
+        return v + 1;
     }
 
     public static void main(String[] args) throws IOException {
