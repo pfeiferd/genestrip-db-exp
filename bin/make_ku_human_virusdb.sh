@@ -12,10 +12,10 @@ file_path=../../data/projects/human_virus/taxids.txt
 
 line_number=1
 while read -r line; do
-    if [ "$line_number" -gt "1" ]; then
+    if [ "$line_number" -ne "1" ]; then
       ./krakenuniq-download --db ../human_virus_db refseq/viral/Any/taxid=$line
     fi
-    line_number=\$((line_number + 1))
+    line_number=2
 done < "\$file_path"
 
 ./krakenuniq-download --db ../human_virus_db taxonomy
