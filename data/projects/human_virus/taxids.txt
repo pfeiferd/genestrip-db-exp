@@ -1,4 +1,3 @@
-# Taken from https://viralzone.expasy.org/678 and converted to taxids...
 147711
 10804
 36427
