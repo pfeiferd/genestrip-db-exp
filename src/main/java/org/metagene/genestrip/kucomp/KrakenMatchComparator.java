@@ -47,7 +47,6 @@ public class KrakenMatchComparator {
         ObjectGoal<Map<String, MatchingResult>, GSProject> matchResGoal = (ObjectGoal<Map<String, MatchingResult>, GSProject>) maker2.getGoal(GSGoalKey.MATCHRES);
         Map<String, MatchingResult> matchResult = matchResGoal.get();
 
-
         ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal =
                 (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
