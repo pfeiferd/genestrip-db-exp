@@ -56,14 +56,13 @@ public class ExperimentRunner {
         ExperimentRunner runner = new ExperimentRunner(new File("./data"), OFF_NAMES, DB_NAMES);
         runner.runDatabaseComparisons();
         runner.runMatchComparison("chronicb", "fastq/ticks.txt");
-         */
         KrakenComparator c = new KrakenComparator(new File("./data"));
         c.reportKMerComparisons("viral", false, "viral_db");
-
-        /*
-        KrakenMatchComparator c2 = new KrakenMatchComparator(new File("./data"));
-        c2.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
-
          */
+
+        KrakenMatchComparator c2 = new KrakenMatchComparator(new File("./data"));
+        //c2.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
+        //c2.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
+        c2.compareWithKUResults("viral", null, "saliva.txt", new String[] { "saliva" });
     }
 }
