@@ -13,7 +13,7 @@ file_path=../../data/projects/human_virus/taxids.txt
 line_number=1
 while read -r line; do
       ./krakenuniq-download --db ../human_virus_db refseq/viral/Any/taxid=$line
-done < "\$file_path"
+done < "$file_path"
 
 ./krakenuniq-download --db ../human_virus_db taxonomy
 
