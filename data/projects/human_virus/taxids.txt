@@ -120,20 +120,12 @@
 333760
 57482
 10566
-# Manually completed with taxons for: 
-#Horsepox virus
-#Human torovirus
-#New York virus
-#Sagiyama virus
-#Sandfly fever sicilian virus
-#Southampton virus
 11984
 28292
 44755
 59303
 67605
 397342
-# Dengue Viruses 2,3,4
 12637
 11060
 11069
