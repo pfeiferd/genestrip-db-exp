@@ -13,7 +13,7 @@ file_path=../../data/projects/human_virus/taxids.txt
 line_number=1
 while read -r line; do
     if [ "$line_number" -gt "1" ]; then
-      ./krakenuniq-download --db ../human_virus_db refseq/viral/Any/taxid=$(line)
+      ./krakenuniq-download --db ../human_virus_db refseq/viral/Any/taxid=$line
     fi
     line_number=\$((line_number + 1))
 done < "\$file_path"
