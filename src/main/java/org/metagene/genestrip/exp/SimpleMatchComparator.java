@@ -53,11 +53,18 @@ public class SimpleMatchComparator {
                                 node = node.getParent();
                             }
                             Rank r = node == null ? null : node.getRank();
-                            if (r != null && (r.isBelow(Rank.SPECIES) || (norank && r.equals(Rank.SPECIES)))) {
-                                ps.print("below species");
+                            if (r != null && (r.isBelow(Rank.SPECIES) ||
+                                            (norank && r.equals(Rank.SPECIES)))) {
+                                ps.print("species or below");
+                                if (count1 != count2) {
+                                    System.out.println("Diff below species for: " + key);
+                                }
                             }
                             else if (r != null && r.equals(Rank.SPECIES)) {
-                                ps.print("species");
+                                ps.print("species or below");
+                                if (count1 != count2) {
+                                    System.out.println("Diff. species for: " + key);
+                                }
                             }
                             else if (r != null && r.equals(Rank.GENUS)) {
                                 ps.print("genus");
@@ -87,6 +94,7 @@ public class SimpleMatchComparator {
                 null, null, null, false);
         GSMaker maker = new GSMaker(project);
         ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker.getGoal(temp ? GSGoalKey.LOAD_TEMPDB : GSGoalKey.LOAD_DB);
+        maker.getGoal(GSGoalKey.DBINFO).make(); // Ensure DB info is around too...
         Database db = storeGoal.get();
         maker.dumpAll();
         return db;
