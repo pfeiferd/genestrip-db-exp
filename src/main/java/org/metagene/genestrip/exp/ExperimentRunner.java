@@ -68,6 +68,7 @@ public class ExperimentRunner {
 
         SimpleMatchComparator c1 = new SimpleMatchComparator(new File("./data"));
         // c1.compareResults("viral", "human_virus", "saliva.txt");
-        c1.compareCommonDBEntries("viral", "human_virus");
+        //c1.compareCommonDBEntries("viral", "human_virus");
+        c1.writeUnfoldedTaxids("human_virus");
     }
 }

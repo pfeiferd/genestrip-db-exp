@@ -14,9 +14,67 @@ public class KrakenComparator extends DatabaseComparator {
         super(baseDir);
     }
 
+    public void reportKrakenDBComparison(String genestripDB, boolean temp, String krakenDB1, String krakenDB2) throws IOException {
+        SmallTaxTree tree = getDatabase(genestripDB, false).getTaxTree();
+        Map<String, Long> kuTaxid2KMer1 = getKrakenDBCounts(getKrakenCountsFile(krakenDB1));
+        Map<String, Long> kuTaxid2KMer2 = getKrakenDBCounts(getKrakenCountsFile(krakenDB1));
+
+        File out = new File(baseDir, krakenDB1 + "_" + krakenDB2 + "_kudbcomp.csv");
+        try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
+            ps.println("taxid; rank; " + krakenDB1 + " kmers; " + krakenDB2 + " kmers;");
+            for (String key : kuTaxid2KMer1.keySet()) {
+                Long count1 = kuTaxid2KMer2.get(key);
+                if (count1 != null) {
+                    SmallTaxTree.SmallTaxIdNode node = tree.getNodeByTaxId(key);
+                    if (node != null) {
+                        Long count2 = kuTaxid2KMer2.get(key);
+                        if (count2 != null) {
+
+                        }
+                        ps.print(key);
+                        ps.print(";");
+                        boolean norank = false;
+                        while (node != null && Rank.NO_RANK.equals(node.getRank())) {
+                            norank = true;
+                            node = node.getParent();
+                        }
+                        Rank r = node == null ? null : node.getRank();
+                        if (r != null && (r.isBelow(Rank.SPECIES) ||
+                                (norank && r.equals(Rank.SPECIES)))) {
+                            ps.print("species or below");
+                        } else if (r != null && r.equals(Rank.SPECIES)) {
+                            ps.print("species or below");
+                        } else if (r != null && r.equals(Rank.GENUS)) {
+                            ps.print("genus");
+                        } else {
+                            ps.print("null");
+                        }
+                        ps.print(";");
+                        ps.print(correctDBValue(count1));
+                        ps.print(";");
+                        ps.print(correctDBValue(count2));
+                        ps.println(";");
+                    }
+                }
+            }
+        }
+    }
+
+    protected long correctDBValue(long v) {
+        return v + 1;
+    }
+
     public void reportKMerComparisons(String genestripDB, boolean temp, String krakenDB) throws IOException {
-        File file = getKrakenCountsFile(krakenDB);
+        Map<String, Long> kuTaxid2KMer = getKrakenDBCounts(getKrakenCountsFile(krakenDB));
+
         String file1 = "gku_kmer_counts.txt";
+        File countsFile = new File(getOutDir(genestripDB), "gku_kmer_counts.csv");
+        try (PrintStream out = new PrintStream(new FileOutputStream(countsFile))) {
+            printJointStoreInfo(getDatabase(genestripDB, temp), out, kuTaxid2KMer);
+        }
+    }
+
+    protected Map<String, Long> getKrakenDBCounts(File file) throws IOException {
         Map<String, Long> kuTaxid2KMer = new HashMap<String, Long>();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
@@ -30,11 +88,7 @@ public class KrakenComparator extends DatabaseComparator {
                 line = br.readLine();
             }
         }
-        File countsFile = new File(getOutDir(genestripDB), "gku_kmer_counts.csv");
-
-        try (PrintStream out = new PrintStream(new FileOutputStream(countsFile))) {
-            printJointStoreInfo(getDatabase(genestripDB, temp), out, kuTaxid2KMer);
-        }
+        return kuTaxid2KMer;
     }
 
     protected File getKrakenCountsFile(String krakenDB) {
@@ -91,16 +145,15 @@ public class KrakenComparator extends DatabaseComparator {
         long diff = Math.abs(h - g);
         if (l == null && g > 0) {
             missingNodesInKu.add(taxNode);
-        }
-        else {
+        } else {
             inDataErr += diff;
-            inDataEntries ++;
+            inDataEntries++;
         }
         if (l != null && diff > 0) {
             differences.put(taxNode, diff);
         }
         err += diff;
-        entries ++;
+        entries++;
 
         out.print(taxNode.getName());
         out.print(';');

@@ -11,6 +11,7 @@ import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.store.KMerSortedArray;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
+import org.metagene.genestrip.tax.TaxTree;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +22,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class SimpleMatchComparator {
     protected final File baseDir;
@@ -54,22 +56,19 @@ public class SimpleMatchComparator {
                             }
                             Rank r = node == null ? null : node.getRank();
                             if (r != null && (r.isBelow(Rank.SPECIES) ||
-                                            (norank && r.equals(Rank.SPECIES)))) {
+                                    (norank && r.equals(Rank.SPECIES)))) {
                                 ps.print("species or below");
                                 if (count1 != count2) {
                                     System.out.println("Diff below species for: " + key);
                                 }
-                            }
-                            else if (r != null && r.equals(Rank.SPECIES)) {
+                            } else if (r != null && r.equals(Rank.SPECIES)) {
                                 ps.print("species or below");
                                 if (count1 != count2) {
                                     System.out.println("Diff. species for: " + key);
                                 }
-                            }
-                            else if (r != null && r.equals(Rank.GENUS)) {
+                            } else if (r != null && r.equals(Rank.GENUS)) {
                                 ps.print("genus");
-                            }
-                            else {
+                            } else {
                                 ps.print("null");
                             }
                             ps.print(";");
@@ -88,6 +87,20 @@ public class SimpleMatchComparator {
         return v + 1;
     }
 
+    protected void writeUnfoldedTaxids(String dbName) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, dbName, null, null, null, null, null, null,
+                null, null, null, false);
+        GSMaker maker = new GSMaker(project);
+        Set<TaxTree.TaxIdNode> nodes = ((ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject>) maker.getGoal(GSGoalKey.TAXNODES)).get();
+        File out = new File(project.getProjectDir(), "unfolded_taxids.txt");
+        try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
+            for (TaxTree.TaxIdNode node : nodes) {
+                ps.println(node.getTaxId());
+            }
+        }
+    }
+
     protected Database getDatabase(String dbName, boolean temp) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, dbName, null, null, null, null, null, null,
@@ -95,6 +108,8 @@ public class SimpleMatchComparator {
         GSMaker maker = new GSMaker(project);
         ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker.getGoal(temp ? GSGoalKey.LOAD_TEMPDB : GSGoalKey.LOAD_DB);
         maker.getGoal(GSGoalKey.DBINFO).make(); // Ensure DB info is around too...
+
+
         Database db = storeGoal.get();
         maker.dumpAll();
         return db;
