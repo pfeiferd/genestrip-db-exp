@@ -60,10 +60,14 @@ public class ExperimentRunner {
         c.reportKMerComparisons("viral", false, "viral_db");
          */
 
-        KrakenMatchComparator c2 = new KrakenMatchComparator(new File("./data"));
-        //c2.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
-        //c2.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
-        //c2.compareWithKUResults("viral", null, "saliva.txt", new String[] { "saliva" });
-        c2.compareWithKUResults("human_virus", null, "saliva.txt", new String[] { "saliva" });
+        // KrakenMatchComparator c2 = new KrakenMatchComparator(new File("./data"));
+        // c2.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
+        // c2.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[] { "fastq1" });
+        // c2.compareWithKUResults("viral", null, "saliva.txt", new String[] { "saliva" });
+        // c2.compareWithKUResults("human_virus", null, "saliva.txt", new String[] { "saliva" });
+
+        SimpleMatchComparator c1 = new SimpleMatchComparator(new File("./data"));
+        // c1.compareResults("viral", "human_virus", "saliva.txt");
+        c1.compareCommonDBEntries("viral", "human_virus");
     }
 }
