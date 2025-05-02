@@ -17,47 +17,59 @@ public class KrakenComparator extends DatabaseComparator {
     public void reportKrakenDBComparison(String genestripDB, boolean temp, String krakenDB1, String krakenDB2) throws IOException {
         SmallTaxTree tree = getDatabase(genestripDB, false).getTaxTree();
         Map<String, Long> kuTaxid2KMer1 = getKrakenDBCounts(getKrakenCountsFile(krakenDB1));
-        Map<String, Long> kuTaxid2KMer2 = getKrakenDBCounts(getKrakenCountsFile(krakenDB1));
+        Map<String, Long> kuTaxid2KMer2 = getKrakenDBCounts(getKrakenCountsFile(krakenDB2));
 
+        int diff = 0;
         File out = new File(baseDir, krakenDB1 + "_" + krakenDB2 + "_kudbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("taxid; rank; " + krakenDB1 + " kmers; " + krakenDB2 + " kmers;");
             for (String key : kuTaxid2KMer1.keySet()) {
-                Long count1 = kuTaxid2KMer2.get(key);
-                if (count1 != null) {
-                    SmallTaxTree.SmallTaxIdNode node = tree.getNodeByTaxId(key);
-                    if (node != null) {
-                        Long count2 = kuTaxid2KMer2.get(key);
-                        if (count2 != null) {
-
-                        }
-                        ps.print(key);
-                        ps.print(";");
-                        boolean norank = false;
-                        while (node != null && Rank.NO_RANK.equals(node.getRank())) {
-                            norank = true;
-                            node = node.getParent();
-                        }
-                        Rank r = node == null ? null : node.getRank();
-                        if (r != null && (r.isBelow(Rank.SPECIES) ||
-                                (norank && r.equals(Rank.SPECIES)))) {
-                            ps.print("species or below");
-                        } else if (r != null && r.equals(Rank.SPECIES)) {
-                            ps.print("species or below");
-                        } else if (r != null && r.equals(Rank.GENUS)) {
-                            ps.print("genus");
-                        } else {
-                            ps.print("null");
-                        }
-                        ps.print(";");
-                        ps.print(correctDBValue(count1));
-                        ps.print(";");
-                        ps.print(correctDBValue(count2));
-                        ps.println(";");
+                SmallTaxTree.SmallTaxIdNode node = tree.getNodeByTaxId(key);
+                if (node != null) {
+                    Long count2 = kuTaxid2KMer2.get(key);
+                    if (count2 == null) {
+                        count2 = 0L;
                     }
+                    Long count1 = kuTaxid2KMer1.get(key);
+                    if (count1 == null) {
+                        count1 = 0L;
+                    }
+                    ps.print(key);
+                    ps.print(";");
+                    boolean norank = false;
+                    while (node != null && Rank.NO_RANK.equals(node.getRank())) {
+                        norank = true;
+                        node = node.getParent();
+                    }
+                    Rank r = node == null ? null : node.getRank();
+                    if (r != null && (r.isBelow(Rank.SPECIES) ||
+                            (norank && r.equals(Rank.SPECIES)))) {
+                        ps.print("species or below");
+                        if (count1 != count2) {
+                            diff++;
+                        }
+                    } else if (r != null && r.equals(Rank.SPECIES)) {
+                        ps.print("species or below");
+                        if (count1 != count2) {
+                            diff++;
+                        }
+                    } else if (r != null && r.equals(Rank.GENUS)) {
+                        ps.print("genus");
+                    } else {
+                        ps.print("null");
+                    }
+                    ps.print(";");
+                    ps.print(correctDBValue(count1));
+                    ps.print(";");
+                    ps.print(correctDBValue(count2));
+                    ps.println(";");
+                }
+                else {
+                    System.out.println(node);
                 }
             }
         }
+        System.out.println(diff);
     }
 
     protected long correctDBValue(long v) {

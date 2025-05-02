@@ -49,28 +49,7 @@ public class SimpleMatchComparator {
                         if (count2 != -1) {
                             ps.print(key);
                             ps.print(";");
-                            boolean norank = false;
-                            while (node != null && Rank.NO_RANK.equals(node.getRank())) {
-                                norank = true;
-                                node = node.getParent();
-                            }
-                            Rank r = node == null ? null : node.getRank();
-                            if (r != null && (r.isBelow(Rank.SPECIES) ||
-                                    (norank && r.equals(Rank.SPECIES)))) {
-                                ps.print("species or below");
-                                if (count1 != count2) {
-                                    System.out.println("Diff below species for: " + key);
-                                }
-                            } else if (r != null && r.equals(Rank.SPECIES)) {
-                                ps.print("species or below");
-                                if (count1 != count2) {
-                                    System.out.println("Diff. species for: " + key);
-                                }
-                            } else if (r != null && r.equals(Rank.GENUS)) {
-                                ps.print("genus");
-                            } else {
-                                ps.print("null");
-                            }
+                            ps.print(getRankString(node));
                             ps.print(";");
                             ps.print(correctDBValue(count1));
                             ps.print(";");
@@ -81,6 +60,36 @@ public class SimpleMatchComparator {
                 }
             }
         }
+    }
+
+    protected String getRankString(SmallTaxTree.SmallTaxIdNode node) {
+        boolean norank = false;
+        while (node != null && Rank.NO_RANK.equals(node.getRank())) {
+            norank = true;
+            node = node.getParent();
+        }
+        Rank r = node == null ? null : node.getRank();
+        if (r != null && (r.isBelow(Rank.SPECIES) ||
+                (norank && r.equals(Rank.SPECIES)))) {
+            /*
+            if (count1 != count2) {
+                System.out.println("Diff below species for: " + key);
+            }
+            */
+            return "species or below";
+        } else if (r != null && r.equals(Rank.SPECIES)) {
+            /*
+            if (count1 != count2) {
+                System.out.println("Diff. species for: " + key);
+            }
+             */
+            return "species or below";
+        } else if (r != null && r.equals(Rank.GENUS)) {
+           return "genus";
+        } else {
+           return "null";
+        }
+
     }
 
     protected long correctDBValue(long v) {
@@ -109,7 +118,6 @@ public class SimpleMatchComparator {
         ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker.getGoal(temp ? GSGoalKey.LOAD_TEMPDB : GSGoalKey.LOAD_DB);
         maker.getGoal(GSGoalKey.DBINFO).make(); // Ensure DB info is around too...
 
-
         Database db = storeGoal.get();
         maker.dumpAll();
         return db;
@@ -133,30 +141,31 @@ public class SimpleMatchComparator {
             Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
             Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
 
-            File out = new File(baseDir, key + "_comp.csv");
+            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; genestrip kmers 1; genestrip kmers 2; genestrip ukmers 1; genestrip ukmers 2; genestrip reads 1; genestrip reads 2");
                 for (String taxid : stats1.keySet()) {
-                    if (taxTreeRef2[0].getNodeByTaxId(taxid) == null) {
+                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef2[0].getNodeByTaxId(taxid);
+                    if (node == null) {
                         continue;
                     }
                     CountsPerTaxid c1 = stats1.get(taxid);
                     CountsPerTaxid c2 = stats2.get(taxid);
                     ps.print(c1.getTaxid());
                     ps.print(';');
-                    ps.print(c1.getRank());
+                    ps.print(getRankString(node));
                     ps.print(';');
-                    ps.print(c1.getKMers());
+                    ps.print(correctDBValue(c1.getKMers()));
                     ps.print(';');
-                    ps.print(c2 == null ? 0 : c2.getKMers());
+                    ps.print(correctDBValue(c2 == null ? 0 : c2.getKMers()));
                     ps.print(';');
-                    ps.print(c1.getUniqueKMers());
+                    ps.print(correctDBValue(c1.getUniqueKMers()));
                     ps.print(';');
-                    ps.print(c2 == null ? 0 : c2.getUniqueKMers());
+                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers()));
                     ps.print(';');
-                    ps.print(c1.getReads());
+                    ps.print(correctDBValue(c1.getReads()));
                     ps.print(';');
-                    ps.print(c2 == null ? 0 : c2.getReads());
+                    ps.print(correctDBValue(c2 == null ? 0 : c2.getReads()));
                     ps.println(';');
                 }
                 for (String taxid : stats2.keySet()) {

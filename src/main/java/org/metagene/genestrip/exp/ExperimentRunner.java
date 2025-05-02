@@ -68,7 +68,15 @@ public class ExperimentRunner {
 
         SimpleMatchComparator c1 = new SimpleMatchComparator(new File("./data"));
         // c1.compareResults("viral", "human_virus", "saliva.txt");
+        c1.compareResults("viral","human_virus", "saliva.txt");
+        c1.compareResults("viral","human_virus-minupdate", "saliva.txt");
         //c1.compareCommonDBEntries("viral", "human_virus");
-        c1.writeUnfoldedTaxids("human_virus");
+        //c1.writeUnfoldedTaxids("human_virus");
+
+        /*
+        KrakenComparator krakenComparator = new KrakenComparator(new File("./data"));
+        krakenComparator.reportKrakenDBComparison("human_virus", false, "viral_db", "human_virus_db");
+
+         */
     }
 }
