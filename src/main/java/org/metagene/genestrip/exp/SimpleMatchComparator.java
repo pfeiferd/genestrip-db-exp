@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class SimpleMatchComparator {
+    public static final String SPECIES_OR_BELOW = "species or below";
+    public static final String GENUS = "genus";
+    public static final String ABOVE_GENUS = "null";
+
     protected final File baseDir;
 
     public SimpleMatchComparator(File baseDir) {
@@ -76,20 +80,19 @@ public class SimpleMatchComparator {
                 System.out.println("Diff below species for: " + key);
             }
             */
-            return "species or below";
+            return SPECIES_OR_BELOW;
         } else if (r != null && r.equals(Rank.SPECIES)) {
             /*
             if (count1 != count2) {
                 System.out.println("Diff. species for: " + key);
             }
              */
-            return "species or below";
+            return SPECIES_OR_BELOW;
         } else if (r != null && r.equals(Rank.GENUS)) {
-           return "genus";
+           return GENUS;
         } else {
-           return "null";
+           return ABOVE_GENUS;
         }
-
     }
 
     protected long correctDBValue(long v) {
@@ -123,7 +126,19 @@ public class SimpleMatchComparator {
         return db;
     }
 
+    private int errs;
+    private long kMersErrSum;
+    private long kMersErrSquareSum;
+    private long readsErrSum;
+    private long readsErrSquareSum;
+
     public void compareResults(String dbName1, String dbName2, String csvFile) throws IOException {
+        errs = 0;
+        kMersErrSum = 0;
+        kMersErrSquareSum = 0;
+        readsErrSum = 0;
+        readsErrSquareSum = 0;
+
         SmallTaxTree[] taxTreeRef1 = new SmallTaxTree[1];
         Map<String, MatchingResult> matches1 = match(dbName1, csvFile, taxTreeRef1);
         SmallTaxTree[] taxTreeRef2 = new SmallTaxTree[1];
@@ -153,7 +168,8 @@ public class SimpleMatchComparator {
                     CountsPerTaxid c2 = stats2.get(taxid);
                     ps.print(c1.getTaxid());
                     ps.print(';');
-                    ps.print(getRankString(node));
+                    String rs = getRankString(node);
+                    ps.print(rs);
                     ps.print(';');
                     ps.print(correctDBValue(c1.getKMers()));
                     ps.print(';');
@@ -167,6 +183,9 @@ public class SimpleMatchComparator {
                     ps.print(';');
                     ps.print(correctDBValue(c2 == null ? 0 : c2.getReads()));
                     ps.println(';');
+                    if (SPECIES_OR_BELOW.equals(rs)) {
+                        sumErrorStats(c1, c2);
+                    }
                 }
                 for (String taxid : stats2.keySet()) {
                     if (taxTreeRef1[0].getNodeByTaxId(taxid) == null) {
@@ -195,6 +214,23 @@ public class SimpleMatchComparator {
                 }
             }
         }
+        System.out.println("Errors: " + errs);
+        System.out.println("Mean kmers error: " + ((double) kMersErrSum) / errs);
+        System.out.println("Mean reads error: " + ((double) readsErrSum) / errs);
+    }
+
+    protected void sumErrorStats(CountsPerTaxid c1, CountsPerTaxid c2) {
+            long k1 = c1 == null ? 0 : c1.getKMers();
+            long k2 = c1 == null ? 0 : c2.getKMers();
+            long err = Math.abs(k1 - k2);
+            kMersErrSum += err;
+            kMersErrSquareSum += err * err;
+
+            long r1 = c1 == null ? 0 : c1.getReads();
+            long r2 = c1 == null ? 0 : c2.getReads();
+            err = Math.abs(r1 - r2);
+            readsErrSum += err;
+            readsErrSquareSum += err * err;
     }
 
     public Map<String, MatchingResult> match(String dbName, String csvFile, SmallTaxTree[] taxTreeRef) throws IOException {
