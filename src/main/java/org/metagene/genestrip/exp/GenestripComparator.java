@@ -1,14 +1,12 @@
 package org.metagene.genestrip.exp;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import org.metagene.genestrip.*;
 import org.metagene.genestrip.goals.MatchResultGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
 import org.metagene.genestrip.match.MatchingResult;
 import org.metagene.genestrip.store.Database;
-import org.metagene.genestrip.store.KMerSortedArray;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 import org.metagene.genestrip.tax.TaxTree;
@@ -17,21 +15,18 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-public class SimpleMatchComparator {
+public class GenestripComparator {
     public static final String SPECIES_OR_BELOW = "species or below";
     public static final String GENUS = "genus";
     public static final String ABOVE_GENUS = "null";
 
     protected final File baseDir;
 
-    public SimpleMatchComparator(File baseDir) {
+    public GenestripComparator(File baseDir) {
         this.baseDir = baseDir;
     }
 
@@ -41,9 +36,9 @@ public class SimpleMatchComparator {
         Object2LongMap<String> stats1 = db1.getStats();
         db1 = null;
         Object2LongMap<String> stats2 = getDatabase(dbName2, false).getStats();
-        File out = new File(baseDir, dbName1 + "_" + dbName2 + "_dbcomp.csv");
+        File out = new File(baseDir, dbName1 + "_" + dbName2 + "_gs_gs_dbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-            ps.println("taxid; rank; " + dbName1 + " kmers; " + dbName2 + " kmers;");
+            ps.println("taxid; rank; kmers 1; kmers 2;");
             for (String key : stats1.keySet()) {
                 if (key != null) {
                     long count1 = stats1.get(key);
@@ -156,11 +151,11 @@ public class SimpleMatchComparator {
             Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
             Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
 
-            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_comp.csv");
+            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-                ps.println("taxid; rank; genestrip kmers 1; genestrip kmers 2; genestrip ukmers 1; genestrip ukmers 2; genestrip reads 1; genestrip reads 2");
+                ps.println("taxid; rank; kmers 1; kmers 2; ukmers 1; ukmers 2; reads 1; reads 2");
                 for (String taxid : stats1.keySet()) {
-                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef2[0].getNodeByTaxId(taxid);
+                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef1[0].getNodeByTaxId(taxid);
                     if (node == null) {
                         continue;
                     }
@@ -188,7 +183,8 @@ public class SimpleMatchComparator {
                     }
                 }
                 for (String taxid : stats2.keySet()) {
-                    if (taxTreeRef1[0].getNodeByTaxId(taxid) == null) {
+                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef2[0].getNodeByTaxId(taxid);
+                    if (node == null) {
                         continue;
                     }
                     CountsPerTaxid c1 = stats1.get(taxid);
@@ -196,7 +192,7 @@ public class SimpleMatchComparator {
                         CountsPerTaxid c2 = stats2.get(taxid);
                         ps.print(c2.getTaxid());
                         ps.print(';');
-                        ps.print(c2.getRank());
+                        ps.print(getRankString(node));
                         ps.print(';');
                         ps.print(0);
                         ps.print(';');
@@ -242,7 +238,9 @@ public class SimpleMatchComparator {
         GSMaker maker = new GSMaker(project);
 
         ObjectGoal<Database, GSProject> dbGoal = (ObjectGoal<Database, GSProject>) maker.getGoal(GSGoalKey.LOAD_DB);
-        taxTreeRef[0] = dbGoal.get().getTaxTree();
+        if (taxTreeRef != null) {
+            taxTreeRef[0] = dbGoal.get().getTaxTree();
+        }
         MatchResultGoal matchGoal = (MatchResultGoal) maker.getGoal(GSGoalKey.MATCHRES);
         Map<String, MatchingResult> matches = matchGoal.get();
         maker.dumpAll();

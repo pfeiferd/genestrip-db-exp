@@ -1,7 +1,9 @@
 package org.metagene.genestrip.kucomp;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import org.metagene.genestrip.exp.DatabaseComparator;
+import org.metagene.genestrip.GSCommon;
+import org.metagene.genestrip.GSProject;
+import org.metagene.genestrip.exp.GenestripComparator;
 import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
@@ -9,8 +11,8 @@ import org.metagene.genestrip.tax.SmallTaxTree;
 import java.io.*;
 import java.util.*;
 
-public class KrakenComparator extends DatabaseComparator {
-    public KrakenComparator(File baseDir) {
+public class KrakenDBComparator extends GenestripComparator {
+    public KrakenDBComparator(File baseDir) {
         super(baseDir);
     }
 
@@ -20,9 +22,9 @@ public class KrakenComparator extends DatabaseComparator {
         Map<String, Long> kuTaxid2KMer2 = getKrakenDBCounts(getKrakenCountsFile(krakenDB2));
 
         int diff = 0;
-        File out = new File(baseDir, krakenDB1 + "_" + krakenDB2 + "_kudbcomp.csv");
+        File out = new File(baseDir, krakenDB1 + "_" + krakenDB2 + "_ku_ku_dbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-            ps.println("taxid; rank; " + krakenDB1 + " kmers; " + krakenDB2 + " kmers;");
+            ps.println("taxid; rank; kmers 1; kmers 2;");
             for (String key : kuTaxid2KMer1.keySet()) {
                 SmallTaxTree.SmallTaxIdNode node = tree.getNodeByTaxId(key);
                 if (node != null) {
@@ -41,22 +43,11 @@ public class KrakenComparator extends DatabaseComparator {
                         norank = true;
                         node = node.getParent();
                     }
-                    Rank r = node == null ? null : node.getRank();
-                    if (r != null && (r.isBelow(Rank.SPECIES) ||
-                            (norank && r.equals(Rank.SPECIES)))) {
-                        ps.print("species or below");
+                    String rs = getRankString(node);
+                    if (SPECIES_OR_BELOW.equals(rs)) {
                         if (count1 != count2) {
                             diff++;
                         }
-                    } else if (r != null && r.equals(Rank.SPECIES)) {
-                        ps.print("species or below");
-                        if (count1 != count2) {
-                            diff++;
-                        }
-                    } else if (r != null && r.equals(Rank.GENUS)) {
-                        ps.print("genus");
-                    } else {
-                        ps.print("null");
                     }
                     ps.print(";");
                     ps.print(correctDBValue(count1));
@@ -72,15 +63,10 @@ public class KrakenComparator extends DatabaseComparator {
         System.out.println(diff);
     }
 
-    protected long correctDBValue(long v) {
-        return v + 1;
-    }
-
     public void reportKMerComparisons(String genestripDB, boolean temp, String krakenDB) throws IOException {
         Map<String, Long> kuTaxid2KMer = getKrakenDBCounts(getKrakenCountsFile(krakenDB));
 
-        String file1 = "gku_kmer_counts.txt";
-        File countsFile = new File(getOutDir(genestripDB), "gku_kmer_counts.csv");
+        File countsFile = new File(baseDir, genestripDB + "_gs_ku_dbcomp.csv");
         try (PrintStream out = new PrintStream(new FileOutputStream(countsFile))) {
             printJointStoreInfo(getDatabase(genestripDB, temp), out, kuTaxid2KMer);
         }
@@ -108,8 +94,7 @@ public class KrakenComparator extends DatabaseComparator {
     }
 
     public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer) {
-
-        out.println("name;rank;taxid;genestrip stored kmers;ku stored kmers;");
+        out.println("taxid; rank; kmers 1; kmers 2;");
 
         visit(database.getTaxTree().getRoot(), database.getStats(), out, kuTaxid2KMer);
 
@@ -147,7 +132,7 @@ public class KrakenComparator extends DatabaseComparator {
     private Map<SmallTaxTree.SmallTaxIdNode, Long> differences = new HashMap<>();
 
     protected void handleNode(SmallTaxTree.SmallTaxIdNode taxNode, Object2LongMap<String> stats, PrintStream out, Map<String, Long> kuTaxid2KMer) {
-        if (taxNode == null || taxNode.getRank() == null /* || !taxNode.getRank().isBelow(Rank.GENUS)*/) {
+        if (taxNode == null || taxNode.getRank() == null) {
             return;
         }
         String taxId = taxNode.getTaxId();
@@ -167,11 +152,9 @@ public class KrakenComparator extends DatabaseComparator {
         err += diff;
         entries++;
 
-        out.print(taxNode.getName());
-        out.print(';');
-        out.print(taxNode.getRank());
-        out.print(';');
         out.print(taxNode.getTaxId());
+        out.print(';');
+        out.print(getRankString(taxNode));
         out.print(';');
         out.print(g);
         out.print(';');
@@ -181,7 +164,7 @@ public class KrakenComparator extends DatabaseComparator {
     }
 
     public static void main(String[] args) throws IOException {
-        KrakenComparator c = new KrakenComparator(new File("./data"));
+        KrakenDBComparator c = new KrakenDBComparator(new File("./data"));
         c.reportKMerComparisons("viral", false, "viral_db");
         //c.reportKMerComparisons("chronicb_std_ku", false, "standard_db");
     }

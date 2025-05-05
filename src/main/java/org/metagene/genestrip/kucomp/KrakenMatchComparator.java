@@ -1,6 +1,7 @@
 package org.metagene.genestrip.kucomp;
 
 import org.metagene.genestrip.*;
+import org.metagene.genestrip.exp.GenestripComparator;
 import org.metagene.genestrip.goals.MatchResultGoal;
 import org.metagene.genestrip.goals.kraken.KrakenResCountGoal;
 import org.metagene.genestrip.make.ObjectGoal;
@@ -22,14 +23,91 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class KrakenMatchComparator {
-    private final File baseDir;
-
+public class KrakenMatchComparator extends GenestripComparator {
     public KrakenMatchComparator(File baseDir) {
-        this.baseDir = baseDir;
+        super(baseDir);
     }
 
-    public void compareWithKUResults(String db, String csvFile1, String csvFile2, String[] keys) throws IOException {
+    public void compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
+        Database db1 = getDatabase(dbName1, false);
+        SmallTaxTree tree1 = db1.getTaxTree();
+
+        GSCommon config = new GSCommon(baseDir);
+
+        GSProject project1 = new GSProject(config, dbName1, null, null, csvFile, null, null, null,
+                null, null, null, false);
+        GSMaker maker1 = new GSMaker(project1);
+        ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal1 =
+                (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker1.getGoal(GSGoalKey.KRAKENCOUNT);
+        Map<String, List<KrakenResCountGoal.KrakenResStats>> stats1 = countGoal1.get();
+        maker1.dumpAll();
+
+        GSProject project2 = new GSProject(config, dbName2, null, null, csvFile, null, null, null,
+                null, null, null, false);
+        GSMaker maker2 = new GSMaker(project2);
+        ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal2 =
+                (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
+        Map<String, List<KrakenResCountGoal.KrakenResStats>> stats2 = countGoal1.get();
+        maker2.dumpAll();
+
+        for (String key : stats1.keySet()) {
+            List<KrakenResCountGoal.KrakenResStats> list1 = stats1.get(key);
+            Map<String, KrakenResCountGoal.KrakenResStats> map1 = new HashMap<>();
+            for (KrakenResCountGoal.KrakenResStats stats : list1) {
+                map1.put(stats.getTaxid(), stats);
+            }
+            List<KrakenResCountGoal.KrakenResStats> list2 = stats2.get(key);
+            Map<String, KrakenResCountGoal.KrakenResStats> map2 = new HashMap<>();
+            for (KrakenResCountGoal.KrakenResStats stats : list2) {
+                map2.put(stats.getTaxid(), stats);
+            }
+
+            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_ku_ku_comp.csv");
+            try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
+                ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2;");
+                for (KrakenResCountGoal.KrakenResStats kustats1 : list1) {
+                    SmallTaxTree.SmallTaxIdNode node = tree1.getNodeByTaxId(kustats1.getTaxid());
+                    if (node != null) {
+                        KrakenResCountGoal.KrakenResStats kustats2 = map2.get(kustats1.getTaxid());
+                        ps.print(kustats1.getTaxid());
+                        ps.print(';');
+                        ps.print(getRankString(node));
+                        ps.print(';');
+                        ps.print(correctDBValue(kustats1.getKmers()));
+                        ps.print(';');
+                        ps.print(correctDBValue(kustats2 == null ? 0 : kustats2.getKmers()));
+                        ps.print(';');
+                        ps.print(correctDBValue(kustats1.getReads()));
+                        ps.print(';');
+                        ps.print(correctDBValue(kustats2 == null ? 0 : kustats2.getReads()));
+                        ps.println(';');
+                    }
+                }
+
+                for (KrakenResCountGoal.KrakenResStats kustats2 : list2) {
+                    if (!map1.containsKey(kustats2.getTaxid())) {
+                        SmallTaxTree.SmallTaxIdNode node = tree1.getNodeByTaxId(kustats2.getTaxid());
+                        if (node != null) {
+                            ps.print(kustats2.getTaxid());
+                            ps.print(';');
+                            ps.print(getRankString(node));
+                            ps.print(';');
+                            ps.print(correctDBValue(0));
+                            ps.print(';');
+                            ps.print(correctDBValue(kustats2.getKmers()));
+                            ps.print(';');
+                            ps.print(correctDBValue(0));
+                            ps.print(';');
+                            ps.print(correctDBValue(kustats2.getReads()));
+                            ps.println(';');
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void compareWithKUResults(String db, String csvFile1, String csvFile2) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         if (csvFile1 != null) {
             GSProject project = new GSProject(config, db, null, null, csvFile1, null, null, null,
@@ -52,68 +130,70 @@ public class KrakenMatchComparator {
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
         maker2.dumpAll();
 
-        List<KrakenResCountGoal.KrakenResStats> list = stats.get(keys[0]);
-        Map<String, CountsPerTaxid> gstats = new HashMap<>(matchResult.get(keys[0]).getTaxid2Stats());
+        for (String key : matchResult.keySet()) {
+            List<KrakenResCountGoal.KrakenResStats> list = stats.get(key);
+            Map<String, CountsPerTaxid> gstats = new HashMap<>(matchResult.get(key).getTaxid2Stats());
 
-        int differentKMerValues = 0;
-        int differentReadValues = 0;
+            int differentKMerValues = 0;
+            int differentReadValues = 0;
 
-        File out = new File(project.getResultsDir(), keys[0] + ".csv");
-        try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-            ps.println("taxid; rank; genestrip kmers; ku kmers; genestrip reads; ku reads");
-            for (KrakenResCountGoal.KrakenResStats kustats : list) {
-                CountsPerTaxid gcounts = gstats.get(kustats.getTaxid());
-                ps.print(kustats.getTaxid());
-                ps.print(';');
-                ps.print(gcounts == null ? "" : gcounts.getRank());
-                ps.print(';');
-                long gkmers = gcounts == null ? 0 : gcounts.getKMers();
-                ps.print(correctV(gkmers));
-                ps.print(';');
-                ps.print(correctV(kustats.getKmers()));
-                ps.print(';');
-                long greads = gcounts == null ? 0 : gcounts.getReads();
-                ps.print(correctV(greads));
-                ps.print(';');
-                ps.print(correctV(kustats.getReads()));
-                ps.println(';');
-                gstats.remove(kustats.getTaxid());
-                if (kustats.getKmers() != gkmers) {
-                    differentKMerValues++;
+            File out = new File(baseDir, key + "_gs_ku_comp.csv");
+            try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
+                ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2");
+                for (KrakenResCountGoal.KrakenResStats kustats : list) {
+                    CountsPerTaxid gcounts = gstats.get(kustats.getTaxid());
+                    ps.print(kustats.getTaxid());
+                    ps.print(';');
+                    ps.print(gcounts == null ? "" : gcounts.getRank());
+                    ps.print(';');
+                    long gkmers = gcounts == null ? 0 : gcounts.getKMers();
+                    ps.print(correctDBValue(gkmers));
+                    ps.print(';');
+                    ps.print(correctDBValue(kustats.getKmers()));
+                    ps.print(';');
+                    long greads = gcounts == null ? 0 : gcounts.getReads();
+                    ps.print(correctDBValue(greads));
+                    ps.print(';');
+                    ps.print(correctDBValue(kustats.getReads()));
+                    ps.println(';');
+                    gstats.remove(kustats.getTaxid());
+                    if (kustats.getKmers() != gkmers) {
+                        differentKMerValues++;
+                    }
+                    if (kustats.getReads() != greads) {
+                        differentReadValues++;
+                    }
                 }
-                if (kustats.getReads() != greads) {
-                    differentReadValues++;
-                }
-            }
 
-            for (CountsPerTaxid gcounts : gstats.values()) {
-                if (gcounts.getTaxid() != null) {
-                    if (gcounts.getKMers() != 0 || gcounts.getReads() != 0) {
-                        ps.print(gcounts.getTaxid());
-                        ps.print(';');
-                        ps.print(gcounts.getRank());
-                        ps.print(';');
-                        ps.print(correctV(gcounts.getKMers()));
-                        ps.print(';');
-                        ps.print(correctV(0));
-                        ps.print(';');
-                        ps.print(correctV(gcounts.getReads()));
-                        ps.print(';');
-                        ps.print(correctV(0));
-                        ps.println(';');
-                        if (gcounts.getKMers() != 0) {
-                            differentKMerValues++;
-                        }
-                        if (gcounts.getReads() != 0) {
-                            differentReadValues++;
+                for (CountsPerTaxid gcounts : gstats.values()) {
+                    if (gcounts.getTaxid() != null) {
+                        if (gcounts.getKMers() != 0 || gcounts.getReads() != 0) {
+                            ps.print(gcounts.getTaxid());
+                            ps.print(';');
+                            ps.print(gcounts.getRank());
+                            ps.print(';');
+                            ps.print(correctDBValue(gcounts.getKMers()));
+                            ps.print(';');
+                            ps.print(correctDBValue(0));
+                            ps.print(';');
+                            ps.print(correctDBValue(gcounts.getReads()));
+                            ps.print(';');
+                            ps.print(correctDBValue(0));
+                            ps.println(';');
+                            if (gcounts.getKMers() != 0) {
+                                differentKMerValues++;
+                            }
+                            if (gcounts.getReads() != 0) {
+                                differentReadValues++;
+                            }
                         }
                     }
                 }
             }
-        }
 
-        System.out.println("Different kmer values: " + differentKMerValues);
-        System.out.println("Different read values: " + differentReadValues);
+            System.out.println("Different kmer values: " + differentKMerValues);
+            System.out.println("Different read values: " + differentReadValues);
+        }
     }
 
     public void accuracyCheckForSimulatedViralReads(String db, String csvFile2) throws IOException {
@@ -171,12 +251,8 @@ public class KrakenMatchComparator {
         maker2.dumpAll();
     }
 
-    protected long correctV(long v) {
-        return v + 1;
-    }
-
     public static void main(String[] args) throws IOException {
         KrakenMatchComparator c = new KrakenMatchComparator(new File("./data"));
-        c.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", new String[]{"fastq1"});
+        c.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt");
     }
 }

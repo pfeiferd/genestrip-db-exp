@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Deprecated
 public class DatabaseComparator {
     private static final DecimalFormat DF = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
 

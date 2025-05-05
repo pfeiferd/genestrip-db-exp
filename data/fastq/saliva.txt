@@ -1,2 +1,2 @@
+saliva1 human_saliva_sample.fastq.gz
 saliva2 human_saliva_sample2.fastq.gz
-saliva human_saliva_sample.fastq.gz
