@@ -1,11 +1,8 @@
 package org.metagene.genestrip.kucomp;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
-import org.metagene.genestrip.GSCommon;
-import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.exp.GenestripComparator;
 import org.metagene.genestrip.store.Database;
-import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.io.*;
@@ -16,7 +13,7 @@ public class KrakenDBComparator extends GenestripComparator {
         super(baseDir);
     }
 
-    public void reportKrakenDBComparison(String genestripDB, boolean temp, String krakenDB1, String krakenDB2) throws IOException {
+    public void reportKrakenDBComparison(String genestripDB, String krakenDB1, String krakenDB2) throws IOException {
         SmallTaxTree tree = getDatabase(genestripDB, false).getTaxTree();
         Map<String, Long> kuTaxid2KMer1 = getKrakenDBCounts(getKrakenCountsFile(krakenDB1));
         Map<String, Long> kuTaxid2KMer2 = getKrakenDBCounts(getKrakenCountsFile(krakenDB2));
@@ -41,7 +38,7 @@ public class KrakenDBComparator extends GenestripComparator {
                     String rs = getRankString(node);
                     ps.print(rs);
                     if (SPECIES_OR_BELOW.equals(rs)) {
-                        if (count1 != count2) {
+                        if (!count1.equals(count2)) {
                             diff++;
                         }
                     }
@@ -52,7 +49,7 @@ public class KrakenDBComparator extends GenestripComparator {
                     ps.println(";");
                 }
                 else {
-                    System.out.println(node);
+                    System.out.println(key);
                 }
             }
         }
@@ -69,14 +66,14 @@ public class KrakenDBComparator extends GenestripComparator {
     }
 
     protected Map<String, Long> getKrakenDBCounts(File file) throws IOException {
-        Map<String, Long> kuTaxid2KMer = new HashMap<String, Long>();
+        Map<String, Long> kuTaxid2KMer = new HashMap<>();
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line = br.readLine();
             while (line != null) {
                 int tab = line.indexOf('\t');
                 if (tab != -1) {
                     String taxid = line.substring(0, tab);
-                    Long kmers = Long.valueOf(line.substring(tab + 1, line.length()));
+                    Long kmers = Long.valueOf(line.substring(tab + 1));
                     kuTaxid2KMer.put(taxid, kmers);
                 }
                 line = br.readLine();
