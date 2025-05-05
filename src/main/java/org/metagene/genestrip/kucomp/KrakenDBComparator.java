@@ -38,12 +38,8 @@ public class KrakenDBComparator extends GenestripComparator {
                     }
                     ps.print(key);
                     ps.print(";");
-                    boolean norank = false;
-                    while (node != null && Rank.NO_RANK.equals(node.getRank())) {
-                        norank = true;
-                        node = node.getParent();
-                    }
                     String rs = getRankString(node);
+                    ps.print(rs);
                     if (SPECIES_OR_BELOW.equals(rs)) {
                         if (count1 != count2) {
                             diff++;

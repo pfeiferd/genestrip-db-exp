@@ -137,7 +137,7 @@ public class KrakenMatchComparator extends GenestripComparator {
             int differentKMerValues = 0;
             int differentReadValues = 0;
 
-            File out = new File(baseDir, key + "_gs_ku_comp.csv");
+            File out = new File(baseDir, db + "_" + key + "_gs_ku_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2");
                 for (KrakenResCountGoal.KrakenResStats kustats : list) {
