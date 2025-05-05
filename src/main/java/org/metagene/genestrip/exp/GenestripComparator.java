@@ -210,9 +210,19 @@ public class GenestripComparator {
                 }
             }
         }
-        System.out.println("Errors: " + errs);
+        System.out.println("Error counts: " + errs);
         System.out.println("Mean kmers error: " + ((double) kMersErrSum) / errs);
+        System.out.println("Mean kmers error std dev: " + getKMersErrStdDev());
         System.out.println("Mean reads error: " + ((double) readsErrSum) / errs);
+        System.out.println("Mean reads error std dev: " + getReadsErrStdDev());
+    }
+
+    protected double getKMersErrStdDev() {
+        return Math.sqrt((kMersErrSquareSum  - ((double) kMersErrSum * kMersErrSum) / errs) / (errs - 1));
+    }
+
+    protected double getReadsErrStdDev() {
+        return Math.sqrt((readsErrSquareSum  - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
     }
 
     protected void sumErrorStats(CountsPerTaxid c1, CountsPerTaxid c2) {
