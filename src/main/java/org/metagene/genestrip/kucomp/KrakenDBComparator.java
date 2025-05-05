@@ -155,10 +155,4 @@ public class KrakenDBComparator extends GenestripComparator {
         out.println(';');
         kuTaxid2KMer.remove(taxId);
     }
-
-    public static void main(String[] args) throws IOException {
-        KrakenDBComparator c = new KrakenDBComparator(new File("./data"));
-        c.reportKMerComparisons("viral", false, "viral_db");
-        //c.reportKMerComparisons("chronicb_std_ku", false, "standard_db");
-    }
 }

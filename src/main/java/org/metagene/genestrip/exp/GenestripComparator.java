@@ -227,13 +227,13 @@ public class GenestripComparator {
 
     protected void sumErrorStats(CountsPerTaxid c1, CountsPerTaxid c2) {
             long k1 = c1 == null ? 0 : c1.getKMers();
-            long k2 = c1 == null ? 0 : c2.getKMers();
+            long k2 = c2 == null ? 0 : c2.getKMers();
             long err = Math.abs(k1 - k2);
             kMersErrSum += err;
             kMersErrSquareSum += err * err;
 
             long r1 = c1 == null ? 0 : c1.getReads();
-            long r2 = c1 == null ? 0 : c2.getReads();
+            long r2 = c2 == null ? 0 : c2.getReads();
             err = Math.abs(r1 - r2);
             readsErrSum += err;
             readsErrSquareSum += err * err;
