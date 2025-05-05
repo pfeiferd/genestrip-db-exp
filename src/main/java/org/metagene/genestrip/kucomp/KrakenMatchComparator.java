@@ -47,7 +47,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         GSMaker maker2 = new GSMaker(project2);
         ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal2 =
                 (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
-        Map<String, List<KrakenResCountGoal.KrakenResStats>> stats2 = countGoal1.get();
+        Map<String, List<KrakenResCountGoal.KrakenResStats>> stats2 = countGoal2.get();
         maker2.dumpAll();
 
         for (String key : stats1.keySet()) {

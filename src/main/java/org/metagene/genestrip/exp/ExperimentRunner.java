@@ -54,7 +54,7 @@ public class ExperimentRunner {
         GenestripComparator c1 = new GenestripComparator(new File("./data"));
         KrakenMatchComparator c2 = new KrakenMatchComparator(new File("./data"));
         KrakenDBComparator c3 = new KrakenDBComparator(new File("./data"));
-
+/*
         c1.writeUnfoldedTaxids("human_virus");
 
         // Figure 2
@@ -70,6 +70,7 @@ public class ExperimentRunner {
         c3.reportKrakenDBComparison("viral", "viral_db", "human_virus_db");
         // Figure 6
         c1.compareResults("viral", "human_virus", "saliva.txt");
+ */
         c2.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
 
         // Not needed: ?
