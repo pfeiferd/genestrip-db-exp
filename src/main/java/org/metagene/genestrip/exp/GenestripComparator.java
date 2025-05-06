@@ -35,27 +35,30 @@ public class GenestripComparator {
         SmallTaxTree tree1 = db1.getTaxTree();
         Object2LongMap<String> stats1 = db1.getStats();
         db1 = null;
-        Object2LongMap<String> stats2 = getDatabase(dbName2, false).getStats();
+
+        Database db2 = getDatabase(dbName2, false);
+        Object2LongMap<String> stats2 = db2.getStats();
+        SmallTaxTree tree2 = db2.getTaxTree();
+        db2 = null;
+
         File out = new File(baseDir, dbName1 + "_" + dbName2 + "_gs_gs_dbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("taxid; rank; kmers 1; kmers 2;");
-            for (String key : stats1.keySet()) {
-                if (key != null) {
-                    long count1 = stats1.get(key);
-                    SmallTaxTree.SmallTaxIdNode node = tree1.getNodeByTaxId(key);
-                    if (node != null) {
-                        long count2 = stats2.getOrDefault(key, -1);
-                        if (count2 != -1) {
-                            ps.print(key);
-                            ps.print(";");
-                            ps.print(getRankString(node));
-                            ps.print(";");
-                            ps.print(correctDBValue(count1));
-                            ps.print(";");
-                            ps.print(correctDBValue(count2));
-                            ps.println(";");
-                        }
-                    }
+            for (SmallTaxTree.SmallTaxIdNode node1 : tree1) {
+                String taxId = node1.getTaxId();
+                SmallTaxTree.SmallTaxIdNode node2 = tree2.getNodeByTaxId(taxId);
+                // We only report on tax ids which are in both (Genestrip) dbs:
+                if (node1 != null && node2 != null) {
+                    long count1 = stats1.getOrDefault(taxId, 0);
+                    long count2 = stats2.getOrDefault(taxId, 0);
+                    ps.print(taxId);
+                    ps.print(";");
+                    ps.print(getRankString(node1));
+                    ps.print(";");
+                    ps.print(correctDBValue(count1));
+                    ps.print(";");
+                    ps.print(correctDBValue(count2));
+                    ps.println(";");
                 }
             }
         }
@@ -154,60 +157,34 @@ public class GenestripComparator {
             File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; ukmers 1; ukmers 2; reads 1; reads 2");
-                for (String taxid : stats1.keySet()) {
+                for (SmallTaxTree.SmallTaxIdNode node1 : taxTreeRef1[0]) {
+                    String taxId = node1.getTaxId();
                     // We only report on tax ids which are in both dbs, so "taxTreeRef2":
-                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef2[0].getNodeByTaxId(taxid);
-                    if (node == null) {
+                    SmallTaxTree.SmallTaxIdNode node2 = taxTreeRef2[0].getNodeByTaxId(taxId);
+                    if (node2 == null) {
                         continue;
                     }
-                    CountsPerTaxid c1 = stats1.get(taxid);
-                    CountsPerTaxid c2 = stats2.get(taxid);
-                    ps.print(c1.getTaxid());
+                    CountsPerTaxid c1 = stats1.get(taxId);
+                    CountsPerTaxid c2 = stats2.get(taxId);
+                    ps.print(taxId);
                     ps.print(';');
-                    String rs = getRankString(node);
+                    String rs = getRankString(node1);
                     ps.print(rs);
                     ps.print(';');
-                    ps.print(correctDBValue(c1.getKMers()));
+                    ps.print(correctDBValue(c1 == null ? 0 : c1.getKMers()));
                     ps.print(';');
                     ps.print(correctDBValue(c2 == null ? 0 : c2.getKMers()));
                     ps.print(';');
-                    ps.print(correctDBValue(c1.getUniqueKMers()));
+                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers()));
                     ps.print(';');
                     ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers()));
                     ps.print(';');
-                    ps.print(correctDBValue(c1.getReads()));
+                    ps.print(correctDBValue(c1 == null ? 0 : c1.getReads()));
                     ps.print(';');
                     ps.print(correctDBValue(c2 == null ? 0 : c2.getReads()));
                     ps.println(';');
                     if (SPECIES_OR_BELOW.equals(rs)) {
                         sumErrorStats(c1, c2);
-                    }
-                }
-                for (String taxid : stats2.keySet()) {
-                    // We only report on tax ids which are in both dbs, so "taxTreeRef2":
-                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef1[0].getNodeByTaxId(taxid);
-                    if (node == null) {
-                        continue;
-                    }
-                    CountsPerTaxid c1 = stats1.get(taxid);
-                    if (c1 == null) {
-                        CountsPerTaxid c2 = stats2.get(taxid);
-                        ps.print(c2.getTaxid());
-                        ps.print(';');
-                        ps.print(getRankString(node));
-                        ps.print(';');
-                        ps.print(0);
-                        ps.print(';');
-                        ps.print(c2.getKMers());
-                        ps.print(';');
-                        ps.print(0);
-                        ps.print(';');
-                        ps.print(c2.getUniqueKMers());
-                        ps.print(';');
-                        ps.print(0);
-                        ps.print(';');
-                        ps.print(c2.getReads());
-                        ps.println(';');
                     }
                 }
             }

@@ -22,8 +22,8 @@ public class KrakenDBComparator extends GenestripComparator {
         File out = new File(baseDir, krakenDB1 + "_" + krakenDB2 + "_ku_ku_dbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("taxid; rank; kmers 1; kmers 2;");
-            for (String key : kuTaxid2KMer1.keySet()) {
-                SmallTaxTree.SmallTaxIdNode node = tree.getNodeByTaxId(key);
+            for (SmallTaxTree.SmallTaxIdNode node : tree) {
+                String key = node.getTaxId();
                 if (node != null) {
                     Long count2 = kuTaxid2KMer2.get(key);
                     if (count2 == null) {
@@ -48,20 +48,17 @@ public class KrakenDBComparator extends GenestripComparator {
                     ps.print(correctDBValue(count2));
                     ps.println(";");
                 }
-                else {
-                    System.out.println(key);
-                }
             }
         }
         System.out.println(diff);
     }
 
-    public void reportKMerComparisons(String genestripDB, boolean temp, String krakenDB) throws IOException {
+    public void reportKMerComparisons(String genestripDB, String krakenDB) throws IOException {
         Map<String, Long> kuTaxid2KMer = getKrakenDBCounts(getKrakenCountsFile(krakenDB));
 
         File countsFile = new File(baseDir, genestripDB + "_gs_ku_dbcomp.csv");
         try (PrintStream out = new PrintStream(new FileOutputStream(countsFile))) {
-            printJointStoreInfo(getDatabase(genestripDB, temp), out, kuTaxid2KMer);
+            printJointStoreInfo(getDatabase(genestripDB, false), out, kuTaxid2KMer);
         }
     }
 
@@ -89,7 +86,45 @@ public class KrakenDBComparator extends GenestripComparator {
     public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer) {
         out.println("taxid; rank; kmers 1; kmers 2;");
 
-        visit(database.getTaxTree().getRoot(), database.getStats(), out, kuTaxid2KMer);
+        long inDataErr = 0;
+        long inDataEntries = 0;
+        long err = 0;
+        long entries = 0;
+        List<SmallTaxTree.SmallTaxIdNode> missingNodesInKu = new ArrayList<>();
+        Map<SmallTaxTree.SmallTaxIdNode, Long> differences = new HashMap<>();
+
+        Object2LongMap<String> stats = database.getStats();
+        for (SmallTaxTree.SmallTaxIdNode taxNode : database.getTaxTree()) {
+            if (taxNode == null || taxNode.getRank() == null) {
+                continue;
+            }
+            String taxId = taxNode.getTaxId();
+            Long l = kuTaxid2KMer.get(taxId);
+            long h = l == null ? 0 : l;
+            long g = stats.getLong(taxId);
+            long diff = Math.abs(h - g);
+            if (l == null && g > 0) {
+                missingNodesInKu.add(taxNode);
+            } else {
+                inDataErr += diff;
+                inDataEntries++;
+            }
+            if (l != null && diff > 0) {
+                differences.put(taxNode, diff);
+            }
+            err += diff;
+            entries++;
+
+            out.print(taxNode.getTaxId());
+            out.print(';');
+            out.print(getRankString(taxNode));
+            out.print(';');
+            out.print(g);
+            out.print(';');
+            out.print(h);
+            out.println(';');
+            kuTaxid2KMer.remove(taxId);
+        }
 
         System.out.println("Absolute error: " + err);
         System.out.println("Entries: " + entries);
@@ -106,53 +141,5 @@ public class KrakenDBComparator extends GenestripComparator {
         System.out.println("Differences:");
         System.out.println(differences.size());
         System.out.println(differences);
-    }
-
-    protected void visit(SmallTaxTree.SmallTaxIdNode node, Object2LongMap<String> stats, PrintStream out, Map<String, Long> kuTaxid2KMer) {
-        handleNode(node, stats, out, kuTaxid2KMer);
-        if (node.getSubNodes() != null) {
-            for (SmallTaxTree.SmallTaxIdNode subNode : node.getSubNodes()) {
-                visit(subNode, stats, out, kuTaxid2KMer);
-            }
-        }
-    }
-
-    private long inDataErr;
-    private long inDataEntries;
-    private long err;
-    private long entries;
-    private List<SmallTaxTree.SmallTaxIdNode> missingNodesInKu = new ArrayList<>();
-    private Map<SmallTaxTree.SmallTaxIdNode, Long> differences = new HashMap<>();
-
-    protected void handleNode(SmallTaxTree.SmallTaxIdNode taxNode, Object2LongMap<String> stats, PrintStream out, Map<String, Long> kuTaxid2KMer) {
-        if (taxNode == null || taxNode.getRank() == null) {
-            return;
-        }
-        String taxId = taxNode.getTaxId();
-        Long l = kuTaxid2KMer.get(taxId);
-        long h = l == null ? 0 : l;
-        long g = stats.getLong(taxId);
-        long diff = Math.abs(h - g);
-        if (l == null && g > 0) {
-            missingNodesInKu.add(taxNode);
-        } else {
-            inDataErr += diff;
-            inDataEntries++;
-        }
-        if (l != null && diff > 0) {
-            differences.put(taxNode, diff);
-        }
-        err += diff;
-        entries++;
-
-        out.print(taxNode.getTaxId());
-        out.print(';');
-        out.print(getRankString(taxNode));
-        out.print(';');
-        out.print(g);
-        out.print(';');
-        out.print(h);
-        out.println(';');
-        kuTaxid2KMer.remove(taxId);
     }
 }

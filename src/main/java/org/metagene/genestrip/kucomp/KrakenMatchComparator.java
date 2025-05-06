@@ -29,10 +29,8 @@ public class KrakenMatchComparator extends GenestripComparator {
     }
 
     public void compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
-        Database db1 = getDatabase(dbName1, false);
-        SmallTaxTree tree1 = db1.getTaxTree();
-        Database db2 = getDatabase(dbName2, false);
-        SmallTaxTree tree2 = db2.getTaxTree();
+        SmallTaxTree tree1 = getDatabase(dbName1, false).getTaxTree();
+        SmallTaxTree tree2 = getDatabase(dbName2, false).getTaxTree();
 
         GSCommon config = new GSCommon(baseDir);
 
@@ -67,67 +65,48 @@ public class KrakenMatchComparator extends GenestripComparator {
             File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_ku_ku_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2;");
-                for (KrakenResCountGoal.KrakenResStats kustats1 : list1) {
-                    SmallTaxTree.SmallTaxIdNode node1 = tree1.getNodeByTaxId(kustats1.getTaxid());
-                    SmallTaxTree.SmallTaxIdNode node2 = tree2.getNodeByTaxId(kustats1.getTaxid());
+                for (SmallTaxTree.SmallTaxIdNode node1 : tree1) {
+                    String taxId = node1.getTaxId();
+                    SmallTaxTree.SmallTaxIdNode node2 = tree2.getNodeByTaxId(taxId);
                     // We only report on tax ids which are in both (Genestrip) dbs:
                     if (node1 != null && node2 != null) {
-                        KrakenResCountGoal.KrakenResStats kustats2 = map2.get(kustats1.getTaxid());
-                        ps.print(kustats1.getTaxid());
+                        KrakenResCountGoal.KrakenResStats kustats1 = map1.get(taxId);
+                        KrakenResCountGoal.KrakenResStats kustats2 = map2.get(taxId);
+                        ps.print(taxId);
                         ps.print(';');
                         ps.print(getRankString(node1));
                         ps.print(';');
-                        ps.print(correctDBValue(kustats1.getKmers()));
+                        ps.print(correctDBValue(kustats1 == null ? 0 : kustats1.getKmers()));
                         ps.print(';');
                         ps.print(correctDBValue(kustats2 == null ? 0 : kustats2.getKmers()));
                         ps.print(';');
-                        ps.print(correctDBValue(kustats1.getReads()));
+                        ps.print(correctDBValue(kustats1 == null ? 0 : kustats1.getReads()));
                         ps.print(';');
                         ps.print(correctDBValue(kustats2 == null ? 0 : kustats2.getReads()));
                         ps.println(';');
-                    }
-                }
-
-                for (KrakenResCountGoal.KrakenResStats kustats2 : list2) {
-                    if (!map1.containsKey(kustats2.getTaxid())) {
-                        SmallTaxTree.SmallTaxIdNode node1 = tree1.getNodeByTaxId(kustats2.getTaxid());
-                        SmallTaxTree.SmallTaxIdNode node2 = tree2.getNodeByTaxId(kustats2.getTaxid());
-                        // We only report on tax ids which are in both (Genestrip) dbs:
-                        if (node1 != null && node2 != null) {
-                            ps.print(kustats2.getTaxid());
-                            ps.print(';');
-                            ps.print(getRankString(node1));
-                            ps.print(';');
-                            ps.print(correctDBValue(0));
-                            ps.print(';');
-                            ps.print(correctDBValue(kustats2.getKmers()));
-                            ps.print(';');
-                            ps.print(correctDBValue(0));
-                            ps.print(';');
-                            ps.print(correctDBValue(kustats2.getReads()));
-                            ps.println(';');
-                        }
                     }
                 }
             }
         }
     }
 
-    public void compareWithKUResults(String db, String csvFile1, String csvFile2) throws IOException {
+    public void compareWithKUResults(String dbName, String csvFile1, String csvFile2) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         if (csvFile1 != null) {
-            GSProject project = new GSProject(config, db, null, null, csvFile1, null, null, null,
+            GSProject project = new GSProject(config, dbName, null, null, csvFile1, null, null, null,
                     null, null, null, false);
             GSMaker maker = new GSMaker(project);
             maker.getGoal(GSGoalKey.FASTA2FASTQ).make();
             maker.dumpAll();
         }
 
-        GSProject project = new GSProject(config, db, null, null, csvFile2, null, null, null,
+        GSProject project = new GSProject(config, dbName, null, null, csvFile2, null, null, null,
                 null, null, null, false);
         project.initConfigParam(GSConfigKey.KRAKEN_STYLE_MATCH, true);
 
         GSMaker maker2 = new GSMaker(project);
+        ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
+        SmallTaxTree tree = storeGoal.get().getTaxTree();
         ObjectGoal<Map<String, MatchingResult>, GSProject> matchResGoal = (ObjectGoal<Map<String, MatchingResult>, GSProject>) maker2.getGoal(GSGoalKey.MATCHRES);
         Map<String, MatchingResult> matchResult = matchResGoal.get();
 
@@ -138,61 +117,43 @@ public class KrakenMatchComparator extends GenestripComparator {
 
         for (String key : matchResult.keySet()) {
             List<KrakenResCountGoal.KrakenResStats> list = stats.get(key);
+            Map<String, KrakenResCountGoal.KrakenResStats> map = new HashMap<>();
+            for (KrakenResCountGoal.KrakenResStats stat : list) {
+                map.put(stat.getTaxid(), stat);
+            }
             Map<String, CountsPerTaxid> gstats = new HashMap<>(matchResult.get(key).getTaxid2Stats());
 
             int differentKMerValues = 0;
             int differentReadValues = 0;
 
-            File out = new File(baseDir, db + "_" + key + "_gs_ku_comp.csv");
+            File out = new File(baseDir, dbName + "_" + key + "_gs_ku_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2");
-                for (KrakenResCountGoal.KrakenResStats kustats : list) {
-                    CountsPerTaxid gcounts = gstats.get(kustats.getTaxid());
-                    ps.print(kustats.getTaxid());
+                for (SmallTaxTree.SmallTaxIdNode node : tree) {
+                    String taxId = node.getTaxId();
+                    CountsPerTaxid gcounts = gstats.get(taxId);
+                    KrakenResCountGoal.KrakenResStats kustats = map.get(taxId);
+                    ps.print(taxId);
                     ps.print(';');
-                    ps.print(gcounts == null ? "" : gcounts.getRank());
+                    ps.print(getRankString(node));
                     ps.print(';');
                     long gkmers = gcounts == null ? 0 : gcounts.getKMers();
                     ps.print(correctDBValue(gkmers));
                     ps.print(';');
-                    ps.print(correctDBValue(kustats.getKmers()));
+                    long kukmers = kustats == null ? 0 : kustats.getKmers();
+                    ps.print(correctDBValue(kukmers));
                     ps.print(';');
                     long greads = gcounts == null ? 0 : gcounts.getReads();
                     ps.print(correctDBValue(greads));
                     ps.print(';');
-                    ps.print(correctDBValue(kustats.getReads()));
+                    long kureads = kustats == null ? 0 : kustats.getReads();
+                    ps.print(correctDBValue(kureads));
                     ps.println(';');
-                    gstats.remove(kustats.getTaxid());
-                    if (kustats.getKmers() != gkmers) {
+                    if (kukmers != gkmers) {
                         differentKMerValues++;
                     }
-                    if (kustats.getReads() != greads) {
+                    if (kureads != greads) {
                         differentReadValues++;
-                    }
-                }
-
-                for (CountsPerTaxid gcounts : gstats.values()) {
-                    if (gcounts.getTaxid() != null) {
-                        if (gcounts.getKMers() != 0 || gcounts.getReads() != 0) {
-                            ps.print(gcounts.getTaxid());
-                            ps.print(';');
-                            ps.print(gcounts.getRank());
-                            ps.print(';');
-                            ps.print(correctDBValue(gcounts.getKMers()));
-                            ps.print(';');
-                            ps.print(correctDBValue(0));
-                            ps.print(';');
-                            ps.print(correctDBValue(gcounts.getReads()));
-                            ps.print(';');
-                            ps.print(correctDBValue(0));
-                            ps.println(';');
-                            if (gcounts.getKMers() != 0) {
-                                differentKMerValues++;
-                            }
-                            if (gcounts.getReads() != 0) {
-                                differentReadValues++;
-                            }
-                        }
                     }
                 }
             }
@@ -249,7 +210,6 @@ public class KrakenMatchComparator extends GenestripComparator {
                 counters[0]++;
             }
         });
-        Map<String, MatchingResult> matchResult = matchResGoal.get();
         System.out.println("Correct classifications GENUS: " + counters[1]);
         System.out.println("Correct classifications SPECIES: " + counters[2]);
         System.out.println("Correct classifications STRAIN: " + counters[3]);
