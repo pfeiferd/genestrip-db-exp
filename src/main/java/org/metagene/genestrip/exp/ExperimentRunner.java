@@ -69,8 +69,9 @@ public class ExperimentRunner {
         c1.compareCommonDBEntries("viral", "human_virus");
         c3.reportKrakenDBComparison("viral", "viral_db", "human_virus_db");
         // Figure 6
-        c1.compareResults("viral", "human_virus", "saliva.txt");
+
  */
+        c1.compareResults("viral", "human_virus", "saliva.txt");
         c2.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
 
         // Not needed: ?

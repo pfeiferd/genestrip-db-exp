@@ -31,6 +31,8 @@ public class KrakenMatchComparator extends GenestripComparator {
     public void compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
         Database db1 = getDatabase(dbName1, false);
         SmallTaxTree tree1 = db1.getTaxTree();
+        Database db2 = getDatabase(dbName2, false);
+        SmallTaxTree tree2 = db2.getTaxTree();
 
         GSCommon config = new GSCommon(baseDir);
 
@@ -66,12 +68,14 @@ public class KrakenMatchComparator extends GenestripComparator {
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2;");
                 for (KrakenResCountGoal.KrakenResStats kustats1 : list1) {
-                    SmallTaxTree.SmallTaxIdNode node = tree1.getNodeByTaxId(kustats1.getTaxid());
-                    if (node != null) {
+                    SmallTaxTree.SmallTaxIdNode node1 = tree1.getNodeByTaxId(kustats1.getTaxid());
+                    SmallTaxTree.SmallTaxIdNode node2 = tree2.getNodeByTaxId(kustats1.getTaxid());
+                    // We only report on tax ids which are in both (Genestrip) dbs:
+                    if (node1 != null && node2 != null) {
                         KrakenResCountGoal.KrakenResStats kustats2 = map2.get(kustats1.getTaxid());
                         ps.print(kustats1.getTaxid());
                         ps.print(';');
-                        ps.print(getRankString(node));
+                        ps.print(getRankString(node1));
                         ps.print(';');
                         ps.print(correctDBValue(kustats1.getKmers()));
                         ps.print(';');
@@ -86,11 +90,13 @@ public class KrakenMatchComparator extends GenestripComparator {
 
                 for (KrakenResCountGoal.KrakenResStats kustats2 : list2) {
                     if (!map1.containsKey(kustats2.getTaxid())) {
-                        SmallTaxTree.SmallTaxIdNode node = tree1.getNodeByTaxId(kustats2.getTaxid());
-                        if (node != null) {
+                        SmallTaxTree.SmallTaxIdNode node1 = tree1.getNodeByTaxId(kustats2.getTaxid());
+                        SmallTaxTree.SmallTaxIdNode node2 = tree2.getNodeByTaxId(kustats2.getTaxid());
+                        // We only report on tax ids which are in both (Genestrip) dbs:
+                        if (node1 != null && node2 != null) {
                             ps.print(kustats2.getTaxid());
                             ps.print(';');
-                            ps.print(getRankString(node));
+                            ps.print(getRankString(node1));
                             ps.print(';');
                             ps.print(correctDBValue(0));
                             ps.print(';');

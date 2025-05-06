@@ -155,7 +155,8 @@ public class GenestripComparator {
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; ukmers 1; ukmers 2; reads 1; reads 2");
                 for (String taxid : stats1.keySet()) {
-                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef1[0].getNodeByTaxId(taxid);
+                    // We only report on tax ids which are in both dbs, so "taxTreeRef2":
+                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef2[0].getNodeByTaxId(taxid);
                     if (node == null) {
                         continue;
                     }
@@ -183,7 +184,8 @@ public class GenestripComparator {
                     }
                 }
                 for (String taxid : stats2.keySet()) {
-                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef2[0].getNodeByTaxId(taxid);
+                    // We only report on tax ids which are in both dbs, so "taxTreeRef2":
+                    SmallTaxTree.SmallTaxIdNode node = taxTreeRef1[0].getNodeByTaxId(taxid);
                     if (node == null) {
                         continue;
                     }
