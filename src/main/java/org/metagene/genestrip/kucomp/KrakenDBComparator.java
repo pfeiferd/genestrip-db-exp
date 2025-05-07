@@ -116,14 +116,16 @@ public class KrakenDBComparator extends GenestripComparator {
             err += diff;
             entries++;
 
-            out.print(taxNode.getTaxId());
-            out.print(';');
-            out.print(getRankString(taxNode));
-            out.print(';');
-            out.print(correctDBValue(g));
-            out.print(';');
-            out.print(correctDBValue(h));
-            out.println(';');
+            if (l != null) {
+                out.print(taxNode.getTaxId());
+                out.print(';');
+                out.print(getRankString(taxNode));
+                out.print(';');
+                out.print(correctDBValue(g));
+                out.print(';');
+                out.print(correctDBValue(h));
+                out.println(';');
+            }
             kuTaxid2KMer.remove(taxId);
         }
 
