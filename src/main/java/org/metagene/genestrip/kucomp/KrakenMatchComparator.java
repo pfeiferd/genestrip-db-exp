@@ -69,7 +69,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                     String taxId = node1.getTaxId();
                     SmallTaxTree.SmallTaxIdNode node2 = tree2.getNodeByTaxId(taxId);
                     // We only report on tax ids which are in both (Genestrip) dbs:
-                    if (node1 != null && node2 != null) {
+                    if (node2 != null) {
                         KrakenResCountGoal.KrakenResStats kustats1 = map1.get(taxId);
                         KrakenResCountGoal.KrakenResStats kustats2 = map2.get(taxId);
                         ps.print(taxId);

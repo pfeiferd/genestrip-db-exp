@@ -23,9 +23,9 @@ public class KrakenDBComparator extends GenestripComparator {
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("taxid; rank; kmers 1; kmers 2;");
             for (SmallTaxTree.SmallTaxIdNode node : tree) {
-                String key = node.getTaxId();
                 // We only report on tax ids which are in respective Genestrip db:
                 if (node != null) {
+                    String key = node.getTaxId();
                     Long count2 = kuTaxid2KMer2.get(key);
                     if (count2 == null) {
                         count2 = 0L;
