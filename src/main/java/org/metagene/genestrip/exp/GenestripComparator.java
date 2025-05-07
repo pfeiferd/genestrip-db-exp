@@ -200,13 +200,13 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(errs);
                 errPs.print(';');
-                errPs.println(DF.format(((double) kMersErrSum) / errs));
+                errPs.print(DF.format(((double) kMersErrSum) / errs));
                 errPs.print(';');
-                errPs.println(DF.format(getKMersErrStdDev()));
+                errPs.print(DF.format(getKMersErrStdDev()));
                 errPs.print(';');
-                errPs.println(DF.format(((double) readsErrSum) / errs));
+                errPs.print(DF.format(((double) readsErrSum) / errs));
                 errPs.print(';');
-                errPs.println(DF.format(getReadsErrStdDev()));
+                errPs.print(DF.format(getReadsErrStdDev()));
                 errPs.println(';');
                 counter++;
             }
@@ -222,6 +222,7 @@ public class GenestripComparator {
     }
 
     protected void sumErrorStats(CountsPerTaxid c1, CountsPerTaxid c2) {
+        errs++;
         long k1 = c1 == null ? 0 : c1.getKMers();
         long k2 = c2 == null ? 0 : c2.getKMers();
         long err = Math.abs(k1 - k2);
