@@ -120,9 +120,9 @@ public class KrakenDBComparator extends GenestripComparator {
             out.print(';');
             out.print(getRankString(taxNode));
             out.print(';');
-            out.print(g);
+            out.print(correctDBValue(g));
             out.print(';');
-            out.print(h);
+            out.print(correctDBValue(h));
             out.println(';');
             kuTaxid2KMer.remove(taxId);
         }
