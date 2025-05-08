@@ -129,10 +129,10 @@ public class GenestripComparator {
     }
 
     private int errs;
-    private long kMersErrSum;
-    private long kMersErrSquareSum;
-    private long readsErrSum;
-    private long readsErrSquareSum;
+    private double kMersErrSum;
+    private double kMersErrSquareSum;
+    private double readsErrSum;
+    private double readsErrSquareSum;
 
     public void compareResults(String dbName1, String dbName2, String csvFile) throws IOException {
         SmallTaxTree[] taxTreeRef1 = new SmallTaxTree[1];
@@ -177,20 +177,24 @@ public class GenestripComparator {
                         String rs = getRankString(node1);
                         ps.print(rs);
                         ps.print(';');
-                        ps.print(correctDBValue(c1 == null ? 0 : c1.getKMers()));
+                        long k1 = c1 == null ? 0 : c1.getKMers();
+                        ps.print(correctDBValue(k1));
                         ps.print(';');
-                        ps.print(correctDBValue(c2 == null ? 0 : c2.getKMers()));
+                        long k2 = c2 == null ? 0 : c2.getKMers();
+                        ps.print(correctDBValue(k2));
                         ps.print(';');
                         ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers()));
                         ps.print(';');
                         ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers()));
                         ps.print(';');
-                        ps.print(correctDBValue(c1 == null ? 0 : c1.getReads()));
+                        long r1 = c1 == null ? 0 : c1.getReads();
+                        ps.print(correctDBValue(r1));
                         ps.print(';');
-                        ps.print(correctDBValue(c2 == null ? 0 : c2.getReads()));
+                        long r2 = c2 == null ? 0 : c2.getReads();
+                        ps.print(correctDBValue(r2));
                         ps.println(';');
                         if (SPECIES_OR_BELOW.equals(rs)) {
-                            sumErrorStats(c1, c2);
+                            sumErrorStats(k1, r1, k2, r2);
                         }
                     }
                 }
@@ -221,17 +225,13 @@ public class GenestripComparator {
         return Math.sqrt((readsErrSquareSum - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
     }
 
-    protected void sumErrorStats(CountsPerTaxid c1, CountsPerTaxid c2) {
+    protected void sumErrorStats(long k1, long r1, long k2, long r2) {
         errs++;
-        long k1 = c1 == null ? 0 : c1.getKMers();
-        long k2 = c2 == null ? 0 : c2.getKMers();
-        long err = Math.abs(k1 - k2) / (k1 + 1);
+        double err = (100d * Math.abs(k1 - k2)) / (k1 + 1);
         kMersErrSum += err;
         kMersErrSquareSum += err * err;
 
-        long r1 = c1 == null ? 0 : c1.getReads();
-        long r2 = c2 == null ? 0 : c2.getReads();
-        err = Math.abs(r1 - r2);
+        err = (100d * Math.abs(r1 - r2)) / (r1 + 1);
         readsErrSum += err;
         readsErrSquareSum += err * err;
     }
