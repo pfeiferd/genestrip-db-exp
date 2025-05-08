@@ -28,7 +28,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         super(baseDir);
     }
 
-    public void compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
+    public Map<String, ErrCompInfo>  compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
         SmallTaxTree tree1 = getDatabase(dbName1, false).getTaxTree();
         SmallTaxTree tree2 = getDatabase(dbName2, false).getTaxTree();
 
@@ -50,6 +50,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats2 = countGoal2.get();
         maker2.dumpAll();
 
+        Map<String, ErrCompInfo> result = new HashMap<String, ErrCompInfo>();
         for (String key : stats1.keySet()) {
             List<KrakenResCountGoal.KrakenResStats> list1 = stats1.get(key);
             Map<String, KrakenResCountGoal.KrakenResStats> map1 = new HashMap<>();
@@ -61,6 +62,8 @@ public class KrakenMatchComparator extends GenestripComparator {
             for (KrakenResCountGoal.KrakenResStats stats : list2) {
                 map2.put(stats.getTaxid(), stats);
             }
+            ErrCompInfo errCompInfo = new ErrCompInfo(0,0);
+            result.put(key, errCompInfo);
 
             File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_ku_ku_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
@@ -74,20 +77,29 @@ public class KrakenMatchComparator extends GenestripComparator {
                         KrakenResCountGoal.KrakenResStats kustats2 = map2.get(taxId);
                         ps.print(taxId);
                         ps.print(';');
-                        ps.print(getRankString(node1));
+                        String rs = getRankString(node1);
+                        ps.print(rs);
                         ps.print(';');
-                        ps.print(correctDBValue(kustats1 == null ? 0 : kustats1.getKmers()));
+                        long k1 = kustats1 == null ? 0 : kustats1.getKmers();
+                        ps.print(correctDBValue(k1));
                         ps.print(';');
-                        ps.print(correctDBValue(kustats2 == null ? 0 : kustats2.getKmers()));
+                        long k2 = kustats2 == null ? 0 : kustats2.getKmers();
+                        ps.print(correctDBValue(k2));
                         ps.print(';');
-                        ps.print(correctDBValue(kustats1 == null ? 0 : kustats1.getReads()));
+                        long r1 = kustats1 == null ? 0 : kustats1.getReads();
+                        ps.print(correctDBValue(r1));
                         ps.print(';');
-                        ps.print(correctDBValue(kustats2 == null ? 0 : kustats2.getReads()));
+                        long r2 = kustats2 == null ? 0 : kustats2.getReads();
+                        ps.print(correctDBValue(r2));
                         ps.println(';');
+                        if (SPECIES_OR_BELOW.equals(rs)) {
+                            errCompInfo.sumErrorStats(k1, r1, k2, r2);
+                        }
                     }
                 }
             }
         }
+        return result;
     }
 
     public void compareWithKUResults(String dbName, String csvFile1, String csvFile2) throws IOException {

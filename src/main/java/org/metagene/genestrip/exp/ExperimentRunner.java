@@ -74,8 +74,8 @@ public class ExperimentRunner {
 
  */
         Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
-//        c2.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
-        c1.combineErrInfos("viral", "human_virus", res1, null);
+        Map<String, GenestripComparator.ErrCompInfo> res2 = c2.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
+        c1.combineErrInfos("viral", "human_virus", res1, res2);
 
         // Not needed: ?
         //c2.compareWithKUResults("human_virus", null, "saliva.txt");
