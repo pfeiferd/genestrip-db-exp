@@ -5,6 +5,7 @@ import org.metagene.genestrip.kucomp.KrakenMatchComparator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class ExperimentRunner {
     /*
@@ -72,8 +73,9 @@ public class ExperimentRunner {
         // Figure 6
 
  */
-        c1.compareResults("viral", "human_virus", "saliva.txt");
+        Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
 //        c2.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
+        c1.combineErrInfos("viral", "human_virus", res1, null);
 
         // Not needed: ?
         //c2.compareWithKUResults("human_virus", null, "saliva.txt");

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -128,112 +129,112 @@ public class GenestripComparator {
         return db;
     }
 
-    private int errs;
-    private double kMersErrSum;
-    private double kMersErrSquareSum;
-    private double readsErrSum;
-    private double readsErrSquareSum;
-
-    public void compareResults(String dbName1, String dbName2, String csvFile) throws IOException {
+    public Map<String, ErrCompInfo> compareResults(String dbName1, String dbName2, String csvFile) throws IOException {
         SmallTaxTree[] taxTreeRef1 = new SmallTaxTree[1];
         Map<String, MatchingResult> matches1 = match(dbName1, csvFile, taxTreeRef1);
         SmallTaxTree[] taxTreeRef2 = new SmallTaxTree[1];
         Map<String, MatchingResult> matches2 = match(dbName2, csvFile, taxTreeRef2);
 
-        File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_gs_comp.csv");
-        try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
-            int counter = 0;
-            errPs.println("no; key; reads; kmer err; kmer err std dev; read err; read err std dev;");
-            for (String key : matches1.keySet()) {
-                errs = 0;
-                kMersErrSum = 0;
-                kMersErrSquareSum = 0;
-                readsErrSum = 0;
-                readsErrSquareSum = 0;
+        Map<String, ErrCompInfo> result = new HashMap<String, ErrCompInfo>();
+        for (String key : matches1.keySet()) {
 
-                MatchingResult res1 = matches1.get(key);
-                MatchingResult res2 = matches2.get(key);
-                if (res1.getGlobalStats().getKMers() != res2.getGlobalStats().getKMers()) {
-                    throw new RuntimeException("Match results do not match");
-                }
+            MatchingResult res1 = matches1.get(key);
+            MatchingResult res2 = matches2.get(key);
+            if (res1.getGlobalStats().getKMers() != res2.getGlobalStats().getKMers()) {
+                throw new RuntimeException("Match results do not match");
+            }
 
-                Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
-                Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
+            ErrCompInfo errCompInfo = new ErrCompInfo(res1.getGlobalStats().getKMers(),
+                    res1.getGlobalStats().getReads());
+            result.put(key, errCompInfo);
 
-                File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
-                try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-                    ps.println("taxid; rank; kmers 1; kmers 2; ukmers 1; ukmers 2; reads 1; reads 2");
-                    for (SmallTaxTree.SmallTaxIdNode node1 : taxTreeRef1[0]) {
-                        String taxId = node1.getTaxId();
-                        // We only report on tax ids which are in both dbs, so "taxTreeRef2":
-                        SmallTaxTree.SmallTaxIdNode node2 = taxTreeRef2[0].getNodeByTaxId(taxId);
-                        if (node2 == null) {
-                            continue;
-                        }
-                        CountsPerTaxid c1 = stats1.get(taxId);
-                        CountsPerTaxid c2 = stats2.get(taxId);
-                        ps.print(taxId);
-                        ps.print(';');
-                        String rs = getRankString(node1);
-                        ps.print(rs);
-                        ps.print(';');
-                        long k1 = c1 == null ? 0 : c1.getKMers();
-                        ps.print(correctDBValue(k1));
-                        ps.print(';');
-                        long k2 = c2 == null ? 0 : c2.getKMers();
-                        ps.print(correctDBValue(k2));
-                        ps.print(';');
-                        ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers()));
-                        ps.print(';');
-                        ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers()));
-                        ps.print(';');
-                        long r1 = c1 == null ? 0 : c1.getReads();
-                        ps.print(correctDBValue(r1));
-                        ps.print(';');
-                        long r2 = c2 == null ? 0 : c2.getReads();
-                        ps.print(correctDBValue(r2));
-                        ps.println(';');
-                        if (SPECIES_OR_BELOW.equals(rs)) {
-                            sumErrorStats(k1, r1, k2, r2);
-                        }
+            Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
+            Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
+
+            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
+            try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
+                ps.println("taxid; rank; kmers 1; kmers 2; ukmers 1; ukmers 2; reads 1; reads 2");
+                for (SmallTaxTree.SmallTaxIdNode node1 : taxTreeRef1[0]) {
+                    String taxId = node1.getTaxId();
+                    // We only report on tax ids which are in both dbs, so "taxTreeRef2":
+                    SmallTaxTree.SmallTaxIdNode node2 = taxTreeRef2[0].getNodeByTaxId(taxId);
+                    if (node2 == null) {
+                        continue;
                     }
+                    CountsPerTaxid c1 = stats1.get(taxId);
+                    CountsPerTaxid c2 = stats2.get(taxId);
+                    ps.print(taxId);
+                    ps.print(';');
+                    String rs = getRankString(node1);
+                    ps.print(rs);
+                    ps.print(';');
+                    long k1 = c1 == null ? 0 : c1.getKMers();
+                    ps.print(correctDBValue(k1));
+                    ps.print(';');
+                    long k2 = c2 == null ? 0 : c2.getKMers();
+                    ps.print(correctDBValue(k2));
+                    ps.print(';');
+                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers()));
+                    ps.print(';');
+                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers()));
+                    ps.print(';');
+                    long r1 = c1 == null ? 0 : c1.getReads();
+                    ps.print(correctDBValue(r1));
+                    ps.print(';');
+                    long r2 = c2 == null ? 0 : c2.getReads();
+                    ps.print(correctDBValue(r2));
+                    ps.println(';');
+                    if (SPECIES_OR_BELOW.equals(rs)) {
+                        errCompInfo.sumErrorStats(k1, r1, k2, r2);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public void combineErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1, Map<String, ErrCompInfo> map2) throws IOException {
+        File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
+        try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
+            errPs.println("no; key; gs reads; gs read len; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev; ku reads; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;");
+            int counter = 0;
+            for (String key : map1.keySet()) {
+                ErrCompInfo errCompInfo1 = map1.get(key);
+                ErrCompInfo errCompInfo2 = map2 != null ? map2.get(key) : null;
+                if (errCompInfo2 == null) {
+                    errCompInfo2 = new ErrCompInfo(0,0);
                 }
                 errPs.print(counter);
                 errPs.print(';');
                 errPs.print(key);
                 errPs.print(';');
-                errPs.print(errs);
+                errPs.print(errCompInfo1.getReads());
                 errPs.print(';');
-                errPs.print(DF.format(((double) kMersErrSum) / errs));
+                errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(DF.format(getKMersErrStdDev()));
+                errPs.print(errCompInfo1.getErrs());
                 errPs.print(';');
-                errPs.print(DF.format(((double) readsErrSum) / errs));
+                errPs.print(DF.format(errCompInfo1.getMeanKMersErr()));
                 errPs.print(';');
-                errPs.print(DF.format(getReadsErrStdDev()));
+                errPs.print(DF.format(errCompInfo1.getKMersErrStdDev()));
+                errPs.print(';');
+                errPs.print(DF.format(errCompInfo1.getMeanReadsErr()));
+                errPs.print(';');
+                errPs.print(DF.format(errCompInfo1.getReadsErrStdDev()));
+                errPs.println(';');
+                errPs.print(errCompInfo2.getErrs());
+                errPs.println(';');
+                errPs.print(DF.format(errCompInfo2.getMeanKMersErr()));
+                errPs.print(';');
+                errPs.print(DF.format(errCompInfo2.getKMersErrStdDev()));
+                errPs.print(';');
+                errPs.print(DF.format(errCompInfo2.getMeanReadsErr()));
+                errPs.print(';');
+                errPs.print(DF.format(errCompInfo2.getReadsErrStdDev()));
                 errPs.println(';');
                 counter++;
             }
         }
-    }
-
-    protected double getKMersErrStdDev() {
-        return Math.sqrt((kMersErrSquareSum - ((double) kMersErrSum * kMersErrSum) / errs) / (errs - 1));
-    }
-
-    protected double getReadsErrStdDev() {
-        return Math.sqrt((readsErrSquareSum - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
-    }
-
-    protected void sumErrorStats(long k1, long r1, long k2, long r2) {
-        errs++;
-        double err = (100d * Math.abs(k1 - k2)) / (k1 + 1);
-        kMersErrSum += err;
-        kMersErrSquareSum += err * err;
-
-        err = (100d * Math.abs(r1 - r2)) / (r1 + 1);
-        readsErrSum += err;
-        readsErrSquareSum += err * err;
     }
 
     public Map<String, MatchingResult> match(String dbName, String csvFile, SmallTaxTree[] taxTreeRef) throws IOException {
@@ -252,5 +253,60 @@ public class GenestripComparator {
         Map<String, MatchingResult> matches = matchGoal.get();
         maker.dumpAll();
         return matches;
+    }
+
+    public static class ErrCompInfo {
+        private long kmers;
+        private long reads;
+
+        private int errs;
+        private double kMersErrSum;
+        private double kMersErrSquareSum;
+        private double readsErrSum;
+        private double readsErrSquareSum;
+
+        public ErrCompInfo(long kmers, long reads) {
+            this.kmers = kmers;
+            this.reads = reads;
+        }
+
+        public long getKMers() {
+            return kmers;
+        }
+
+        public long getReads() {
+            return reads;
+        }
+
+        public int getErrs() {
+            return errs;
+        }
+
+        public double getKMersErrStdDev() {
+            return Math.sqrt((kMersErrSquareSum - ((double) kMersErrSum * kMersErrSum) / errs) / (errs - 1));
+        }
+
+        public double getReadsErrStdDev() {
+            return Math.sqrt((readsErrSquareSum - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
+        }
+
+        public double getMeanKMersErr() {
+            return kMersErrSum / errs;
+        }
+
+        public double getMeanReadsErr() {
+            return readsErrSum / errs;
+        }
+
+        public void sumErrorStats(long k1, long r1, long k2, long r2) {
+            errs++;
+            double err = (100d * Math.abs(k1 - k2)) / (k1 + 1);
+            kMersErrSum += err;
+            kMersErrSquareSum += err * err;
+
+            err = (100d * Math.abs(r1 - r2)) / (r1 + 1);
+            readsErrSum += err;
+            readsErrSquareSum += err * err;
+        }
     }
 }
