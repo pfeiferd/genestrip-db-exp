@@ -225,7 +225,7 @@ public class GenestripComparator {
         errs++;
         long k1 = c1 == null ? 0 : c1.getKMers();
         long k2 = c2 == null ? 0 : c2.getKMers();
-        long err = Math.abs(k1 - k2);
+        long err = Math.abs(k1 - k2) / (k1 + 1);
         kMersErrSum += err;
         kMersErrSquareSum += err * err;
 
