@@ -196,7 +196,9 @@ public class GenestripComparator {
     public void combineErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1, Map<String, ErrCompInfo> map2) throws IOException {
         File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
-            errPs.println("no; key; gs reads; gs read len; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev; ku reads; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;");
+            errPs.println("no; key; reads; gs read len; " +
+                    "gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev; " +
+                    "ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;");
             int counter = 0;
             for (String key : map1.keySet()) {
                 ErrCompInfo errCompInfo1 = map1.get(key);
@@ -221,9 +223,9 @@ public class GenestripComparator {
                 errPs.print(DF.format(errCompInfo1.getMeanReadsErr()));
                 errPs.print(';');
                 errPs.print(DF.format(errCompInfo1.getReadsErrStdDev()));
-                errPs.println(';');
+                errPs.print(';');
                 errPs.print(errCompInfo2.getErrs());
-                errPs.println(';');
+                errPs.print(';');
                 errPs.print(DF.format(errCompInfo2.getMeanKMersErr()));
                 errPs.print(';');
                 errPs.print(DF.format(errCompInfo2.getKMersErrStdDev()));
