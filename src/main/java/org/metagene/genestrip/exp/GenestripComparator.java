@@ -216,23 +216,23 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(errCompInfo1.getErrs());
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo1.getMeanKMersErr()));
+                errPs.print(DF.format(100 * errCompInfo1.getMeanKMersErr()));
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo1.getKMersErrStdDev()));
+                errPs.print(DF.format(100 * errCompInfo1.getKMersErrStdDev()));
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo1.getMeanReadsErr()));
+                errPs.print(DF.format(100 * errCompInfo1.getMeanReadsErr()));
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo1.getReadsErrStdDev()));
+                errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
                 errPs.print(';');
                 errPs.print(errCompInfo2.getErrs());
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo2.getMeanKMersErr()));
+                errPs.print(DF.format(100 * errCompInfo2.getMeanKMersErr()));
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo2.getKMersErrStdDev()));
+                errPs.print(DF.format(100 * errCompInfo2.getKMersErrStdDev()));
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo2.getMeanReadsErr()));
+                errPs.print(DF.format(100 * errCompInfo2.getMeanReadsErr()));
                 errPs.print(';');
-                errPs.print(DF.format(errCompInfo2.getReadsErrStdDev()));
+                errPs.print(DF.format(100 * errCompInfo2.getReadsErrStdDev()));
                 errPs.println(';');
                 counter++;
             }
@@ -302,11 +302,11 @@ public class GenestripComparator {
 
         public void sumErrorStats(long k1, long r1, long k2, long r2) {
             errs++;
-            double err = (100d * Math.abs(k1 - k2)) / (k1 + 1);
+            double err = ((double) Math.abs(k1 - k2)) / (k1 + 1);
             kMersErrSum += err;
             kMersErrSquareSum += err * err;
 
-            err = (100d * Math.abs(r1 - r2)) / (r1 + 1);
+            err = ((double) Math.abs(r1 - r2)) / (r1 + 1);
             readsErrSum += err;
             readsErrSquareSum += err * err;
         }

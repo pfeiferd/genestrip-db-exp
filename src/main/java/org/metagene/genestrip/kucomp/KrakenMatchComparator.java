@@ -50,7 +50,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats2 = countGoal2.get();
         maker2.dumpAll();
 
-        Map<String, ErrCompInfo> result = new HashMap<String, ErrCompInfo>();
+        Map<String, ErrCompInfo> result = new HashMap<>();
         for (String key : stats1.keySet()) {
             List<KrakenResCountGoal.KrakenResStats> list1 = stats1.get(key);
             Map<String, KrakenResCountGoal.KrakenResStats> map1 = new HashMap<>();
