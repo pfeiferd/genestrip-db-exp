@@ -52,12 +52,13 @@ public class ExperimentRunner {
     */
 
     public static void main(String[] args) throws IOException {
-        KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
         /*
         KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
-
+        c2.reportKMerComparisons("chronicb", "standard_db");
+*/
+        KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
+/*
         c1.writeUnfoldedTaxids("human_virus");
-
         // Figure 2
         c2.reportKMerComparisons("viral", "viral_db");
         // Figure 3
@@ -70,15 +71,11 @@ public class ExperimentRunner {
         c1.compareCommonDBEntries("viral", "human_virus");
         // Use taxids from Genestrip's human virus database as basis for tax ids.
         c2.reportKrakenDBComparison("human_virus", "viral_db", "human_virus_db");
+        */
         // Figure 6
-
         Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
         Map<String, GenestripComparator.ErrCompInfo> res2 = c1.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
         c1.combineErrInfos("viral", "human_virus", res1, res2);
-        */
-        Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareKUWithKUResults("viral", "viral", "saliva.txt");
-        Map<String, GenestripComparator.ErrCompInfo> res2 = c1.compareKUWithKUResults("human_virus", "human_virus", "saliva.txt");
-        c1.combineErrInfos("ku_viral", "ku_human_virus", res1, res2);
 
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
