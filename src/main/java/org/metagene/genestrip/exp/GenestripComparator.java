@@ -214,7 +214,7 @@ public class GenestripComparator {
                 errPs.print(DF.format(100 * errCompInfo1.getMeanReadsErr()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
-                errPs.print(';');
+                errPs.println(';');
                 counter++;
             }
         }
