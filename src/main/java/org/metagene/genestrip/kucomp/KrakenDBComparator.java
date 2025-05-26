@@ -3,6 +3,7 @@ package org.metagene.genestrip.kucomp;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.exp.GenestripComparator;
 import org.metagene.genestrip.store.Database;
+import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 
 import java.io.*;
@@ -117,6 +118,7 @@ public class KrakenDBComparator extends GenestripComparator {
             entries++;
 
             if (l != null) {
+                if (taxNode.getRank().isBelow(Rank.GENUS)) {
                 out.print(taxNode.getTaxId());
                 out.print(';');
                 out.print(getRankString(taxNode));
@@ -125,6 +127,7 @@ public class KrakenDBComparator extends GenestripComparator {
                 out.print(';');
                 out.print(correctDBValue(h));
                 out.println(';');
+                }
             }
             kuTaxid2KMer.remove(taxId);
         }

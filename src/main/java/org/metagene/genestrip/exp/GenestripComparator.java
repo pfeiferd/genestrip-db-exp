@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GenestripComparator {
     protected static final DecimalFormat DF = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
@@ -135,9 +132,8 @@ public class GenestripComparator {
         SmallTaxTree[] taxTreeRef2 = new SmallTaxTree[1];
         Map<String, MatchingResult> matches2 = match(dbName2, csvFile, taxTreeRef2);
 
-        Map<String, ErrCompInfo> result = new HashMap<String, ErrCompInfo>();
+        Map<String, ErrCompInfo> result = new LinkedHashMap<String, ErrCompInfo>(); // Maintains order of keys.
         for (String key : matches1.keySet()) {
-
             MatchingResult res1 = matches1.get(key);
             MatchingResult res2 = matches2.get(key);
             if (res1.getGlobalStats().getKMers() != res2.getGlobalStats().getKMers()) {
@@ -191,6 +187,37 @@ public class GenestripComparator {
             }
         }
         return result;
+    }
+
+    public void writeErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1) throws IOException {
+        File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
+        try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
+            errPs.println("no; key; reads; gs read len; " +
+                    "errs; kmer err; kmer err std dev; read err; read err std dev;");
+            int counter = 0;
+            for (String key : map1.keySet()) {
+                ErrCompInfo errCompInfo1 = map1.get(key);
+                errPs.print(counter);
+                errPs.print(';');
+                errPs.print(key);
+                errPs.print(';');
+                errPs.print(errCompInfo1.getReads());
+                errPs.print(';');
+                errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
+                errPs.print(';');
+                errPs.print(errCompInfo1.getErrs());
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getMeanKMersErr()));
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getKMersErrStdDev()));
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getMeanReadsErr()));
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
+                errPs.print(';');
+                counter++;
+            }
+        }
     }
 
     public void combineErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1, Map<String, ErrCompInfo> map2) throws IOException {

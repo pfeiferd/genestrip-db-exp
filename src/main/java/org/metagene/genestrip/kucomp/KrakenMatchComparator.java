@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +51,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats2 = countGoal2.get();
         maker2.dumpAll();
 
-        Map<String, ErrCompInfo> result = new HashMap<>();
+        Map<String, ErrCompInfo> result = new LinkedHashMap<>(); // Maintains order of keys
         for (String key : stats1.keySet()) {
             List<KrakenResCountGoal.KrakenResStats> list1 = stats1.get(key);
             Map<String, KrakenResCountGoal.KrakenResStats> map1 = new HashMap<>();
@@ -102,7 +103,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         return result;
     }
 
-    public void compareWithKUResults(String dbName, String csvFile1, String csvFile2) throws IOException {
+    public  Map<String, ErrCompInfo> compareWithKUResults(String dbName, String csvFile1, String csvFile2) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         if (csvFile1 != null) {
             GSProject project = new GSProject(config, dbName, null, null, csvFile1, null, null, null,
@@ -127,7 +128,14 @@ public class KrakenMatchComparator extends GenestripComparator {
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
         maker2.dumpAll();
 
+        Map<String, ErrCompInfo> result = new LinkedHashMap<>(); // Maintains order of keys...
         for (String key : matchResult.keySet()) {
+            MatchingResult res1 = matchResult.get(key);
+
+            ErrCompInfo errCompInfo = new ErrCompInfo(res1.getGlobalStats().getKMers(),
+                    res1.getGlobalStats().getReads());
+            result.put(key, errCompInfo);
+
             List<KrakenResCountGoal.KrakenResStats> list = stats.get(key);
             Map<String, KrakenResCountGoal.KrakenResStats> map = new HashMap<>();
             for (KrakenResCountGoal.KrakenResStats stat : list) {
@@ -147,7 +155,8 @@ public class KrakenMatchComparator extends GenestripComparator {
                     KrakenResCountGoal.KrakenResStats kustats = map.get(taxId);
                     ps.print(taxId);
                     ps.print(';');
-                    ps.print(getRankString(node));
+                    String rs = getRankString(node);
+                    ps.print(rs);
                     ps.print(';');
                     long gkmers = gcounts == null ? 0 : gcounts.getKMers();
                     ps.print(correctDBValue(gkmers));
@@ -167,12 +176,19 @@ public class KrakenMatchComparator extends GenestripComparator {
                     if (kureads != greads) {
                         differentReadValues++;
                     }
+
+                    if (gcounts != null || kustats != null) {
+                        // There is a small error: Some genome occur in the KrakenUniq and not in Genestrip DB.
+                        // Hits for them would be missed...
+                        errCompInfo.sumErrorStats(gkmers, greads, kukmers, kureads);
+                    }
                 }
             }
 
             System.out.println("Different kmer values: " + differentKMerValues);
             System.out.println("Different read values: " + differentReadValues);
         }
+        return result;
     }
 
     public void accuracyCheckForSimulatedViralReads(String db, String csvFile2) throws IOException {
@@ -196,7 +212,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                 if (myReadEntry.classNode != null) {
                     byte[] desc = myReadEntry.readDescriptor;
                     int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
-                    TaxTree.TaxIdNode node = map.get(desc, 2, pos);
+                    TaxTree.TaxIdNode node = map.get(desc, 2, pos, false);
                     if (node != null) {
                         SmallTaxTree.SmallTaxIdNode snode = smallTaxTree.getNodeByTaxId(node.getTaxId());
                         SmallTaxTree.SmallTaxIdNode lca = smallTaxTree.getLeastCommonAncestor(snode, myReadEntry.classNode);
