@@ -52,9 +52,9 @@ public class ExperimentRunner {
     */
 
     public static void main(String[] args) throws IOException {
-        /*
+/*
         KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
-        c2.reportKMerComparisons("chronicb", "standard_db");
+        c2.reportKMerComparisons("chronicb_std_ku", "standard_db");
 */
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
 /*
@@ -65,19 +65,26 @@ public class ExperimentRunner {
         c1.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt");
         // Text in context with Figure 3
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
+
+ */
         // Figure 4
-        c1.compareWithKUResults("viral", null, "saliva.txt");
+        Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", null, "saliva.txt");
+        // Table 4
+        c1.writeErrInfos("viral", "viral_db", res3);
+/*
         // Figure 5
         c1.compareCommonDBEntries("viral", "human_virus");
         // Use taxids from Genestrip's human virus database as basis for tax ids.
         c2.reportKrakenDBComparison("human_virus", "viral_db", "human_virus_db");
-        */
+
         // Figure 6
         Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
         Map<String, GenestripComparator.ErrCompInfo> res2 = c1.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
+        // Table 5
         c1.combineErrInfos("viral", "human_virus", res1, res2);
 
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
+ */
     }
 }
