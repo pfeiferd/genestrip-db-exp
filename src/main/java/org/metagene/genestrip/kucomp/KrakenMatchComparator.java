@@ -29,7 +29,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         super(baseDir);
     }
 
-    public Map<String, ErrCompInfo>  compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
+    public Map<String, ErrCompInfo> compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
         SmallTaxTree tree1 = getDatabase(dbName1, false).getTaxTree();
         SmallTaxTree tree2 = getDatabase(dbName2, false).getTaxTree();
 
@@ -63,7 +63,7 @@ public class KrakenMatchComparator extends GenestripComparator {
             for (KrakenResCountGoal.KrakenResStats stats : list2) {
                 map2.put(stats.getTaxid(), stats);
             }
-            ErrCompInfo errCompInfo = new ErrCompInfo(0,0);
+            ErrCompInfo errCompInfo = new ErrCompInfo(0, 0);
             result.put(key, errCompInfo);
 
             File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_ku_ku_comp.csv");
@@ -103,7 +103,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         return result;
     }
 
-    public  Map<String, ErrCompInfo> compareWithKUResults(String dbName, String csvFile1, String csvFile2) throws IOException {
+    public Map<String, ErrCompInfo> compareWithKUResults(String dbName, String csvFile1, String csvFile2) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         if (csvFile1 != null) {
             GSProject project = new GSProject(config, dbName, null, null, csvFile1, null, null, null,
@@ -115,7 +115,9 @@ public class KrakenMatchComparator extends GenestripComparator {
 
         GSProject project = new GSProject(config, dbName, null, null, csvFile2, null, null, null,
                 null, null, null, false);
-        project.initConfigParam(GSConfigKey.KRAKEN_STYLE_MATCH, true);
+
+        KrakenDBComparator krakenDBComparator = new KrakenDBComparator(baseDir);
+        Map<String, Long> kuTaxid2KMer = krakenDBComparator.getKrakenDBCounts(krakenDBComparator.getKrakenCountsFile(dbName + "_db"));
 
         GSMaker maker2 = new GSMaker(project);
         ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
@@ -127,6 +129,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                 (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
         maker2.dumpAll();
+
 
         Map<String, ErrCompInfo> result = new LinkedHashMap<>(); // Maintains order of keys...
         for (String key : matchResult.keySet()) {
@@ -151,36 +154,36 @@ public class KrakenMatchComparator extends GenestripComparator {
                 ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2");
                 for (SmallTaxTree.SmallTaxIdNode node : tree) {
                     String taxId = node.getTaxId();
-                    CountsPerTaxid gcounts = gstats.get(taxId);
-                    KrakenResCountGoal.KrakenResStats kustats = map.get(taxId);
-                    ps.print(taxId);
-                    ps.print(';');
-                    String rs = getRankString(node);
-                    ps.print(rs);
-                    ps.print(';');
-                    long gkmers = gcounts == null ? 0 : gcounts.getKMers();
-                    ps.print(correctDBValue(gkmers));
-                    ps.print(';');
-                    long kukmers = kustats == null ? 0 : kustats.getKmers();
-                    ps.print(correctDBValue(kukmers));
-                    ps.print(';');
-                    long greads = gcounts == null ? 0 : gcounts.getReads();
-                    ps.print(correctDBValue(greads));
-                    ps.print(';');
-                    long kureads = kustats == null ? 0 : kustats.getReads();
-                    ps.print(correctDBValue(kureads));
-                    ps.println(';');
-                    if (kukmers != gkmers) {
-                        differentKMerValues++;
-                    }
-                    if (kureads != greads) {
-                        differentReadValues++;
-                    }
-
-                    if (gcounts != null || kustats != null) {
-                        // There is a small error: Some genome occur in the KrakenUniq and not in Genestrip DB.
-                        // Hits for them would be missed...
-                        errCompInfo.sumErrorStats(gkmers, greads, kukmers, kureads);
+                    if (kuTaxid2KMer.get(taxId) != null) {
+                        CountsPerTaxid gcounts = gstats.get(taxId);
+                        KrakenResCountGoal.KrakenResStats kustats = map.get(taxId);
+                        long gkmers = gcounts == null ? 0 : gcounts.getKMers();
+                        long kukmers = kustats == null ? 0 : kustats.getKmers();
+                        long greads = gcounts == null ? 0 : gcounts.getReads();
+                        long kureads = kustats == null ? 0 : kustats.getReads();
+                        // No need to report if all is zero.
+                        if (gkmers != 0 || kukmers != 0 || greads != 0 || kureads != 0) {
+                            ps.print(taxId);
+                            ps.print(';');
+                            String rs = getRankString(node);
+                            ps.print(rs);
+                            ps.print(';');
+                            ps.print(correctDBValue(gkmers));
+                            ps.print(';');
+                            ps.print(correctDBValue(kukmers));
+                            ps.print(';');
+                            ps.print(correctDBValue(greads));
+                            ps.print(';');
+                            ps.print(correctDBValue(kureads));
+                            ps.println(';');
+                            if (kukmers != gkmers) {
+                                differentKMerValues++;
+                            }
+                            if (kureads != greads) {
+                                differentReadValues++;
+                            }
+                            errCompInfo.sumErrorStats(gkmers, greads, kukmers, kureads);
+                        }
                     }
                 }
             }
@@ -195,7 +198,6 @@ public class KrakenMatchComparator extends GenestripComparator {
         GSCommon config = new GSCommon(baseDir);
         GSProject project2 = new GSProject(config, db, null, null, csvFile2, null, null, null,
                 null, null, null, false);
-        project2.initConfigParam(GSConfigKey.KRAKEN_STYLE_MATCH, true);
         project2.initConfigParam(GSConfigKey.THREADS, -1);
 
         GSMaker maker2 = new GSMaker(project2);

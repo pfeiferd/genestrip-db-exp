@@ -20,7 +20,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class GenestripComparator {
-    protected static final DecimalFormat DF = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.US));
+    protected static final DecimalFormat DF = new DecimalFormat("#,###.0", new DecimalFormatSymbols(Locale.US));
 
     public static final String SPECIES_OR_BELOW = "species or below";
     public static final String GENUS = "genus";
@@ -270,7 +270,6 @@ public class GenestripComparator {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, dbName, null, null, csvFile, null, null, null,
                 null, null, null, false);
-        project.initConfigParam(GSConfigKey.KRAKEN_STYLE_MATCH, true);
         project.initConfigParam(GSConfigKey.THREADS, -1);
         GSMaker maker = new GSMaker(project);
 
