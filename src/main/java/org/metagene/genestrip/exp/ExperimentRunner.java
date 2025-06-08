@@ -52,10 +52,9 @@ public class ExperimentRunner {
     */
 
     public static void main(String[] args) throws IOException {
-/*
         KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
-        c2.reportKMerComparisons("chronicb_std_ku", "standard_db");
-*/
+        c2.reportKMerComparisons("chronicb", "standard_db");
+
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
 /*
         c1.writeUnfoldedTaxids("human_virus");

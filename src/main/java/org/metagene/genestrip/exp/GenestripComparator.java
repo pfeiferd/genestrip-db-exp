@@ -88,7 +88,7 @@ public class GenestripComparator {
             }
              */
             return SPECIES_OR_BELOW;
-        } else if (r != null && r.equals(Rank.GENUS)) {
+        } else if (r != null && r.equals(Rank.GENUS) || r.isBelow(Rank.GENUS)) {
             return GENUS;
         } else {
             return ABOVE_GENUS;

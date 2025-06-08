@@ -95,6 +95,8 @@ public class KrakenDBComparator extends GenestripComparator {
         List<SmallTaxTree.SmallTaxIdNode> missingNodesInKu = new ArrayList<>();
         Map<SmallTaxTree.SmallTaxIdNode, Long> differences = new HashMap<>();
 
+        Map<String, Long> kmerSumsPerGenusG = new HashMap<>();
+        Map<String, Long> kmerSumsPerGenusKU = new HashMap<>();
         Object2LongMap<String> stats = database.getStats();
         for (SmallTaxTree.SmallTaxIdNode taxNode : database.getTaxTree()) {
             if (taxNode == null || taxNode.getRank() == null) {
@@ -118,7 +120,7 @@ public class KrakenDBComparator extends GenestripComparator {
             entries++;
 
             if (l != null) {
-                if (taxNode.getRank().isBelow(Rank.GENUS)) {
+                if (taxNode.getRank().equals(Rank.GENUS) || taxNode.getRank().isBelow(Rank.GENUS)) {
                 out.print(taxNode.getTaxId());
                 out.print(';');
                 out.print(getRankString(taxNode));
@@ -130,8 +132,32 @@ public class KrakenDBComparator extends GenestripComparator {
                 }
             }
             kuTaxid2KMer.remove(taxId);
+            SmallTaxTree.SmallTaxIdNode genusNode = taxNode;
+            for (; genusNode != null &&  genusNode.getRank() != null && genusNode.getRank().isBelow(Rank.GENUS); genusNode = genusNode.getParent()) {
+            }
+            if (genusNode != null && Rank.GENUS.equals(genusNode.getRank())) {
+                Long v1 = kmerSumsPerGenusG.get(genusNode.getTaxId());
+                v1 = v1 == null ? g : v1 + g;
+                kmerSumsPerGenusG.put(genusNode.getTaxId(), v1);
+                Long v2 = kmerSumsPerGenusKU.get(genusNode.getTaxId());
+                v2 = v2 == null ? h : v2 + h;
+                kmerSumsPerGenusKU.put(genusNode.getTaxId(), v2);
+            }
         }
 
+        System.out.println("Genestrip:");
+        System.out.println(kmerSumsPerGenusG);
+        System.out.println("KU:");
+        System.out.println(kmerSumsPerGenusKU);
+        for (String key : kmerSumsPerGenusKU.keySet()) {
+            Long h = kmerSumsPerGenusKU.get(key);
+            Long g = kmerSumsPerGenusG.get(key);
+            if (g != null && h != null) {
+                System.out.println(key + ": " + DF.format( g / h));
+            }
+        }
+
+        /*
         System.out.println("Absolute error: " + err);
         System.out.println("Entries: " + entries);
         System.out.println("Absolute in data error: " + inDataErr);
@@ -147,5 +173,6 @@ public class KrakenDBComparator extends GenestripComparator {
         System.out.println("Differences:");
         System.out.println(differences.size());
         System.out.println(differences);
+         */
     }
 }
