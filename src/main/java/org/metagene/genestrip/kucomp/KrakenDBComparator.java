@@ -120,28 +120,30 @@ public class KrakenDBComparator extends GenestripComparator {
             entries++;
 
             if (l != null) {
-                if (taxNode.getRank().equals(Rank.GENUS) || taxNode.getRank().isBelow(Rank.GENUS)) {
-                out.print(taxNode.getTaxId());
-                out.print(';');
-                out.print(getRankString(taxNode));
-                out.print(';');
-                out.print(correctDBValue(g));
-                out.print(';');
-                out.print(correctDBValue(h));
-                out.println(';');
-                }
+    //            if (taxNode.getRank().equals(Rank.GENUS) || taxNode.getRank().isBelow(Rank.GENUS)) {
+                    out.print(taxNode.getTaxId());
+                    out.print(';');
+                    out.print(getRankString(taxNode));
+                    out.print(';');
+                    out.print(correctDBValue(g));
+                    out.print(';');
+                    out.print(correctDBValue(h));
+                    out.println(';');
+    //            }
             }
             kuTaxid2KMer.remove(taxId);
             SmallTaxTree.SmallTaxIdNode genusNode = taxNode;
-            for (; genusNode != null &&  genusNode.getRank() != null && genusNode.getRank().isBelow(Rank.GENUS); genusNode = genusNode.getParent()) {
+            for (; genusNode != null && genusNode.getRank() != null && genusNode.getRank().isBelow(Rank.GENUS); genusNode = genusNode.getParent()) {
             }
             if (genusNode != null && Rank.GENUS.equals(genusNode.getRank())) {
                 Long v1 = kmerSumsPerGenusG.get(genusNode.getTaxId());
-                v1 = v1 == null ? g : v1 + g;
-                kmerSumsPerGenusG.put(genusNode.getTaxId(), v1);
+                kmerSumsPerGenusG.put(genusNode.getTaxId(), v1 == null ? g : v1 + g);
+                Long t1 = kmerSumsPerGenusG.get("TOTAL");
+                kmerSumsPerGenusG.put("TOTAL", t1 == null ? g : t1 + g);
                 Long v2 = kmerSumsPerGenusKU.get(genusNode.getTaxId());
-                v2 = v2 == null ? h : v2 + h;
-                kmerSumsPerGenusKU.put(genusNode.getTaxId(), v2);
+                kmerSumsPerGenusKU.put(genusNode.getTaxId(), v2 == null ? h : v2 + h);
+                Long t2 = kmerSumsPerGenusKU.get("TOTAL");
+                kmerSumsPerGenusKU.put("TOTAL", t2 == null ? h : t2 + h);
             }
         }
 
@@ -149,13 +151,20 @@ public class KrakenDBComparator extends GenestripComparator {
         System.out.println(kmerSumsPerGenusG);
         System.out.println("KU:");
         System.out.println(kmerSumsPerGenusKU);
+        double macroAverageSum = 0;
+        int count = 0;
         for (String key : kmerSumsPerGenusKU.keySet()) {
             Long h = kmerSumsPerGenusKU.get(key);
             Long g = kmerSumsPerGenusG.get(key);
             if (g != null && h != null) {
-                System.out.println(key + ": " + DF.format( g / h));
+                System.out.println(key + ": " + DF.format(((double) g) / h));
+            }
+            if (!"TOTAL".equals(key)) {
+                macroAverageSum += ((double) g) / h;
+                count++;
             }
         }
+        System.out.println("MacroAverage: " + macroAverageSum / count);
 
         /*
         System.out.println("Absolute error: " + err);
