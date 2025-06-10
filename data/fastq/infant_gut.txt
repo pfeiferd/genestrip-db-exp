@@ -1,5 +1,0 @@
-# From https://www.ncbi.nlm.nih.gov/bioproject/PRJNA871395
-i1 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR21147092
-i2 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR21147093
-i50 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR21147156
-i51 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR21147157

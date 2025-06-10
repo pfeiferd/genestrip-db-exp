@@ -20,3 +20,5 @@
 2791001
 # Rickettsia
 780
+# Francisella (because of tularemia)
+262

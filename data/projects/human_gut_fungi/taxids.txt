@@ -13,9 +13,6 @@
 76775
 # Saccharomyces
 4930
-# Cryptococcus neoformans
-# Not in the gut, but in the mock community for abundance test
-# 5207
 
 
 
