@@ -5,14 +5,7 @@ scriptdir=$(dirname "$0")
 
 cd $scriptdir/..
 
-mkdir -p sra-tools
-cd sra-tools
-
-wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/3.2.1/sratoolkit.3.2.1-alma_linux64.tar.gz
-gunzip sratoolkit.3.2.1-alma_linux64.tar.gz
-tax -xf sratoolkit.3.2.1-alma_linux64.tar.gz
-
-bin=./sratoolkit.3.2.1-alma_linux64/bin
+bin=./sra-tools/sratoolkit/bin
 file_path=../../data/fastq
 
 # ERX1462737
