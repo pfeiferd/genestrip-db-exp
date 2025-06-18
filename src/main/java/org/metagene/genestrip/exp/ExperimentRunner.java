@@ -52,12 +52,14 @@ public class ExperimentRunner {
     */
 
     public static void main(String[] args) throws IOException {
+        /*
         KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
         c2.reportKMerComparisons("chronicb", "microbial_db");
+        */
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
-/*
         c1.writeUnfoldedTaxids("human_virus");
+ /*
         // Figure 2
         c2.reportKMerComparisons("viral", "viral_db");
         // Figure 3
@@ -65,12 +67,12 @@ public class ExperimentRunner {
         // Text in context with Figure 3
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
 
- */
+
         // Figure 4
         Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", null, "saliva.txt");
         // Table 4
         c1.writeErrInfos("viral", "viral_db", res3);
-/*
+
         // Figure 5
         c1.compareCommonDBEntries("viral", "human_virus");
         // Use taxids from Genestrip's human virus database as basis for tax ids.
