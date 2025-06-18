@@ -6,7 +6,7 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 
 bin=./sra-tools/sratoolkit/bin
-file_path=../../data/fastq
+file_path=./data/fastq
 
 # ERX1462737
 $bin/prefetch ERR1395610 --max-size 200g -O $file_path
