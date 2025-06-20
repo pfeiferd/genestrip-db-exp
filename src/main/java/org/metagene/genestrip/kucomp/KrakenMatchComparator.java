@@ -103,7 +103,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         return result;
     }
 
-    public Map<String, ErrCompInfo> compareWithKUResults(String dbName, String csvFile1, String csvFile2) throws IOException {
+    public Map<String, ErrCompInfo> compareWithKUResults(String dbName, String kuDBName, String csvFile1, String csvFile2) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         if (csvFile1 != null) {
             GSProject project = new GSProject(config, dbName, null, null, csvFile1, null, null, null,
@@ -117,7 +117,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                 null, null, null, false);
 
         KrakenDBComparator krakenDBComparator = new KrakenDBComparator(baseDir);
-        Map<String, Long> kuTaxid2KMer = krakenDBComparator.getKrakenDBCounts(krakenDBComparator.getKrakenCountsFile(dbName + "_db"));
+        Map<String, Long> kuTaxid2KMer = krakenDBComparator.getKrakenDBCounts(krakenDBComparator.getKrakenCountsFile(kuDBName));
 
         GSMaker maker2 = new GSMaker(project);
         ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
@@ -245,10 +245,5 @@ public class KrakenMatchComparator extends GenestripComparator {
         System.out.println("Correct classifications STRAIN: " + counters[3]);
         System.out.println("Total count: " + counters[0]);
         maker2.dumpAll();
-    }
-
-    public static void main(String[] args) throws IOException {
-        KrakenMatchComparator c = new KrakenMatchComparator(new File("./data"));
-        c.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt");
     }
 }

@@ -87,6 +87,6 @@ public class ExperimentRunner {
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
  */
-        c1.compareWithKUResults("tick-borne", null, "ticks.txt");
+        c1.compareWithKUResults("tick-borne", "microbial_db", null, "ticks.txt");
     }
 }
