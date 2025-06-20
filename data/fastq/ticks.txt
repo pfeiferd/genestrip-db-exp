@@ -1,18 +1,18 @@
 # From https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10328957/
 # All MinION samples:
-tick1 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281117
+tick1 tick1.fastq.gz
 
-tick2 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281105
+tick2 tick2.fastq.gz
 
-tick3 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281103
+tick3 tick3.fastq.gz
 
-tick4 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281101
+tick4 tick4.fastq.gz
 
-tick5 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281100
+tick5 tick5.fastq.gz
 
-tick6 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281099
+tick6 tick6.fastq.gz
 
-tick7 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281116
+tick7 tick7.fastq.gz
 
-tick8 https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281115
+tick8 tick8.fastq.gz
 

@@ -58,7 +58,7 @@ public class ExperimentRunner {
         */
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
-        c1.writeUnfoldedTaxids("human_virus");
+        // c1.writeUnfoldedTaxids("human_virus");
  /*
         // Figure 2
         c2.reportKMerComparisons("viral", "viral_db");
@@ -87,5 +87,6 @@ public class ExperimentRunner {
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
  */
+        c1.compareWithKUResults("tick-borne", null, "ticks.txt");
     }
 }

@@ -1,4 +1,4 @@
-**Genestrip-DB-Exp** - Experiments around [Genestrip](https://github.com/pfeiferd/genestrip)
+**Genestrip-DB-Exp** - Experiments concerning [Genestrip](https://github.com/pfeiferd/genestrip)
 ===============================================
   
 This project exists to run accuracy, quality and performance experiments with respect to [Genestrip]([Genestrip](https://github.com/pfeiferd/genestrip)).
@@ -22,7 +22,7 @@ This version of Genestrip-DB-Exp is tied to Genestrip [Version 2.0](https://gith
 The original experiments were based on the [RefSeq Release 230](https://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER).
 Using later version of the RefSeq might bring (slightly) different results than the original runs.
 
-## Running the experiments
+## Running the experiments (without performance experiments)
 
 Please `cd` to `genestrip-db-exp/bin` and execute the shell scripts there
 in this given order:
@@ -30,11 +30,16 @@ in this given order:
 1) `sh ./install_krakenuniq.sh` installs KrakenUniq in a respective folder. Please consult the [KrakenUniq README](https://github.com/fbreitwieser/krakenuniq/blob/master/README.md#installation) if this step fails in order to provide potential fixes.
 2) `sh ./install_sra_sdk_linux64.sh` or `sh ./install_sra_sdk_mac_arm.sh` installs the [SRA tools](https://github.com/ncbi/sra-tools/wiki/01.-Downloading-SRA-Toolkit) on Linux or a Mac, respectively.
 3) `sh ./download_hs_fastqs.sh` downloads fastq files based on human saliva samples from the [SRA](https://www.ncbi.nlm.nih.gov/sra/).
-4) `sh ./download_ku_microbial_db.sh` downloads and installs the [MicrobialDB](https://benlangmead.github.io/aws-indexes/k2) for KrakenUniq.
-5) `sh ./make_ku_viraldb.sh` creates a complete viral DB for KrakenUniq. This incurs a download of viral genomes from the RefSeq.
-6) `sh ./make_ku_human_virusdb.sh` creates a human virus DB for KrakenUniq. This incurs a download of viral genomes from the RefSeq.
-7) Finally `sh ./runexps.sh` runs all the experiments and produces related result files right under `genestrip-db-exp/data`. Beware: This incurs a download of all viral and bacterial genomes from the RefSeq and triggers the generation of three Genestrip databases.
+4) `sh ./download_tick_fastqs.sh` downloads fastq files related to tick analysis from the [SRA](https://www.ncbi.nlm.nih.gov/sra/).
+5) `sh ./download_ku_microbial_db.sh` downloads and installs the [MicrobialDB](https://benlangmead.github.io/aws-indexes/k2) for KrakenUniq.
+6) `sh ./make_ku_viraldb.sh` creates a complete viral DB for KrakenUniq. This incurs a download of viral genomes from the RefSeq.
+7) `sh ./make_ku_human_virusdb.sh` creates a human virus DB for KrakenUniq. This incurs a download of viral genomes from the RefSeq.
+8) Finally `sh ./runexps.sh` runs all the experiments and produces related result files right under `genestrip-db-exp/data`. Beware: This incurs a download of all viral and bacterial genomes from the RefSeq and triggers the generation of three Genestrip databases.
 
 (There are additional scripts, files and folders currently that are currently not used to produce the experiments' results.)
 
+## Performance experiments
 
+At first, please follow steps 1 to 7 from above.
+
+The rest: TODO...
