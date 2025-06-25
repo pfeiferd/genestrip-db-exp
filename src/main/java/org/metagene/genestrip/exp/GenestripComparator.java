@@ -57,9 +57,9 @@ public class GenestripComparator {
                     ps.print(";");
                     ps.print(getRankString(node1));
                     ps.print(";");
-                    ps.print(correctDBValue(count1));
+                    ps.print(correctDBValue(count1, false));
                     ps.print(";");
-                    ps.print(correctDBValue(count2));
+                    ps.print(correctDBValue(count2, false));
                     ps.println(";");
                 }
             }
@@ -88,15 +88,15 @@ public class GenestripComparator {
             }
              */
             return SPECIES_OR_BELOW;
-        } else if (r != null && r.equals(Rank.GENUS) || r.isBelow(Rank.GENUS)) {
+        } else if (r != null && (r.equals(Rank.GENUS) || r.isBelow(Rank.GENUS))) {
             return GENUS;
         } else {
             return ABOVE_GENUS;
         }
     }
 
-    protected long correctDBValue(long v) {
-        return v + 1;
+    protected long correctDBValue(long v, boolean full) {
+        return full ? v : v + 1;
     }
 
     protected void writeUnfoldedTaxids(String dbName) throws IOException {
@@ -165,20 +165,20 @@ public class GenestripComparator {
                     ps.print(rs);
                     ps.print(';');
                     long k1 = c1 == null ? 0 : c1.getKMers();
-                    ps.print(correctDBValue(k1));
+                    ps.print(correctDBValue(k1, false));
                     ps.print(';');
                     long k2 = c2 == null ? 0 : c2.getKMers();
-                    ps.print(correctDBValue(k2));
+                    ps.print(correctDBValue(k2, false));
                     ps.print(';');
-                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers()));
+                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers(), false));
                     ps.print(';');
-                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers()));
+                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers(), false));
                     ps.print(';');
                     long r1 = c1 == null ? 0 : c1.getReads();
-                    ps.print(correctDBValue(r1));
+                    ps.print(correctDBValue(r1, false));
                     ps.print(';');
                     long r2 = c2 == null ? 0 : c2.getReads();
-                    ps.print(correctDBValue(r2));
+                    ps.print(correctDBValue(r2, false));
                     ps.println(';');
                     if (SPECIES_OR_BELOW.equals(rs)) {
                         errCompInfo.sumErrorStats(k1, r1, k2, r2);

@@ -52,10 +52,10 @@ public class ExperimentRunner {
     */
 
     public static void main(String[] args) throws IOException {
-        /*
-        KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
-        c2.reportKMerComparisons("chronicb", "microbial_db");
-        */
+
+     //   KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
+     //   c2.reportKMerComparisons("tick-borne", "microbial_db");
+
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
         // c1.writeUnfoldedTaxids("human_virus");
@@ -87,6 +87,6 @@ public class ExperimentRunner {
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
  */
-        c1.compareWithKUResults("tick-borne", "microbial_db", null, "ticks.txt");
+        c1.compareWithKUResults("tick-borne", "microbial_db", null, "ticks.txt", true);
     }
 }

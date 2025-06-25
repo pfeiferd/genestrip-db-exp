@@ -45,9 +45,9 @@ public class KrakenDBComparator extends GenestripComparator {
                         }
                     }
                     ps.print(";");
-                    ps.print(correctDBValue(count1));
+                    ps.print(correctDBValue(count1, false));
                     ps.print(";");
-                    ps.print(correctDBValue(count2));
+                    ps.print(correctDBValue(count2, false));
                     ps.println(";");
                 }
             }
@@ -125,9 +125,9 @@ public class KrakenDBComparator extends GenestripComparator {
                     out.print(';');
                     out.print(getRankString(taxNode));
                     out.print(';');
-                    out.print(correctDBValue(g));
+                    out.print(correctDBValue(g, false));
                     out.print(';');
-                    out.print(correctDBValue(h));
+                    out.print(correctDBValue(h, false));
                     out.println(';');
     //            }
             }
@@ -157,7 +157,7 @@ public class KrakenDBComparator extends GenestripComparator {
             Long h = kmerSumsPerGenusKU.get(key);
             Long g = kmerSumsPerGenusG.get(key);
             if (g != null && h != null) {
-                System.out.println(key + ": " + DF.format(((double) g) / h));
+                System.out.println(key + ": " + ((double) g) / h);
             }
             if (!"TOTAL".equals(key)) {
                 macroAverageSum += ((double) g) / h;

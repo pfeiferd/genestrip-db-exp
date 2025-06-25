@@ -19,10 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class KrakenMatchComparator extends GenestripComparator {
     public KrakenMatchComparator(File baseDir) {
@@ -82,16 +79,16 @@ public class KrakenMatchComparator extends GenestripComparator {
                         ps.print(rs);
                         ps.print(';');
                         long k1 = kustats1 == null ? 0 : kustats1.getKmers();
-                        ps.print(correctDBValue(k1));
+                        ps.print(correctDBValue(k1, false));
                         ps.print(';');
                         long k2 = kustats2 == null ? 0 : kustats2.getKmers();
-                        ps.print(correctDBValue(k2));
+                        ps.print(correctDBValue(k2, false));
                         ps.print(';');
                         long r1 = kustats1 == null ? 0 : kustats1.getReads();
-                        ps.print(correctDBValue(r1));
+                        ps.print(correctDBValue(r1, false));
                         ps.print(';');
                         long r2 = kustats2 == null ? 0 : kustats2.getReads();
-                        ps.print(correctDBValue(r2));
+                        ps.print(correctDBValue(r2, false));
                         ps.println(';');
                         if (SPECIES_OR_BELOW.equals(rs)) {
                             errCompInfo.sumErrorStats(k1, r1, k2, r2);
@@ -103,7 +100,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         return result;
     }
 
-    public Map<String, ErrCompInfo> compareWithKUResults(String dbName, String kuDBName, String csvFile1, String csvFile2) throws IOException {
+    public Map<String, ErrCompInfo> compareWithKUResults(String dbName, String kuDBName, String csvFile1, String csvFile2, boolean full) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         if (csvFile1 != null) {
             GSProject project = new GSProject(config, dbName, null, null, csvFile1, null, null, null,
@@ -116,20 +113,20 @@ public class KrakenMatchComparator extends GenestripComparator {
         GSProject project = new GSProject(config, dbName, null, null, csvFile2, null, null, null,
                 null, null, null, false);
 
-        KrakenDBComparator krakenDBComparator = new KrakenDBComparator(baseDir);
-        Map<String, Long> kuTaxid2KMer = krakenDBComparator.getKrakenDBCounts(krakenDBComparator.getKrakenCountsFile(kuDBName));
-
         GSMaker maker2 = new GSMaker(project);
-        ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
-        SmallTaxTree tree = storeGoal.get().getTaxTree();
-        ObjectGoal<Map<String, MatchingResult>, GSProject> matchResGoal = (ObjectGoal<Map<String, MatchingResult>, GSProject>) maker2.getGoal(GSGoalKey.MATCHRES);
-        Map<String, MatchingResult> matchResult = matchResGoal.get();
-
         ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject> countGoal =
                 (ObjectGoal<Map<String, List<KrakenResCountGoal.KrakenResStats>>, GSProject>) maker2.getGoal(GSGoalKey.KRAKENCOUNT);
+
         Map<String, List<KrakenResCountGoal.KrakenResStats>> stats = countGoal.get();
+        ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
+        SmallTaxTree tree = storeGoal.get().getTaxTree();
+
+        ObjectGoal<Map<String, MatchingResult>, GSProject> matchResGoal = (ObjectGoal<Map<String, MatchingResult>, GSProject>) maker2.getGoal(GSGoalKey.MATCHRES);
+        Map<String, MatchingResult> matchResult = matchResGoal.get();
         maker2.dumpAll();
 
+        KrakenDBComparator krakenDBComparator = new KrakenDBComparator(baseDir);
+        Map<String, Long> kuTaxid2KMer = krakenDBComparator.getKrakenDBCounts(krakenDBComparator.getKrakenCountsFile(kuDBName));
 
         Map<String, ErrCompInfo> result = new LinkedHashMap<>(); // Maintains order of keys...
         for (String key : matchResult.keySet()) {
@@ -145,36 +142,43 @@ public class KrakenMatchComparator extends GenestripComparator {
                 map.put(stat.getTaxid(), stat);
             }
             Map<String, CountsPerTaxid> gstats = new HashMap<>(matchResult.get(key).getTaxid2Stats());
-
             int differentKMerValues = 0;
             int differentReadValues = 0;
 
             File out = new File(baseDir, dbName + "_" + key + "_gs_ku_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-                ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2");
+                if (full) {
+                    ps.print("name;");
+                }
+                ps.println("taxid;rank;kmers 1;kmers 2;reads 1;reads 2");
                 for (SmallTaxTree.SmallTaxIdNode node : tree) {
                     String taxId = node.getTaxId();
-                    if (kuTaxid2KMer.get(taxId) != null) {
+                    if (full || kuTaxid2KMer.get(taxId) != null) {
                         CountsPerTaxid gcounts = gstats.get(taxId);
                         KrakenResCountGoal.KrakenResStats kustats = map.get(taxId);
+                        map.remove(taxId);
                         long gkmers = gcounts == null ? 0 : gcounts.getKMers();
                         long kukmers = kustats == null ? 0 : kustats.getKmers();
                         long greads = gcounts == null ? 0 : gcounts.getReads();
                         long kureads = kustats == null ? 0 : kustats.getReads();
                         // No need to report if all is zero.
                         if (gkmers != 0 || kukmers != 0 || greads != 0 || kureads != 0) {
+                            if (full) {
+                                ps.print(node.getName());
+                                ps.print(';');
+                            }
                             ps.print(taxId);
                             ps.print(';');
-                            String rs = getRankString(node);
+                            String rs = full ? (node.getRank() == null ? null : node.getRank().getName()) : getRankString(node);
                             ps.print(rs);
                             ps.print(';');
-                            ps.print(correctDBValue(gkmers));
+                            ps.print(correctDBValue(gkmers, full));
                             ps.print(';');
-                            ps.print(correctDBValue(kukmers));
+                            ps.print(correctDBValue(kukmers, full));
                             ps.print(';');
-                            ps.print(correctDBValue(greads));
+                            ps.print(correctDBValue(greads, full));
                             ps.print(';');
-                            ps.print(correctDBValue(kureads));
+                            ps.print(correctDBValue(kureads, full));
                             ps.println(';');
                             if (kukmers != gkmers) {
                                 differentKMerValues++;
@@ -184,6 +188,35 @@ public class KrakenMatchComparator extends GenestripComparator {
                             }
                             errCompInfo.sumErrorStats(gkmers, greads, kukmers, kureads);
                         }
+                    }
+                }
+                if (full) {
+                    for (String taxId : map.keySet()) {
+                        KrakenResCountGoal.KrakenResStats kustats = map.get(taxId);
+                        long kukmers = kustats == null ? 0 : kustats.getKmers();
+                        long kureads = kustats == null ? 0 : kustats.getReads();
+                        ps.print("??");
+                        ps.print(';');
+                        ps.print(taxId);
+                        ps.print(';');
+                        String rs = null;
+                        ps.print(rs);
+                        ps.print(';');
+                        ps.print(correctDBValue(0, full));
+                        ps.print(';');
+                        ps.print(correctDBValue(kukmers, full));
+                        ps.print(';');
+                        ps.print(correctDBValue(0, full));
+                        ps.print(';');
+                        ps.print(correctDBValue(kureads, full));
+                        ps.println(';');
+                        if (kukmers != 0) {
+                            differentKMerValues++;
+                        }
+                        if (kureads != 0) {
+                            differentReadValues++;
+                        }
+                        errCompInfo.sumErrorStats(0, 0, kukmers, kureads);
                     }
                 }
             }
