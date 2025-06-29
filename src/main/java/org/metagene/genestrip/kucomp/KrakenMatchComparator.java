@@ -1,9 +1,14 @@
 package org.metagene.genestrip.kucomp;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.metagene.genestrip.*;
 import org.metagene.genestrip.exp.GenestripComparator;
 import org.metagene.genestrip.goals.MatchResultGoal;
 import org.metagene.genestrip.goals.kraken.KrakenResCountGoal;
+import org.metagene.genestrip.io.StreamProvider;
+import org.metagene.genestrip.io.StreamingResourceStream;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
 import org.metagene.genestrip.match.FastqKMerMatcher;
@@ -15,11 +20,10 @@ import org.metagene.genestrip.tax.SmallTaxTree;
 import org.metagene.genestrip.tax.TaxTree;
 import org.metagene.genestrip.util.ByteArrayUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.*;
+
+import static org.metagene.genestrip.GSGoalKey.FASTQ_MAP;
 
 public class KrakenMatchComparator extends GenestripComparator {
     public KrakenMatchComparator(File baseDir) {
@@ -98,6 +102,68 @@ public class KrakenMatchComparator extends GenestripComparator {
             }
         }
         return result;
+    }
+
+    private static final CSVFormat FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
+            .setDelimiter(';').setRecordSeparator('\n').setHeader().build();
+
+    public void aggregateCompareWithKUResults(String dbName, String csvFile1) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, dbName, null, null, csvFile1, null, null, null,
+                null, null, null, false);
+        GSMaker maker2 = new GSMaker(project);
+
+        ObjectGoal<Map<String, StreamingResourceStream>, GSProject> mapGoal = (ObjectGoal<Map<String, StreamingResourceStream>, GSProject>) maker2.getGoal(FASTQ_MAP);
+        ObjectGoal<Database, GSProject> storeGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
+        SmallTaxTree tree = storeGoal.get().getTaxTree();
+
+        for (String key : mapGoal.get().keySet()) {
+            File in = new File(baseDir, dbName + "_" + key + "_gs_ku_comp.csv");
+            if (in.exists()) {
+                Map<String, long[]> sumsMap = new HashMap<>();
+                try (CSVParser parser = FORMAT
+                        .parse(new InputStreamReader(StreamProvider.getInputStreamForFile(in)))) {
+
+                    for (CSVRecord record : parser) {
+                        String taxid = record.get("taxid");
+                        SmallTaxTree.SmallTaxIdNode node = tree.getNodeByTaxId(taxid);
+                        while (node != null) {
+                            if (Rank.GENUS.equals(node.getRank())) {
+                                break;
+                            }
+                            node = node.getParent();
+                        }
+                        if (node != null) {
+                            long[] sums = sumsMap.get(node.getTaxId());
+                            if (sums == null) {
+                                sums = new long[4];
+                                sumsMap.put(node.getTaxId(), sums);
+                            }
+                            sums[0] += Long.valueOf(record.get("kmers 1"));
+                            sums[1] += Long.valueOf(record.get("kmers 2"));
+                            sums[2] += Long.valueOf(record.get("reads 1"));
+                            sums[3] += Long.valueOf(record.get("reads 2"));
+                        } else {
+                            System.err.println("Warning missing taxid node for: " + taxid);
+                        }
+                    }
+                }
+                File out = new File(baseDir, dbName + "_" + key + "_genus_agg_gs_ku_comp.csv");
+                try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
+                    ps.println("taxid;kmers 1;kmers 2;reads 1;reads 2");
+                    for (String taxid : sumsMap.keySet()) {
+                        long[] sums = sumsMap.get(taxid);
+                        ps.print(taxid);
+                        ps.print(';');
+                        for (int i = 0; i < sums.length; i++) {
+                            ps.print(sums[i]);
+                            ps.print(';');
+                        }
+                        ps.println();
+                    }
+                }
+            }
+        }
     }
 
     public Map<String, ErrCompInfo> compareWithKUResults(String dbName, String kuDBName, String csvFile1, String csvFile2, boolean full) throws IOException {
