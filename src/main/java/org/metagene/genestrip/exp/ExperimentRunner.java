@@ -54,7 +54,6 @@ public class ExperimentRunner {
     public static void main(String[] args) throws IOException {
 
      //   KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
-     //   c2.reportKMerComparisons("tick-borne", "microbial_db");
 
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
@@ -87,7 +86,15 @@ public class ExperimentRunner {
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
  */
-        // c1.compareWithKUResults("tick-borne", "microbial_db", null, "ticks.txt", true);
+        KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
+
+        // Section "The Databases \texttt{MicrobialDB} and \texttt{tb}"
+        c2.reportKMerComparisons("tick-borne", "microbial_db", null, false);
+        c2.reportKMerComparisons("tick-borne", "microbial_db", "943", true);
+
+        // Figure 7 and Figure 8
+        c1.compareWithKUResults("tick-borne", "microbial_db", null, "ticks.txt", true);
         c1.aggregateCompareWithKUResults("tick-borne", "ticks.txt");
+
     }
 }

@@ -55,12 +55,12 @@ public class KrakenDBComparator extends GenestripComparator {
         System.out.println(diff);
     }
 
-    public void reportKMerComparisons(String genestripDB, String krakenDB) throws IOException {
+    public void reportKMerComparisons(String genestripDB, String krakenDB, String filterTaxid, boolean full) throws IOException {
         Map<String, Long> kuTaxid2KMer = getKrakenDBCounts(getKrakenCountsFile(krakenDB));
 
-        File countsFile = new File(baseDir, genestripDB + "_gs_ku_dbcomp.csv");
+        File countsFile = new File(baseDir, genestripDB + (filterTaxid == null ? "" : "_" + filterTaxid) + "_gs_ku_dbcomp.csv");
         try (PrintStream out = new PrintStream(new FileOutputStream(countsFile))) {
-            printJointStoreInfo(getDatabase(genestripDB, false), out, kuTaxid2KMer);
+            printJointStoreInfo(getDatabase(genestripDB, false), out, kuTaxid2KMer, filterTaxid, full);
         }
     }
 
@@ -85,7 +85,7 @@ public class KrakenDBComparator extends GenestripComparator {
         return new File(baseDir, "../ku/" + krakenDB + "/database.kdb.counts");
     }
 
-    public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer) {
+    public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer, String filterTaxid, boolean full) {
         out.println("taxid; rank; kmers 1; kmers 2;");
 
         long inDataErr = 0;
@@ -101,6 +101,18 @@ public class KrakenDBComparator extends GenestripComparator {
         for (SmallTaxTree.SmallTaxIdNode taxNode : database.getTaxTree()) {
             if (taxNode == null || taxNode.getRank() == null) {
                 continue;
+            }
+            if (filterTaxid != null) {
+                boolean found = false;
+                for (SmallTaxTree.SmallTaxIdNode n = taxNode; n != null; n = n.getParent()) {
+                    if (filterTaxid.equals(n.getTaxId())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    continue;
+                }
             }
             String taxId = taxNode.getTaxId();
             Long l = kuTaxid2KMer.get(taxId);
@@ -119,15 +131,15 @@ public class KrakenDBComparator extends GenestripComparator {
             err += diff;
             entries++;
 
-            if (l != null) {
+            if (l != null || full) {
     //            if (taxNode.getRank().equals(Rank.GENUS) || taxNode.getRank().isBelow(Rank.GENUS)) {
                     out.print(taxNode.getTaxId());
                     out.print(';');
                     out.print(getRankString(taxNode));
                     out.print(';');
-                    out.print(correctDBValue(g, false));
+                    out.print(correctDBValue(g, full));
                     out.print(';');
-                    out.print(correctDBValue(h, false));
+                    out.print(correctDBValue(h, full));
                     out.println(';');
     //            }
             }
