@@ -5,4 +5,4 @@ scriptdir=$(dirname "$0")
 
 cd $scriptdir/..
 
-mvn exec:exec@exp
+/usr/bin/time -l mvn exec:exec@exp
