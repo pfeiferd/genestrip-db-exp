@@ -36,10 +36,14 @@ in this given order:
 7) `sh ./make_ku_human_virusdb.sh` creates a human virus DB for KrakenUniq. This incurs a download of viral genomes from the RefSeq.
 8) Finally `sh ./runexps.sh` runs all the experiments and produces related result files right under `genestrip-db-exp/data`. Beware: This incurs a download of all viral and bacterial genomes from the RefSeq and triggers the generation of three Genestrip databases.
 
-(There are additional scripts, files and folders currently that are currently not used to produce the experiments' results.)
+(There are additional scripts, files and folders that are currently not used to produce the experiments' results.)
 
 ## Performance experiments
 
-At first, please follow steps 1 to 7 from above.
+To run the database generation-experiments on *macOS*, please `cd` to `genestrip-db-exp/bin` and execute
+`sh ./run_gendb_perf_exps_ios.sh`
+Afterwards you will find log files like `db_gen_human_virus.log` under `genestrip-db-exp/data`.
 
-The rest: TODO...
+The tool `/usr/bin/time` is (probably) not available under Linux but feel free to migrate the above-mentioned script, e.g. by using
+[`cgmemtime`](https://github.com/gsauthof/cgmemtime) instead of `/usr/bin/time`.
+
