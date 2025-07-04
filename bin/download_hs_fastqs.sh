@@ -16,6 +16,6 @@ file_path=./data/fastq
 for id in ERR1395610 ERR1395613 SRR5571991 SRR5571990 SRR5571985;
   do
       # $bin/prefetch $id --max-size 200g -O $file_path
-      $bin/fasterq-dump $file_path/$id -O $file_path
-      gzip $file_path/$id_?.fastq
+      #$bin/fasterq-dump $file_path/$id -O $file_path
+      gzip $file_path/${id}_?.fastq
   done
