@@ -13,9 +13,9 @@ file_path=./data/fastq
 # SRX2830683
 # SRX2830684
 # SRX2830689
-for id in ERR1395613 SRR5571991 SRR5571990 SRR5571985; # ERR1395610
+for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
   do
-      # $bin/prefetch $id --max-size 200g -O $file_path
+      $bin/prefetch $id --max-size 200g -O $file_path
       $bin/fasterq-dump $file_path/$id -O $file_path
       gzip $file_path/${id}_?.fastq
       rm -rf $file_path/${id}
