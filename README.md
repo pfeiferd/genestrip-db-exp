@@ -22,7 +22,7 @@ This version of Genestrip-DB-Exp is tied to Genestrip [Version 2.0](https://gith
 The original experiments were based on the [RefSeq Release 230](https://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER).
 Using later version of the RefSeq might bring (slightly) different results than the original runs.
 
-## Running the experiments (without performance experiments)
+## Experiment preparation
 
 Please `cd` to `genestrip-db-exp/bin` and execute the shell scripts there
 in this given order:
@@ -34,11 +34,15 @@ in this given order:
 5) `sh ./download_ku_microbial_db.sh` downloads and installs the [MicrobialDB](https://benlangmead.github.io/aws-indexes/k2) for KrakenUniq.
 6) `sh ./make_ku_viraldb.sh` creates a complete viral DB for KrakenUniq. This incurs a download of viral genomes from the RefSeq.
 7) `sh ./make_ku_human_virusdb.sh` creates a human virus DB for KrakenUniq. This incurs a download of viral genomes from the RefSeq.
-8) Finally `sh ./runexps.sh` runs all the experiments and produces related result files right under `genestrip-db-exp/data`. Beware: This incurs a download of all viral and bacterial genomes from the RefSeq and triggers the generation of three Genestrip databases.
 
-(There are additional scripts, files and folders that are currently not used to produce the experiments' results.)
+## Running the experiments (without performance experiments)
+
+`sh ./runexps.sh` runs all the experiments and produces related result files right under `genestrip-db-exp/data`. 
+Beware: This incurs a download of all viral and bacterial genomes from the RefSeq and triggers the generation of three Genestrip databases.
 
 ## Performance experiments
+
+### DB generation performance
 
 To run the database generation-experiments on *macOS*, please `cd` to `genestrip-db-exp/bin` and execute
 `sh ./run_gendb_perf_exps_ios.sh`
@@ -47,3 +51,10 @@ Afterwards you will find log files like `db_gen_human_virus.log` under `genestri
 The tool `/usr/bin/time` is (probably) not available under Linux but feel free to migrate the above-mentioned script, e.g. by using
 [`cgmemtime`](https://github.com/gsauthof/cgmemtime) instead of `/usr/bin/time`.
 
+### Classification performance
+
+To run the database generation-experiments regarding ticks on *macOS*, please `cd` to `genestrip-db-exp/bin` and execute
+`sh ./run_match_perf_exps_ios.sh`. **Important:** `sh ./run_gendb_perf_exps_ios.sh` and `sh ./download_tick_fastqs.sh` most have been
+run beforehand so that the necessary files exist.
+
+**Note:** There are additional scripts, files and folders that are currently not used to produce the experiments' results.
