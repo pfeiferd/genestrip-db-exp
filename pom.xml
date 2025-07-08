@@ -8,6 +8,7 @@
 		<gs.project.name>${name}</gs.project.name>
 		<gs.project.goal>${goal}</gs.project.goal>
 		<gs.project.fqmap>${fqmap}</gs.project.fqmap>
+		<gs.project.fqfile>${fqfile}</gs.project.fqfile>
 	</properties>
 	
 	<name>genestrip-db-exp</name>
@@ -72,7 +73,7 @@
 							<includeProjectDependencies>true</includeProjectDependencies>
 							<includePluginDependencies>true</includePluginDependencies>
 							<arguments>
-								<argument>-Xmx64G</argument>
+								<argument>-Xmx28G</argument>
 								<argument>-classpath</argument>
 								<classpath />
 								<argument>org.metagene.genestrip.Main</argument>
@@ -91,14 +92,35 @@
 							<includeProjectDependencies>true</includeProjectDependencies>
 							<includePluginDependencies>true</includePluginDependencies>
 							<arguments>
-								<argument>-Xmx64G</argument>
+								<argument>-Xmx24G</argument>
 								<argument>-classpath</argument>
 								<classpath />
 								<argument>org.metagene.genestrip.Main</argument>
-								<argument>-m</argument>
-								<argument>${gs.project.fqmap}</argument>
 								<argument>${gs.project.name}</argument>
 								<argument>${gs.project.goal}</argument>
+								<argument>-m</argument>
+								<argument>${gs.project.fqmap}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>singlematch</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>java</executable>
+							<includeProjectDependencies>true</includeProjectDependencies>
+							<includePluginDependencies>true</includePluginDependencies>
+							<arguments>
+								<argument>-Xmx24G</argument>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>org.metagene.genestrip.Main</argument>
+								<argument>${gs.project.name}</argument>
+								<argument>${gs.project.goal}</argument>
+								<argument>-f</argument>
+								<argument>${gs.project.fqfile}</argument>
 							</arguments>
 						</configuration>
 					</execution>

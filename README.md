@@ -24,6 +24,9 @@ Using later version of the RefSeq might bring (slightly) different results than 
 
 ## Experiment preparation
 
+You need at least 2,5 TB of disk space (ideally on SSD drive) for the experiments.
+You need excellent internet bandwidth in order to download over 1,5 TB of data.
+
 Please `cd` to `genestrip-db-exp/bin` and execute the shell scripts there
 in this given order:
 
