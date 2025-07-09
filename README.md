@@ -48,7 +48,7 @@ Beware: This incurs a download of all viral and bacterial genomes from the RefSe
 ### DB generation performance
 
 To run the database generation-experiments on *macOS*, please `cd` to `genestrip-db-exp/bin` and execute
-`sh ./run_gendb_perf_exps_ios.sh`
+`sh ./run_gendb_perf_exps_macos.sh`
 Afterwards you will find log files like `db_gen_human_virus.log` under `genestrip-db-exp/data`.
 
 The tool `/usr/bin/time` is (probably) not available under Linux but feel free to migrate the above-mentioned script, e.g. by using
@@ -57,7 +57,7 @@ The tool `/usr/bin/time` is (probably) not available under Linux but feel free t
 ### Classification performance
 
 To run the database generation-experiments regarding ticks on *macOS*, please `cd` to `genestrip-db-exp/bin` and execute
-`sh ./run_match_perf_exps_ios.sh`. **Important:** `sh ./run_gendb_perf_exps_ios.sh` and `sh ./download_tick_fastqs.sh` most have been
+`sh ./run_match_perf_exps_macos.sh`. **Important:** `sh ./run_gendb_perf_exps_ios.sh` and `sh ./download_tick_fastqs.sh` most have been
 run beforehand so that the necessary files exist.
 
 **Note:** There are additional scripts, files and folders that are currently not used to produce the experiments' results.
