@@ -10,3 +10,6 @@ unzip master.zip
 mv  cgmemtime-master  cgmemtime
 cd  cgmemtime
 make
+
+cd $scriptdir/..
+rm master.zip
