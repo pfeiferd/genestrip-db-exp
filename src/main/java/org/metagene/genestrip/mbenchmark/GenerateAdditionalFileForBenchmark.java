@@ -15,6 +15,7 @@ import org.metagene.genestrip.tax.TaxTree;
 import java.io.*;
 import java.util.*;
 
+@Deprecated
 public class GenerateAdditionalFileForBenchmark {
     private static final CSVFormat FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
             .setDelimiter('\t').setRecordSeparator('\n').build();

@@ -8,67 +8,22 @@ import java.io.IOException;
 import java.util.Map;
 
 public class ExperimentRunner {
-    /*
-    public static final String[] DB_NAMES = new String[]{"babesia",
-            "borrelia",
-            "borrelia_plasmid",
-            "chronicb",
-            "human_virus2",
-            "parasites",
-            "plasmopara",
-            "protozoa",
-            "vineyard"};
-    public static final String[] OFF_NAMES = DB_NAMES;
-
-    private final File baseDir;
-    private final String[] offNames;
-    private final String[] dbBaseNames;
-
-    @Deprecated
-    public ExperimentRunner(File baseDir, String[] offNames, String[] dbBaseNames) {
-        this.baseDir = baseDir;
-        this.dbBaseNames = dbBaseNames;
-        this.offNames = offNames;
-    }
-
-    @Deprecated
-    public void runDatabaseComparisons() throws IOException {
-        DatabaseComparator comparator = new DatabaseComparator(baseDir);
-        for (String dbBaseName : dbBaseNames) {
-            comparator.reportRankCounts(dbBaseName);
-        }
-        String[] minUpdateDBNames = new String[dbBaseNames.length];
-        int i = 0;
-        for (String dbBaseName : dbBaseNames) {
-            minUpdateDBNames[i++] = getMinUpdateDBName(dbBaseName);
-        }
-        comparator.reportComparisons(offNames, dbBaseNames, minUpdateDBNames);
-    }
-
-    @Deprecated
-    protected String getMinUpdateDBName(String dbBaseName) {
-        return dbBaseName + "-minupdate";
-    }
-    */
-
     public static void main(String[] args) throws IOException {
-
-     //   KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
-
+        KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
-        // c1.writeUnfoldedTaxids("human_virus");
- /*
+        c1.writeUnfoldedTaxids("human_virus");
+
         // Figure 2
-        c2.reportKMerComparisons("viral", "viral_db");
+        c2.reportKMerComparisons("viral", "viral_db", null, false);
         // Figure 3
-        c1.compareWithKUResults("viral", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt");
+        c1.compareWithKUResults("viral", "viral_db", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", false);
         // Text in context with Figure 3
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
 
 
         // Figure 4
-        Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", null, "saliva.txt");
+        Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", null, "saliva.txt", false);
         // Table 4
         c1.writeErrInfos("viral", "viral_db", res3);
 
@@ -85,8 +40,6 @@ public class ExperimentRunner {
 
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
- */
-        KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
 
         // Section "The Databases \texttt{MicrobialDB} and \texttt{tb}"
         c2.reportKMerComparisons("tick-borne", "microbial_db", null, false);
@@ -95,6 +48,5 @@ public class ExperimentRunner {
         // Figure 7 and Figure 8
         c1.compareWithKUResults("tick-borne", "microbial_db", null, "ticks.txt", true);
         c1.aggregateCompareWithKUResults("tick-borne", "ticks.txt");
-
     }
 }
