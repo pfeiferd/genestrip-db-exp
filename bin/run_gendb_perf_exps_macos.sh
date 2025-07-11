@@ -5,7 +5,7 @@ scriptdir=$(dirname "$0")
 
 cd $scriptdir/..
 
-for db in parasites human_virus viral tick-borne vineyard protozoa;
+for db in vineyard parasites human_virus viral tick-borne protozoa;
   do
     mvn exec:exec@db -Dname=$db -Dgoal=clear
     mvn exec:exec@db -Dname=$db -Dgoal=refseqfna
