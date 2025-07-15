@@ -22,7 +22,6 @@ public class ExperimentRunner {
         System.out.println("** Text in context of Figure 3 **");
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
 
-
         System.out.println("** Figure 4 **");
         Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", null, "saliva.txt", false);
         System.out.println("** Table 4 **");

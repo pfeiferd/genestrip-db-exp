@@ -20,7 +20,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class GenestripComparator {
-    protected static final DecimalFormat DF = new DecimalFormat("#,###.0", new DecimalFormatSymbols(Locale.US));
+    protected static final DecimalFormat DF = new DecimalFormat("#,###.00", new DecimalFormatSymbols(Locale.US));
 
     public static final String SPECIES_OR_BELOW = "species or below";
     public static final String GENUS = "genus";
@@ -193,7 +193,7 @@ public class GenestripComparator {
         File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
             errPs.println("no; key; reads; gs read len; " +
-                    "errs; kmer err; kmer err std dev; read err; read err std dev;");
+                    "errs; kmer err; kmer err std dev; read err; read err std dev; kmer diffs; read diffs; kmer diffs %; read diffs %;");
             int counter = 0;
             for (String key : map1.keySet()) {
                 ErrCompInfo errCompInfo1 = map1.get(key);
@@ -214,7 +214,15 @@ public class GenestripComparator {
                 errPs.print(DF.format(100 * errCompInfo1.getMeanReadsErr()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
+                errPs.print(';');
+                errPs.print(errCompInfo1.getKmerDiffs());
+                errPs.print(';');
+                errPs.print(errCompInfo1.getReadDiffs());
                 errPs.println(';');
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getKmerDiffsRatio()));
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getReadDiffsRatio()));
                 counter++;
             }
         }
@@ -293,9 +301,28 @@ public class GenestripComparator {
         private double readsErrSum;
         private double readsErrSquareSum;
 
+        private int kmerDiffs;
+        private int readDiffs;
+
         public ErrCompInfo(long kmers, long reads) {
             this.kmers = kmers;
             this.reads = reads;
+        }
+
+        public int getKmerDiffs() {
+            return kmerDiffs;
+        }
+
+        public int getReadDiffs() {
+            return readDiffs;
+        }
+
+        public double getKmerDiffsRatio() {
+            return ((double) kmerDiffs) / errs;
+        }
+
+        public double getReadDiffsRatio() {
+            return ((double) readDiffs) / errs;
         }
 
         public long getKMers() {
@@ -328,6 +355,12 @@ public class GenestripComparator {
 
         public void sumErrorStats(long k1, long r1, long k2, long r2) {
             errs++;
+            if (k1 != k2) {
+                kmerDiffs++;
+            }
+            if (r1 != r2) {
+                readDiffs++;
+            }
             double err = ((double) Math.abs(k1 - k2)) / (k1 + 1);
             kMersErrSum += err;
             kMersErrSquareSum += err * err;
