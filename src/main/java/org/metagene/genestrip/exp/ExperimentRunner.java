@@ -14,6 +14,7 @@ public class ExperimentRunner {
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
         c1.writeUnfoldedTaxids("human_virus");
 
+        /*
         System.out.println("** Figure 2 **");
         c2.reportKMerComparisons("viral", "viral_db", null, false);
         System.out.println("** Figure 3 **");
@@ -31,7 +32,7 @@ public class ExperimentRunner {
         c1.compareCommonDBEntries("viral", "human_virus");
         // Use taxids from Genestrip's human virus database as basis for tax ids.
         c2.reportKrakenDBComparison("human_virus", "viral_db", "human_virus_db");
-
+*/
         System.out.println("** Figure 6 **");
         Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
         Map<String, GenestripComparator.ErrCompInfo> res2 = c1.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
