@@ -31,14 +31,14 @@ public class ExperimentRunner {
         c1.compareCommonDBEntries("viral", "human_virus");
         // Use taxids from Genestrip's human virus database as basis for tax ids.
         c2.reportKrakenDBComparison("human_virus", "viral_db", "human_virus_db");
-*/
+
         System.out.println("** Figure 6 **");
         Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
         Map<String, GenestripComparator.ErrCompInfo> res2 = c1.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
 
         System.out.println("** Table 5 **");
         c1.combineErrInfos("viral", "human_virus", res1, res2);
-
+*/
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
 
