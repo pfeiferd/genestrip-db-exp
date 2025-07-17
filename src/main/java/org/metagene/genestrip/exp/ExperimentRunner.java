@@ -14,7 +14,6 @@ public class ExperimentRunner {
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
         c1.writeUnfoldedTaxids("human_virus");
 
-        /*
         System.out.println("** Figure 2 **");
         c2.reportKMerComparisons("viral", "viral_db", null, false);
         System.out.println("** Figure 3 **");
@@ -38,7 +37,7 @@ public class ExperimentRunner {
 
         System.out.println("** Table 5 **");
         c1.combineErrInfos("viral", "human_virus", res1, res2);
-*/
+
         // Not needed: ?
         //c1.compareWithKUResults("human_virus", null, "saliva.txt");
 
