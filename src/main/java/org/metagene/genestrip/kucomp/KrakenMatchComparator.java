@@ -171,6 +171,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         if (csvFile1 != null) {
             GSProject project = new GSProject(config, dbName, null, null, csvFile1, null, null, null,
                     null, null, null, false);
+            project.initConfigParam(GSConfigKey.ALWAYS_ASSUME_GZIP, false);
             GSMaker maker = new GSMaker(project);
             maker.getGoal(GSGoalKey.FASTA2FASTQ).make();
             maker.dumpAll();
