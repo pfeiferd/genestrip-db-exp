@@ -311,33 +311,35 @@ public class KrakenMatchComparator extends GenestripComparator {
         matchResGoal.setAfterMatchCallback(new FastqKMerMatcher.AfterMatchCallback() {
             @Override
             public void afterMatch(FastqKMerMatcher.MyReadEntry myReadEntry, boolean b) {
-                if (myReadEntry.classNode != null) {
-                    byte[] desc = myReadEntry.readDescriptor;
-                    int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
-                    TaxTree.TaxIdNode node = map.get(desc, 2, pos, false);
-                    if (node != null) {
-                        SmallTaxTree.SmallTaxIdNode snode = smallTaxTree.getNodeByTaxId(node.getTaxId());
-                        SmallTaxTree.SmallTaxIdNode lca = smallTaxTree.getLeastCommonAncestor(snode, myReadEntry.classNode);
-                        while (lca != null && Rank.NO_RANK.equals(lca.getRank())) {
-                            lca = lca.getParent();
-                        }
-                        if (lca != null) {
-                            Rank r = lca.getRank();
-                            if (r != null) {
-                                if (Rank.GENUS.equals(r) || r.isBelow(Rank.GENUS)) {
-                                    counters[1]++;
-                                }
-                                if (Rank.SPECIES.equals(r) || r.isBelow(Rank.SPECIES)) {
-                                    counters[2]++;
-                                }
-                                if (Rank.STRAIN.equals(r) || r.isBelow(Rank.STRAIN)) {
-                                    counters[3]++;
+                synchronized (counters) {
+                    if (myReadEntry.classNode != null) {
+                        byte[] desc = myReadEntry.readDescriptor;
+                        int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
+                        TaxTree.TaxIdNode node = map.get(desc, 2, pos, false);
+                        if (node != null) {
+                            SmallTaxTree.SmallTaxIdNode snode = smallTaxTree.getNodeByTaxId(node.getTaxId());
+                            SmallTaxTree.SmallTaxIdNode lca = smallTaxTree.getLeastCommonAncestor(snode, myReadEntry.classNode);
+                            while (lca != null && Rank.NO_RANK.equals(lca.getRank())) {
+                                lca = lca.getParent();
+                            }
+                            if (lca != null) {
+                                Rank r = lca.getRank();
+                                if (r != null) {
+                                    if (Rank.GENUS.equals(r) || r.isBelow(Rank.GENUS)) {
+                                        counters[1]++;
+                                    }
+                                    if (Rank.SPECIES.equals(r) || r.isBelow(Rank.SPECIES)) {
+                                        counters[2]++;
+                                    }
+                                    if (Rank.STRAIN.equals(r) || r.isBelow(Rank.STRAIN)) {
+                                        counters[3]++;
+                                    }
                                 }
                             }
                         }
                     }
+                    counters[0]++;
                 }
-                counters[0]++;
             }
         });
         matchResGoal.make();
