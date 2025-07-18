@@ -218,11 +218,11 @@ public class GenestripComparator {
                 errPs.print(errCompInfo1.getKmerDiffs());
                 errPs.print(';');
                 errPs.print(errCompInfo1.getReadDiffs());
-                errPs.println(';');
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getKmerDiffsRatio()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getReadDiffsRatio()));
+                errPs.println(';');
                 counter++;
             }
         }
