@@ -340,6 +340,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                 counters[0]++;
             }
         });
+        matchResGoal.make();
         System.out.println("Correct classifications GENUS: " + counters[1]);
         System.out.println("Correct classifications SPECIES: " + counters[2]);
         System.out.println("Correct classifications STRAIN: " + counters[3]);
