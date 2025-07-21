@@ -1,10 +1,16 @@
 package org.metagene.genestrip.kucomp;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import org.metagene.genestrip.GSCommon;
+import org.metagene.genestrip.GSGoalKey;
+import org.metagene.genestrip.GSMaker;
+import org.metagene.genestrip.GSProject;
 import org.metagene.genestrip.exp.GenestripComparator;
+import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
+import org.metagene.genestrip.tax.TaxTree;
 
 import java.io.*;
 import java.util.*;
@@ -45,9 +51,9 @@ public class KrakenDBComparator extends GenestripComparator {
                         }
                     }
                     ps.print(";");
-                    ps.print(correctDBValue(count1, false));
+                    ps.print(LF.format(correctDBValue(count1, false)));
                     ps.print(";");
-                    ps.print(correctDBValue(count2, false));
+                    ps.print(LF.format(correctDBValue(count2, false)));
                     ps.println(";");
                 }
             }
@@ -137,9 +143,9 @@ public class KrakenDBComparator extends GenestripComparator {
                     out.print(';');
                     out.print(getRankString(taxNode));
                     out.print(';');
-                    out.print(correctDBValue(g, full));
+                    out.print(LF.format(correctDBValue(g, full)));
                     out.print(';');
-                    out.print(correctDBValue(h, full));
+                    out.print(LF.format(correctDBValue(h, full)));
                     out.println(';');
     //            }
             }
@@ -178,7 +184,6 @@ public class KrakenDBComparator extends GenestripComparator {
         }
         System.out.println("MacroAverage: " + macroAverageSum / count);
 
-        /*
         System.out.println("Absolute error: " + err);
         System.out.println("Entries: " + entries);
         System.out.println("Absolute in data error: " + inDataErr);
@@ -194,6 +199,34 @@ public class KrakenDBComparator extends GenestripComparator {
         System.out.println("Differences:");
         System.out.println(differences.size());
         System.out.println(differences);
-         */
+
+        for (SmallTaxTree.SmallTaxIdNode missingInKU : missingNodesInKu) {
+            if (Rank.SPECIES.equals(missingInKU.getRank()) || missingInKU.getRank().isBelow(Rank.SPECIES) || missingInKU.getSubNodes() == null || missingInKU.getSubNodes().length == 0) {
+                System.out.println(missingInKU.getTaxId());
+            }
+        }
+    }
+
+    public void writeTaxidsTxtFromKUDB(Rank maxRank, String krakenDB, String genestripDB) throws IOException {
+        Map<String, Long> kuTaxid2KMer = getKrakenDBCounts(getKrakenCountsFile(krakenDB));
+
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, genestripDB, null, null, null, null, null, null,
+                null, null, null, false);
+        File taxidsTxt = new File(project.getProjectDir(), "taxids.txt");
+
+        GSMaker maker = new GSMaker(project);
+        TaxTree taxTree = ((ObjectGoal<TaxTree, GSProject>) maker.getGoal(GSGoalKey.TAXTREE)).get();
+
+        try (PrintStream ps = new PrintStream(new FileOutputStream(taxidsTxt))) {
+            for (String taxid : kuTaxid2KMer.keySet()) {
+                TaxTree.TaxIdNode node = taxTree.getNodeByTaxId(taxid);
+                if (node != null && (maxRank.equals(node.getRank()) || node.getRank().isBelow(maxRank))) {
+                    ps.println(taxid);
+                }
+            }
+        }
+
+        maker.dumpAll();
     }
 }

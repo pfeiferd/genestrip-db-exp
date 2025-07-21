@@ -20,7 +20,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class GenestripComparator {
-    protected static final DecimalFormat DF = new DecimalFormat("#,###.00", new DecimalFormatSymbols(Locale.US));
+    protected static final DecimalFormat LF = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US));
+    protected static final DecimalFormat DF = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
 
     public static final String SPECIES_OR_BELOW = "species or below";
     public static final String GENUS = "genus";
@@ -57,9 +58,9 @@ public class GenestripComparator {
                     ps.print(";");
                     ps.print(getRankString(node1));
                     ps.print(";");
-                    ps.print(correctDBValue(count1, false));
+                    ps.print(LF.format(correctDBValue(count1, false)));
                     ps.print(";");
-                    ps.print(correctDBValue(count2, false));
+                    ps.print(LF.format(correctDBValue(count2, false)));
                     ps.println(";");
                 }
             }
@@ -165,20 +166,20 @@ public class GenestripComparator {
                     ps.print(rs);
                     ps.print(';');
                     long k1 = c1 == null ? 0 : c1.getKMers();
-                    ps.print(correctDBValue(k1, false));
+                    ps.print(LF.format(correctDBValue(k1, false)));
                     ps.print(';');
                     long k2 = c2 == null ? 0 : c2.getKMers();
-                    ps.print(correctDBValue(k2, false));
+                    ps.print(LF.format(correctDBValue(k2, false)));
                     ps.print(';');
-                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers(), false));
+                    ps.print(LF.format(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers(), false)));
                     ps.print(';');
-                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers(), false));
+                    ps.print(LF.format(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers(), false)));
                     ps.print(';');
                     long r1 = c1 == null ? 0 : c1.getReads();
-                    ps.print(correctDBValue(r1, false));
+                    ps.print(LF.format(correctDBValue(r1, false)));
                     ps.print(';');
                     long r2 = c2 == null ? 0 : c2.getReads();
-                    ps.print(correctDBValue(r2, false));
+                    ps.print(LF.format(correctDBValue(r2, false)));
                     ps.println(';');
                     if (SPECIES_OR_BELOW.equals(rs)) {
                         errCompInfo.sumErrorStats(k1, r1, k2, r2);
@@ -193,7 +194,7 @@ public class GenestripComparator {
         File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
             errPs.println("no; key; reads; gs read len; " +
-                    "errs; kmer err; kmer err std dev; read err; read err std dev; kmer diffs; read diffs; kmer diffs %; read diffs %;");
+                    "errs; kmer err; kmer err std dev; read err; read err std dev; kmer diffs; read diffs; kmer diffs percent; read diffs percent;");
             int counter = 0;
             for (String key : map1.keySet()) {
                 ErrCompInfo errCompInfo1 = map1.get(key);
@@ -201,11 +202,11 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(key);
                 errPs.print(';');
-                errPs.print(errCompInfo1.getReads());
+                errPs.print(LF.format(errCompInfo1.getReads()));
                 errPs.print(';');
                 errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(errCompInfo1.getErrs());
+                errPs.print(LF.format(errCompInfo1.getErrs()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getMeanKMersErr()));
                 errPs.print(';');
@@ -215,9 +216,9 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
                 errPs.print(';');
-                errPs.print(errCompInfo1.getKmerDiffs());
+                errPs.print(LF.format(errCompInfo1.getKmerDiffs()));
                 errPs.print(';');
-                errPs.print(errCompInfo1.getReadDiffs());
+                errPs.print(LF.format(errCompInfo1.getReadDiffs()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getKmerDiffsRatio()));
                 errPs.print(';');
@@ -245,11 +246,11 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(key);
                 errPs.print(';');
-                errPs.print(errCompInfo1.getReads());
+                errPs.print(LF.format(errCompInfo1.getReads()));
                 errPs.print(';');
                 errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(errCompInfo1.getErrs());
+                errPs.print(LF.format(errCompInfo1.getErrs()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getMeanKMersErr()));
                 errPs.print(';');
@@ -259,7 +260,7 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
                 errPs.print(';');
-                errPs.print(errCompInfo2.getErrs());
+                errPs.print(LF.format(errCompInfo2.getErrs()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo2.getMeanKMersErr()));
                 errPs.print(';');

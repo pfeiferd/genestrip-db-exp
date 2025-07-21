@@ -83,16 +83,16 @@ public class KrakenMatchComparator extends GenestripComparator {
                         ps.print(rs);
                         ps.print(';');
                         long k1 = kustats1 == null ? 0 : kustats1.getKmers();
-                        ps.print(correctDBValue(k1, false));
+                        ps.print(LF.format(correctDBValue(k1, false)));
                         ps.print(';');
                         long k2 = kustats2 == null ? 0 : kustats2.getKmers();
-                        ps.print(correctDBValue(k2, false));
+                        ps.print(LF.format(correctDBValue(k2, false)));
                         ps.print(';');
                         long r1 = kustats1 == null ? 0 : kustats1.getReads();
-                        ps.print(correctDBValue(r1, false));
+                        ps.print(LF.format(correctDBValue(r1, false)));
                         ps.print(';');
                         long r2 = kustats2 == null ? 0 : kustats2.getReads();
-                        ps.print(correctDBValue(r2, false));
+                        ps.print(LF.format(correctDBValue(r2, false)));
                         ps.println(';');
                         if (SPECIES_OR_BELOW.equals(rs)) {
                             errCompInfo.sumErrorStats(k1, r1, k2, r2);
@@ -156,7 +156,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                         ps.print(taxid);
                         ps.print(';');
                         for (int i = 0; i < sums.length; i++) {
-                            ps.print(sums[i]);
+                            ps.print(LF.format(sums[i]));
                             ps.print(';');
                         }
                         ps.println();
@@ -239,13 +239,13 @@ public class KrakenMatchComparator extends GenestripComparator {
                             String rs = full ? (node.getRank() == null ? null : node.getRank().getName()) : getRankString(node);
                             ps.print(rs);
                             ps.print(';');
-                            ps.print(correctDBValue(gkmers, full));
+                            ps.print(LF.format(correctDBValue(gkmers, full)));
                             ps.print(';');
-                            ps.print(correctDBValue(kukmers, full));
+                            ps.print(LF.format(correctDBValue(kukmers, full)));
                             ps.print(';');
-                            ps.print(correctDBValue(greads, full));
+                            ps.print(LF.format(correctDBValue(greads, full)));
                             ps.print(';');
-                            ps.print(correctDBValue(kureads, full));
+                            ps.print(LF.format(correctDBValue(kureads, full)));
                             ps.println(';');
                             if (kukmers != gkmers) {
                                 differentKMerValues++;
@@ -269,13 +269,13 @@ public class KrakenMatchComparator extends GenestripComparator {
                         String rs = null;
                         ps.print(rs);
                         ps.print(';');
-                        ps.print(correctDBValue(0, full));
+                        ps.print(LF.format(correctDBValue(0, full)));
                         ps.print(';');
-                        ps.print(correctDBValue(kukmers, full));
+                        ps.print(LF.format(correctDBValue(kukmers, full)));
                         ps.print(';');
-                        ps.print(correctDBValue(0, full));
+                        ps.print(LF.format(correctDBValue(0, full)));
                         ps.print(';');
-                        ps.print(correctDBValue(kureads, full));
+                        ps.print(LF.format(correctDBValue(kureads, full)));
                         ps.println(';');
                         if (kukmers != 0) {
                             differentKMerValues++;
