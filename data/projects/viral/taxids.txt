@@ -1,7 +1,2 @@
 # Simply all viral genomes from the RefSeq
 10239
-# This beast messed up the comparison for one "evil" k-mer:
--3052767
-# Exclude some taxids that are not in the corresponding KrakenUniq DB (although they probably should be)
-# This is just for best correspondence between the viral databases from Grenestrip and KrakenUniq
--1969841
