@@ -2,6 +2,7 @@ package org.metagene.genestrip.exp;
 
 import org.metagene.genestrip.kucomp.KrakenDBComparator;
 import org.metagene.genestrip.kucomp.KrakenMatchComparator;
+import org.metagene.genestrip.tax.Rank;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,11 +17,12 @@ public class ExperimentRunner {
 
         System.out.println("** Figure 2 **");
         c2.reportKMerComparisons("viral", "viral_db", null, false);
+
         System.out.println("** Figure 3 **");
         c1.compareWithKUResults("viral", "viral_db", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", false);
+
         System.out.println("** Text in context of Figure 3 **");
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
-
         System.out.println("** Figure 4 **");
         Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", null, "saliva.txt", false);
         System.out.println("** Table 4 **");
