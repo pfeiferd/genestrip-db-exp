@@ -51,9 +51,9 @@ public class KrakenDBComparator extends GenestripComparator {
                         }
                     }
                     ps.print(";");
-                    ps.print(LF.format(correctDBValue(count1, false)));
+                    ps.print(correctDBValue(count1, false));
                     ps.print(";");
-                    ps.print(LF.format(correctDBValue(count2, false)));
+                    ps.print(correctDBValue(count2, false));
                     ps.println(";");
                 }
             }
@@ -143,9 +143,9 @@ public class KrakenDBComparator extends GenestripComparator {
                     out.print(';');
                     out.print(getRankString(taxNode));
                     out.print(';');
-                    out.print(LF.format(correctDBValue(g, full)));
+                    out.print(correctDBValue(g, full));
                     out.print(';');
-                    out.print(LF.format(correctDBValue(h, full)));
+                    out.print(correctDBValue(h, full));
                     out.println(';');
     //            }
             }

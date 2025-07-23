@@ -58,9 +58,9 @@ public class GenestripComparator {
                     ps.print(";");
                     ps.print(getRankString(node1));
                     ps.print(";");
-                    ps.print(LF.format(correctDBValue(count1, false)));
+                    ps.print(correctDBValue(count1, false));
                     ps.print(";");
-                    ps.print(LF.format(correctDBValue(count2, false)));
+                    ps.print(correctDBValue(count2, false));
                     ps.println(";");
                 }
             }
@@ -166,20 +166,20 @@ public class GenestripComparator {
                     ps.print(rs);
                     ps.print(';');
                     long k1 = c1 == null ? 0 : c1.getKMers();
-                    ps.print(LF.format(correctDBValue(k1, false)));
+                    ps.print(correctDBValue(k1, false));
                     ps.print(';');
                     long k2 = c2 == null ? 0 : c2.getKMers();
-                    ps.print(LF.format(correctDBValue(k2, false)));
+                    ps.print(correctDBValue(k2, false));
                     ps.print(';');
-                    ps.print(LF.format(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers(), false)));
+                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers(), false));
                     ps.print(';');
-                    ps.print(LF.format(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers(), false)));
+                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers(), false));
                     ps.print(';');
                     long r1 = c1 == null ? 0 : c1.getReads();
-                    ps.print(LF.format(correctDBValue(r1, false)));
+                    ps.print(correctDBValue(r1, false));
                     ps.print(';');
                     long r2 = c2 == null ? 0 : c2.getReads();
-                    ps.print(LF.format(correctDBValue(r2, false)));
+                    ps.print(correctDBValue(r2, false));
                     ps.println(';');
                     if (SPECIES_OR_BELOW.equals(rs)) {
                         errCompInfo.sumErrorStats(k1, r1, k2, r2);
