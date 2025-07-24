@@ -195,7 +195,7 @@ public class GenestripComparator {
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
             errPs.println("no; key; reads; gs read len; " +
                     "errs; kmer err; kmer err std dev; read err; read err std dev; kmer diffs; read diffs; kmer diffs percent; read diffs percent;");
-            int counter = 0;
+            int counter = 1;
             for (String key : map1.keySet()) {
                 ErrCompInfo errCompInfo1 = map1.get(key);
                 errPs.print(counter);
