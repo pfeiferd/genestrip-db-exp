@@ -18,4 +18,4 @@ mkdir -p ../viral_db
 
 export JELLYFISH_BIN=$(pwd)/jellyfish-install/bin/jellyfish
 
-./krakenuniq-build --db ../viral_db
+../../cgmemtime/cgmemtime ./krakenuniq-build --db ../viral_db &> make_ku_viraldb_cgmemtime.log
