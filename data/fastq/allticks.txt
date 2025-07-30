@@ -1,0 +1,11 @@
+# From https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10328957/
+# All MinION samples:
+allticks tick1.fastq.gz
+allticks tick2.fastq.gz
+allticks tick3.fastq.gz
+allticks tick4.fastq.gz
+allticks tick5.fastq.gz
+allticks tick6.fastq.gz
+allticks tick7.fastq.gz
+allticks tick8.fastq.gz
+
