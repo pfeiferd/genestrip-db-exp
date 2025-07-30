@@ -19,4 +19,4 @@ done < "$file_path"
 
 export JELLYFISH_BIN=$(pwd)/jellyfish-install/bin/jellyfish
 
-./krakenuniq-build --db ../human_virus_db
+../../cgmemtime/cgmemtime ./krakenuniq-build --db ../human_virus_db &> make_ku_human_virus_cgmemtime.log
