@@ -16,8 +16,8 @@ import java.io.*;
 import java.util.*;
 
 public class KrakenDBComparator extends GenestripComparator {
-    public KrakenDBComparator(File baseDir) {
-        super(baseDir);
+    public KrakenDBComparator(File baseDir, File resultsDir) {
+        super(baseDir, resultsDir);
     }
 
     public void reportKrakenDBComparison(String genestripDB, String krakenDB1, String krakenDB2) throws IOException {
@@ -26,7 +26,7 @@ public class KrakenDBComparator extends GenestripComparator {
         Map<String, Long> kuTaxid2KMer2 = getKrakenDBCounts(getKrakenCountsFile(krakenDB2));
 
         int diff = 0;
-        File out = new File(baseDir, krakenDB1 + "_" + krakenDB2 + "_ku_ku_dbcomp.csv");
+        File out = new File(resultsDir, krakenDB1 + "_" + krakenDB2 + "_ku_ku_dbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("taxid; rank; kmers 1; kmers 2;");
             for (SmallTaxTree.SmallTaxIdNode node : tree) {
@@ -64,7 +64,7 @@ public class KrakenDBComparator extends GenestripComparator {
     public void reportKMerComparisons(String genestripDB, String krakenDB, String filterTaxid, boolean full) throws IOException {
         Map<String, Long> kuTaxid2KMer = getKrakenDBCounts(getKrakenCountsFile(krakenDB));
 
-        File countsFile = new File(baseDir, genestripDB + (filterTaxid == null ? "" : "_" + filterTaxid) + "_gs_ku_dbcomp.csv");
+        File countsFile = new File(resultsDir, genestripDB + (filterTaxid == null ? "" : "_" + filterTaxid) + "_gs_ku_dbcomp.csv");
         try (PrintStream out = new PrintStream(new FileOutputStream(countsFile))) {
             printJointStoreInfo(getDatabase(genestripDB, false), out, kuTaxid2KMer, filterTaxid, full);
         }

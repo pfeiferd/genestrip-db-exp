@@ -10,9 +10,9 @@ import java.util.Map;
 
 public class ExperimentRunner {
     public static void main(String[] args) throws IOException {
-        KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"));
+        KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"), new File("./results"));
 
-        KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"));
+        KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
         c1.writeUnfoldedTaxids("human_virus");
 
         System.out.println("** Figure 2 **");

@@ -26,8 +26,8 @@ import java.util.*;
 import static org.metagene.genestrip.GSGoalKey.FASTQ_MAP;
 
 public class KrakenMatchComparator extends GenestripComparator {
-    public KrakenMatchComparator(File baseDir) {
-        super(baseDir);
+    public KrakenMatchComparator(File baseDir, File resultsDir) {
+        super(baseDir, resultsDir);
     }
 
     public Map<String, ErrCompInfo> compareKUWithKUResults(String dbName1, String dbName2, String csvFile) throws IOException {
@@ -67,7 +67,7 @@ public class KrakenMatchComparator extends GenestripComparator {
             ErrCompInfo errCompInfo = new ErrCompInfo(0, 0);
             result.put(key, errCompInfo);
 
-            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_ku_ku_comp.csv");
+            File out = new File(resultsDir, dbName1 + "_" + dbName2 + "_" + key + "_ku_ku_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; reads 1; reads 2;");
                 for (SmallTaxTree.SmallTaxIdNode node1 : tree1) {
@@ -118,7 +118,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         SmallTaxTree tree = storeGoal.get().getTaxTree();
 
         for (String key : mapGoal.get().keySet()) {
-            File in = new File(baseDir, dbName + "_" + key + "_gs_ku_comp.csv");
+            File in = new File(resultsDir, dbName + "_" + key + "_gs_ku_comp.csv");
             if (in.exists()) {
                 Map<String, long[]> sumsMap = new HashMap<>();
                 try (CSVParser parser = FORMAT
@@ -148,7 +148,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                         }
                     }
                 }
-                File out = new File(baseDir, dbName + "_" + key + "_genus_agg_gs_ku_comp.csv");
+                File out = new File(resultsDir, dbName + "_" + key + "_genus_agg_gs_ku_comp.csv");
                 try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                     ps.println("taxid;kmers 1;kmers 2;reads 1;reads 2");
                     for (String taxid : sumsMap.keySet()) {
@@ -192,7 +192,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         Map<String, MatchingResult> matchResult = matchResGoal.get();
         maker2.dumpAll();
 
-        KrakenDBComparator krakenDBComparator = new KrakenDBComparator(baseDir);
+        KrakenDBComparator krakenDBComparator = new KrakenDBComparator(baseDir, resultsDir);
         Map<String, Long> kuTaxid2KMer = krakenDBComparator.getKrakenDBCounts(krakenDBComparator.getKrakenCountsFile(kuDBName));
 
         Map<String, ErrCompInfo> result = new LinkedHashMap<>(); // Maintains order of keys...
@@ -212,7 +212,7 @@ public class KrakenMatchComparator extends GenestripComparator {
             int differentKMerValues = 0;
             int differentReadValues = 0;
 
-            File out = new File(baseDir, dbName + "_" + key + "_gs_ku_comp.csv");
+            File out = new File(resultsDir, dbName + "_" + key + "_gs_ku_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 if (full) {
                     ps.print("name;");

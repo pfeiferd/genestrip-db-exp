@@ -28,9 +28,11 @@ public class GenestripComparator {
     public static final String ABOVE_GENUS = "null";
 
     protected final File baseDir;
+    protected final File resultsDir;
 
-    public GenestripComparator(File baseDir) {
+    public GenestripComparator(File baseDir, File resultsDir) {
         this.baseDir = baseDir;
+        this.resultsDir = resultsDir;
     }
 
     public void compareCommonDBEntries(String dbName1, String dbName2) throws IOException {
@@ -44,7 +46,7 @@ public class GenestripComparator {
         SmallTaxTree tree2 = db2.getTaxTree();
         db2 = null;
 
-        File out = new File(baseDir, dbName1 + "_" + dbName2 + "_gs_gs_dbcomp.csv");
+        File out = new File(resultsDir, dbName1 + "_" + dbName2 + "_gs_gs_dbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("taxid; rank; kmers 1; kmers 2;");
             for (SmallTaxTree.SmallTaxIdNode node1 : tree1) {
@@ -148,7 +150,7 @@ public class GenestripComparator {
             Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
             Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
 
-            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
+            File out = new File(resultsDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; ukmers 1; ukmers 2; reads 1; reads 2");
                 for (SmallTaxTree.SmallTaxIdNode node1 : taxTreeRef1[0]) {
@@ -191,7 +193,7 @@ public class GenestripComparator {
     }
 
     public void writeErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1) throws IOException {
-        File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
+        File errOut = new File(resultsDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
             errPs.println("no; key; reads; gs read len; " +
                     "errs; kmer err; kmer err std dev; read err; read err std dev; kmer diffs; read diffs; kmer diffs percent; read diffs percent;");
@@ -230,7 +232,7 @@ public class GenestripComparator {
     }
 
     public void combineErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1, Map<String, ErrCompInfo> map2) throws IOException {
-        File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
+        File errOut = new File(resultsDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
             errPs.println("no; key; reads; gs read len; " +
                     "gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev; " +
