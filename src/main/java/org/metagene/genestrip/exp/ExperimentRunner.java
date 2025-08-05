@@ -25,7 +25,7 @@ public class ExperimentRunner {
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
         System.out.println("** Figure 4 **");
         Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", null, "saliva.txt", false);
-        System.out.println("** Table 4 **");
+        System.out.println("** Table 3 **");
         c1.writeErrInfos("viral", "viral_db", res3);
 
         System.out.println("** Figure 5 **");
@@ -37,7 +37,7 @@ public class ExperimentRunner {
         Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
         Map<String, GenestripComparator.ErrCompInfo> res2 = c1.compareKUWithKUResults("viral", "human_virus", "saliva.txt");
 
-        System.out.println("** Table 5 **");
+        System.out.println("** Table 4 **");
         c1.combineErrInfos("viral", "human_virus", res1, res2);
 
         // Not needed: ?

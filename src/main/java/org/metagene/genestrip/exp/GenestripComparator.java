@@ -144,7 +144,7 @@ public class GenestripComparator {
             }
 
             ErrCompInfo errCompInfo = new ErrCompInfo(res1.getGlobalStats().getKMers(),
-                    res1.getGlobalStats().getReads());
+                    res1.getGlobalStats().getReads(), res1.getGlobalStats().getReadsBPs());
             result.put(key, errCompInfo);
 
             Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
@@ -206,7 +206,7 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(LF.format(errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
+                errPs.print(LF.format(((double) errCompInfo1.getBps()) / errCompInfo1.getReads()));
                 errPs.print(';');
                 errPs.print(LF.format(errCompInfo1.getErrs()));
                 errPs.print(';');
@@ -242,7 +242,7 @@ public class GenestripComparator {
                 ErrCompInfo errCompInfo1 = map1.get(key);
                 ErrCompInfo errCompInfo2 = map2 != null ? map2.get(key) : null;
                 if (errCompInfo2 == null) {
-                    errCompInfo2 = new ErrCompInfo(0,0);
+                    errCompInfo2 = new ErrCompInfo(0,0, 0);
                 }
                 errPs.print(counter);
                 errPs.print(';');
@@ -250,7 +250,7 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(LF.format(errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
+                errPs.print(LF.format(((double) errCompInfo1.getBps()) / errCompInfo1.getReads()));
                 errPs.print(';');
                 errPs.print(LF.format(errCompInfo1.getErrs()));
                 errPs.print(';');
@@ -295,8 +295,9 @@ public class GenestripComparator {
     }
 
     public static class ErrCompInfo {
-        private long kmers;
-        private long reads;
+        private final long kmers;
+        private final long reads;
+        private final long bps;
 
         private int errs;
         private double kMersErrSum;
@@ -307,9 +308,10 @@ public class GenestripComparator {
         private int kmerDiffs;
         private int readDiffs;
 
-        public ErrCompInfo(long kmers, long reads) {
+        public ErrCompInfo(long kmers, long reads, long bps) {
             this.kmers = kmers;
             this.reads = reads;
+            this.bps = bps;
         }
 
         public int getKmerDiffs() {
@@ -334,6 +336,10 @@ public class GenestripComparator {
 
         public long getReads() {
             return reads;
+        }
+
+        public long getBps() {
+            return bps;
         }
 
         public int getErrs() {

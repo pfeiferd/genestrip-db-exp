@@ -64,7 +64,7 @@ public class KrakenMatchComparator extends GenestripComparator {
             for (KrakenResCountGoal.KrakenResStats stats : list2) {
                 map2.put(stats.getTaxid(), stats);
             }
-            ErrCompInfo errCompInfo = new ErrCompInfo(0, 0);
+            ErrCompInfo errCompInfo = new ErrCompInfo(0, 0, 0);
             result.put(key, errCompInfo);
 
             File out = new File(resultsDir, dbName1 + "_" + dbName2 + "_" + key + "_ku_ku_comp.csv");
@@ -200,7 +200,7 @@ public class KrakenMatchComparator extends GenestripComparator {
             MatchingResult res1 = matchResult.get(key);
 
             ErrCompInfo errCompInfo = new ErrCompInfo(res1.getGlobalStats().getKMers(),
-                    res1.getGlobalStats().getReads());
+                    res1.getGlobalStats().getReads(), res1.getGlobalStats().getReadsBPs());
             result.put(key, errCompInfo);
 
             List<KrakenResCountGoal.KrakenResStats> list = stats.get(key);
