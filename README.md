@@ -40,24 +40,44 @@ in this given order:
 
 ## Running the experiments (without performance experiments)
 
-`sh ./runexps.sh` runs all the experiments and produces related result files right under `genestrip-db-exp/data`. 
+`sh ./runexps.sh` runs all the non-performance-related experiments and produces related result files right under `genestrip-db-exp/results/`. 
 Beware: This incurs a download of all viral and bacterial genomes from the RefSeq and triggers the generation of three Genestrip databases.
 
 ## Performance experiments
 
 ### DB generation performance
 
-To run the database generation-experiments on *macOS*, please `cd` to `genestrip-db-exp/bin` and execute
-`sh ./run_gendb_perf_exps_macos.sh`
-Afterwards you will find log files like `db_gen_human_virus.log` under `genestrip-db-exp/data`.
+Please first `cd` to `genestrip-db-exp/bin`.
 
-The tool `/usr/bin/time` is (probably) not available under Linux but feel free to migrate the above-mentioned script, e.g. by using
-[`cgmemtime`](https://github.com/gsauthof/cgmemtime) instead of `/usr/bin/time`.
+1) Under *Linux*, please install [`cgmemtime`](https://github.com/gsauthof/cgmemtime) which should be used
+instead of `/usr/bin/time`. To do so, execute `sh ./install_cgmemtime_linux.sh`. (However, `/usr/bin/time` is used under *macOS*.)
+2) To run the database generation-experiments, execute
+`sh ./run_gendb_perf_exps_macos.sh` or `sh ./run_gendb_perf_exps_linux.sh`, respectively.
+
+Afterward, you will find log files like `db_gen_human_virus.log` etc. under `genestrip-db-exp/results/logs`.
 
 ### Classification performance
 
-To run the database generation-experiments regarding ticks on *macOS*, please `cd` to `genestrip-db-exp/bin` and execute
-`sh ./run_match_perf_exps_macos.sh`. **Important:** `sh ./run_gendb_perf_exps_ios.sh` and `sh ./download_tick_fastqs.sh` most have been
-run beforehand so that the necessary files exist.
+Please first `cd` to `genestrip-db-exp/bin`.
+
+**To run the classification performance experiments with Genestrip:**
+
+**Important:** `sh ./run_gendb_perf_exps_ios.sh` most have been
+run beforehand so that the necessary databases exist.
+Under Linux, `cgmemtime` must have been installed via `sh ./install_cgmemtime_linux.sh` (see above).
+
+1) Execute `sh ./run_match_ticks_perf_exps_macos.sh` or `sh ./run_match_ticks_perf_exps_linux.sh`.
+2) Execute `sh ./run_match_saliva_perf_exps_macos.sh` or `sh ./run_match_saliva_perf_exps_linux.sh`.
+
+Afterward, you will find log files like `match_tick-borne_tick1.log` etc. under `genestrip-db-exp/results/logs`.
+
+**To run the classification performance experiments with KrakenUniq:**
+
+**Important:** KrakenUniq does not support multithreading under macOS,
+so for fair results, corresponding scripts should be run under Linux (although there exist corresponding scripts for macOS).
+1) Execute `sh ./run_ku_ticks_perf_exps_macos.sh` or `sh ./run_ku_ticks_perf_exps_linux.sh`.
+2) Execute `sh ./run_ku_saliva_perf_exps_macos.sh` or `sh ./run_ku_saliva_perf_exps_linux.sh`.
+
+Afterward, you will find log files like `match_ku_mb_tick1.log` etc. under `genestrip-db-exp/results/logs`.
 
 **Note:** There are additional scripts, files and folders that are currently not used to produce the experiments' results.
