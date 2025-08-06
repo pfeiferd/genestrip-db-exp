@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.metagene</groupId>
 	<artifactId>genestrip-db-exp</artifactId>
-	<version>1.5</version>
+	<version>1.6</version>
 
 	<properties>
 		<gs.project.name>${name}</gs.project.name>
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>org.genestrip</groupId>
 			<artifactId>genestrip</artifactId>
-			<version>2.1</version>
+			<version>2.2</version>
 		</dependency>
 	</dependencies>
 	<build>
