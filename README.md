@@ -40,6 +40,8 @@ in this given order:
 
 ## Running the experiments (without performance experiments)
 
+Please first `cd` to `genestrip-db-exp/bin`.
+
 `sh ./runexps.sh` runs all the non-performance-related experiments and produces related result files right under `genestrip-db-exp/results/`. 
 Beware: This incurs a download of all viral and bacterial genomes from the RefSeq and triggers the generation of three Genestrip databases.
 
