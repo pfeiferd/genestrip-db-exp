@@ -62,7 +62,7 @@ Please first `cd` to `genestrip-db-exp/bin`.
 
 **To run the classification performance experiments with Genestrip:**
 
-**Important:** `sh ./run_gendb_perf_exps_ios.sh` most have been
+**Important:** `sh ./run_gendb_perf_exps_macos.sh` or `sh ./run_gendb_perf_exps_linux.sh` most have been
 run beforehand so that the necessary databases exist.
 Under Linux, `cgmemtime` must have been installed via `sh ./install_cgmemtime_linux.sh` (see above).
 
