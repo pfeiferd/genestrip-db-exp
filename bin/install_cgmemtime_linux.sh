@@ -7,7 +7,6 @@ cd $scriptdir/..
 
 wget https://github.com/gsauthof/cgmemtime/archive/refs/heads/master.zip
 unzip master.zip
-rm -rf  cgmemtime
 mv  cgmemtime-master  cgmemtime
 cd  cgmemtime
 # Let' print to stdout:
