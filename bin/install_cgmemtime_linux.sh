@@ -10,7 +10,7 @@ unzip master.zip
 mv  cgmemtime-master  cgmemtime
 cd  cgmemtime
 # Let' print to stdout:
-sed -i 's/print_result(stderr.*/print_result(stdout/' cgmemtime.c
+sed -i 's/print_result(stderr/print_result(stdout/' cgmemtime.c
 make
 
 cd $scriptdir/..
