@@ -24,6 +24,7 @@ import java.io.*;
 import java.util.*;
 
 import static org.metagene.genestrip.GSGoalKey.FASTQ_MAP;
+import static org.metagene.genestrip.GSGoalKey.TAXTREE;
 
 public class KrakenMatchComparator extends GenestripComparator {
     public KrakenMatchComparator(File baseDir, File resultsDir) {
@@ -343,6 +344,69 @@ public class KrakenMatchComparator extends GenestripComparator {
             }
         });
         matchResGoal.make();
+        System.out.println("Correct classifications GENUS: " + counters[1]);
+        System.out.println("Correct classifications SPECIES: " + counters[2]);
+        System.out.println("Correct classifications STRAIN: " + counters[3]);
+        System.out.println("Total count: " + counters[0]);
+        maker2.dumpAll();
+    }
+
+    public void accuracyCheckForSimulatedViralReadsKU(String db, String csvFile2) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project2 = new GSProject(config, db, null, null, csvFile2, null, null, null,
+                null, null, null, false);
+        project2.initConfigParam(GSConfigKey.THREADS, -1);
+
+        GSMaker maker2 = new GSMaker(project2);
+
+        ObjectGoal<AccessionMap, GSProject> accessCollGoal = (ObjectGoal<AccessionMap, GSProject>) maker2.getGoal(GSGoalKey.ACCMAP);
+        AccessionMap map = accessCollGoal.get();
+        ObjectGoal<TaxTree, GSProject> taxTreeGoal = (ObjectGoal<TaxTree, GSProject>) maker2.getGoal(GSGoalKey.TAXTREE);
+        TaxTree taxTree = taxTreeGoal.get();
+
+        int[] counters = new int[4];
+        KrakenResCountGoal krakenResCountGoal = new KrakenResCountGoal(project2,
+                (ObjectGoal<Map<String, StreamingResourceStream>, GSProject>) maker2.getGoal(GSGoalKey.FASTQ_MAP_TRANSFORM),
+                (ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject>) maker2.getGoal(GSGoalKey.TAXNODES),
+                maker2.getGoal(GSGoalKey.SETUP),
+                maker2.getGoal(GSGoalKey.FASTQ_DOWNLOAD)) {
+            @Override
+            protected void afterReadMatch(String krakenTaxid, byte[] readDescriptor) {
+                synchronized (counters) {
+                    if (krakenTaxid != null) {
+                        TaxTree.TaxIdNode classNode = taxTree.getNodeByTaxId(krakenTaxid);
+                        if (classNode != null) {
+                            byte[] desc = readDescriptor;
+                            int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
+                            TaxTree.TaxIdNode node = map.get(desc, 2, pos, false);
+                            if (node != null) {
+                                TaxTree.TaxIdNode lca = taxTree.getLeastCommonAncestor(node, classNode);
+                                while (lca != null && Rank.NO_RANK.equals(lca.getRank())) {
+                                    lca = lca.getParent();
+                                }
+                                if (lca != null) {
+                                    Rank r = lca.getRank();
+                                    if (r != null) {
+                                        if (Rank.GENUS.equals(r) || r.isBelow(Rank.GENUS)) {
+                                            counters[1]++;
+                                        }
+                                        if (Rank.SPECIES.equals(r) || r.isBelow(Rank.SPECIES)) {
+                                            counters[2]++;
+                                        }
+                                        if (Rank.STRAIN.equals(r) || r.isBelow(Rank.STRAIN)) {
+                                            counters[3]++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        counters[0]++;
+                    }
+                }
+            }
+        };
+        krakenResCountGoal.make();
+        System.out.println("+++ KrakenUniq ++ü");
         System.out.println("Correct classifications GENUS: " + counters[1]);
         System.out.println("Correct classifications SPECIES: " + counters[2]);
         System.out.println("Correct classifications STRAIN: " + counters[3]);
