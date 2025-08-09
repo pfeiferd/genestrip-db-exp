@@ -31,8 +31,8 @@ public class ErrCompInfoTest {
             rdiffrelmean /= n;
             kdiffrelmean /= n;
 
-            assertEquals(rdiffrelmean, errCompInfo.getMeanReadsErr(), 0);
-            assertEquals(kdiffrelmean, errCompInfo.getMeanKMersErr(), 0);
+            assertEquals(rdiffrelmean, errCompInfo.getMeanReadsErr(), 0.00001);
+            assertEquals(kdiffrelmean, errCompInfo.getMeanKMersErr(), 0.00001);
 
             double rdiffrelstddev = 0;
             double kdiffrelstddev = 0;

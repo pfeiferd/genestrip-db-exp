@@ -366,11 +366,11 @@ public class GenestripComparator {
         }
 
         public double getMeanKMersErr() {
-            return kMersErrSum / errs;
+            return kMersErrMean; // kMersErrSum / errs;
         }
 
         public double getMeanReadsErr() {
-            return readsErrSum / errs;
+            return readsErrMean; // readsErrSum / errs;
         }
 
         public void sumErrorStats(long k1, long r1, long k2, long r2) {
