@@ -15,16 +15,15 @@ public class ExperimentRunner {
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
         c1.writeUnfoldedTaxids("human_virus");
 
-        /*
         System.out.println("** Figure 2 **");
         c2.reportKMerComparisons("viral", "viral_db", null, false);
 
         System.out.println("** Figure 3 **");
         c1.compareWithKUResults("viral", "viral_db", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", false);
-*/
+
         System.out.println("** Text in context of Figure 3 **");
-        c1.accuracyCheckForSimulatedViralReadsKU("viral", "viral_ku_comp.txt");
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
+        c1.accuracyCheckForSimulatedViralReadsKU("viral", "viral_ku_comp.txt");
         System.out.println("** Figure 4 **");
         Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", null, "saliva.txt", false);
         System.out.println("** Table 3 **");
