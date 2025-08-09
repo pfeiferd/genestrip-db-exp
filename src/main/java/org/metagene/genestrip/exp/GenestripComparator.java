@@ -305,6 +305,11 @@ public class GenestripComparator {
         private double readsErrSum;
         private double readsErrSquareSum;
 
+        private double kMersErrMean;
+        private double kMersErrM2;
+        private double readsErrMean;
+        private double readsErrM2;
+
         private int kmerDiffs;
         private int readDiffs;
 
@@ -347,11 +352,17 @@ public class GenestripComparator {
         }
 
         public double getKMersErrStdDev() {
-            return Math.sqrt((kMersErrSquareSum - ((double) kMersErrSum * kMersErrSum) / errs) / (errs - 1));
+            // Supposed to be numerically more stable according to:
+            // https://math.stackexchange.com/questions/198336/how-to-calculate-standard-deviation-with-streaming-inputs
+            return Math.sqrt(kMersErrM2 / (errs - 1));
+            // return Math.sqrt((kMersErrSquareSum - ((double) kMersErrSum * kMersErrSum) / errs) / (errs - 1));
         }
 
         public double getReadsErrStdDev() {
-            return Math.sqrt((readsErrSquareSum - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
+            // Supposed to be numerically more stable according to:
+            // https://math.stackexchange.com/questions/198336/how-to-calculate-standard-deviation-with-streaming-inputs
+            return Math.sqrt(readsErrM2 / (errs - 1));
+           // return Math.sqrt((readsErrSquareSum - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
         }
 
         public double getMeanKMersErr() {
@@ -374,9 +385,17 @@ public class GenestripComparator {
             kMersErrSum += err;
             kMersErrSquareSum += err * err;
 
+            double delta = err - kMersErrMean;
+            kMersErrMean += delta / errs;
+            kMersErrM2 += delta * (err - kMersErrMean);
+
             err = ((double) Math.abs(r1 - r2)) / (r1 + 1);
             readsErrSum += err;
             readsErrSquareSum += err * err;
+
+            delta = err - readsErrMean;
+            readsErrMean += delta / errs;
+            readsErrM2 += delta * (err - readsErrMean);
         }
     }
 }
