@@ -237,7 +237,7 @@ public class GenestripComparator {
             errPs.println("no; key; reads; gs read len; " +
                     "gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev; " +
                     "ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;");
-            int counter = 0;
+            int counter = 1;
             for (String key : map1.keySet()) {
                 ErrCompInfo errCompInfo1 = map1.get(key);
                 ErrCompInfo errCompInfo2 = map2 != null ? map2.get(key) : null;
