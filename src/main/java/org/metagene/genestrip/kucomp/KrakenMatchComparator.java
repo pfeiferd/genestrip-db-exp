@@ -144,9 +144,12 @@ public class KrakenMatchComparator extends GenestripComparator {
                             sums[1] += Long.valueOf(record.get("kmers 2"));
                             sums[2] += Long.valueOf(record.get("reads 1"));
                             sums[3] += Long.valueOf(record.get("reads 2"));
-                        } else {
+                        }
+                        /*
+                        else {
                             System.err.println("Warning missing taxid node for: " + taxid);
                         }
+                        */
                     }
                 }
                 File out = new File(resultsDir, dbName + "_" + key + "_genus_agg_gs_ku_comp.csv");
