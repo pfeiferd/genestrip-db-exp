@@ -15,10 +15,10 @@ Genestrip-DB-Exp requires [Maven 2 or 3](https://maven.apache.org/) and is compa
 To build it, `cd` to the installation directory `genestrip-db-exp`. Given a matching Maven and JDK installation, `mvn install` will compile and install the Java program library.
 
 The rest of the of system is a bunch of shell scripts that can be executed on a Linux x64 or on a Mac Arm architecture.
-You need a large disk with at least 2 TB free space and a high network bandwidth (with Internet access) to download and store the necessary data.
+You need a large disk with at least 2.5 TB free space and a high network bandwidth (with Internet access) to download and store the necessary data.
 You need at least 32 GB of RAM for the result data to be computed. The computations may take several days...
 
-This version of Genestrip-DB-Exp is tied to Genestrip [Version 2.0](https://github.com/pfeiferd/genestrip/releases/tag/v2.0).
+This version of Genestrip-DB-Exp is tied to Genestrip [Version 2.2](https://github.com/pfeiferd/genestrip/releases/tag/v2.2).
 The original experiments were based on the [RefSeq Release 230](https://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER).
 Using later version of the RefSeq might bring (slightly) different results than the original runs.
 
