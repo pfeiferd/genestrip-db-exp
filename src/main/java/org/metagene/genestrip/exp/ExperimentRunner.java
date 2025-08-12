@@ -52,7 +52,7 @@ public class ExperimentRunner {
          */
 
         System.out.println("** Figure 7 and Figure 8 **");
-        c1.compareWithKUResults("tick-borne", "microbial_db", null, "ticks.txt", true);
+        c1.compareWithKUResults("tick-borne", "microbial_db", null, "seventicks.txt", true);
         c1.aggregateCompareWithKUResults("tick-borne", "ticks.txt");
     }
 }
