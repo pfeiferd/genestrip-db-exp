@@ -3,6 +3,7 @@ package org.metagene.genestrip.exp;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import org.metagene.genestrip.*;
 import org.metagene.genestrip.goals.MatchResultGoal;
+import org.metagene.genestrip.goals.refseq.ExtractRefSeqFastasGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.CountsPerTaxid;
 import org.metagene.genestrip.match.MatchingResult;
@@ -33,6 +34,20 @@ public class GenestripComparator {
     public GenestripComparator(File baseDir, File resultsDir) {
         this.baseDir = baseDir;
         this.resultsDir = resultsDir;
+    }
+
+    public void extractRefSeqFastas(String db) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, db, null, null, null, null, null, null,
+                null, null, null, false);
+        project.initConfigParam(GSConfigKey.THREADS, -1);
+
+        GSMaker maker = new GSMaker(project);
+
+        ExtractRefSeqFastasGoal goal = (ExtractRefSeqFastasGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_FASTA);
+        goal.make();
+        goal.get();
+        maker.dumpAll();
     }
 
     public void compareCommonDBEntries(String dbName1, String dbName2) throws IOException {
@@ -288,7 +303,7 @@ public class GenestripComparator {
         if (taxTreeRef != null) {
             taxTreeRef[0] = dbGoal.get().getTaxTree();
         }
-        MatchResultGoal matchGoal = (MatchResultGoal) maker.getGoal(GSGoalKey.MATCHRES);
+        MatchResultGoal<GSProject> matchGoal = (MatchResultGoal<GSProject>) maker.getGoal(GSGoalKey.MATCHRES);
         Map<String, MatchingResult> matches = matchGoal.get();
         maker.dumpAll();
         return matches;

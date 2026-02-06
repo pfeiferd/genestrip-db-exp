@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.metagene.genestrip.*;
 import org.metagene.genestrip.exp.GenestripComparator;
+import org.metagene.genestrip.goals.refseq.ExtractRefSeqFastasGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.refseq.AccessionMap;
 import org.metagene.genestrip.tax.Rank;
@@ -15,9 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class GanonMatchComparator extends GenestripComparator {

@@ -12,7 +12,8 @@ import java.util.Map;
 public class ExperimentRunner {
     public static void main(String[] args) throws IOException {
         GanonMatchComparator gmc = new GanonMatchComparator(new File("./data"), new File("./results"));
-        gmc.accuracyCheckForSimulatedViralReadsGanon("viral", "ganon/virals.all");
+        gmc.extractRefSeqFastas("viral");
+        gmc.accuracyCheckForSimulatedViralReadsGanon("viral", "ganon/viralfastq1.all");
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
         c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");

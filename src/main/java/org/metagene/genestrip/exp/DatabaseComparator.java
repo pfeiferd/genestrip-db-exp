@@ -110,7 +110,7 @@ public class DatabaseComparator {
         final long[] movedKmers = new long[] { 0 };
         store1.visit(new KMerSortedArray.KMerSortedArrayVisitor<String>() {
             @Override
-            public void nextValue(KMerSortedArray<String> trie, long kmer, short index, long i) {
+            public void nextValue(KMerSortedArray<String> trie, long kmer, int index, long i) {
                 String taxId1 = store1.getValueForIndex(index);
                 String taxId2 = store2.getLong(kmer, null);
                 if (taxId1 == null || taxId2 == null) {
