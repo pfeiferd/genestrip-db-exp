@@ -3,6 +3,8 @@ set -e
 
 scriptdir=$(dirname "$0")
 
+mkdir -p $scriptdir/../ganon
+
 cd $scriptdir/../ganon
 
 # Create a viral database
