@@ -13,6 +13,9 @@ git clone https://github.com/fbreitwieser/krakenuniq.git
 
 cd krakenuniq
 
+# This file must be deleted, it leads to a compile error as it is not C++
+rm src/gzstream/version
+# Now we can build...
 ./install_krakenuniq.sh -j .
 
 

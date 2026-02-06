@@ -20,16 +20,19 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class GenestripComparator {
-    protected static final DecimalFormat DF = new DecimalFormat("#,###.0", new DecimalFormatSymbols(Locale.US));
+    protected static final DecimalFormat LF = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US));
+    protected static final DecimalFormat DF = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
 
     public static final String SPECIES_OR_BELOW = "species or below";
     public static final String GENUS = "genus";
     public static final String ABOVE_GENUS = "null";
 
     protected final File baseDir;
+    protected final File resultsDir;
 
-    public GenestripComparator(File baseDir) {
+    public GenestripComparator(File baseDir, File resultsDir) {
         this.baseDir = baseDir;
+        this.resultsDir = resultsDir;
     }
 
     public void compareCommonDBEntries(String dbName1, String dbName2) throws IOException {
@@ -43,7 +46,7 @@ public class GenestripComparator {
         SmallTaxTree tree2 = db2.getTaxTree();
         db2 = null;
 
-        File out = new File(baseDir, dbName1 + "_" + dbName2 + "_gs_gs_dbcomp.csv");
+        File out = new File(resultsDir, dbName1 + "_" + dbName2 + "_gs_gs_dbcomp.csv");
         try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
             ps.println("taxid; rank; kmers 1; kmers 2;");
             for (SmallTaxTree.SmallTaxIdNode node1 : tree1) {
@@ -57,9 +60,9 @@ public class GenestripComparator {
                     ps.print(";");
                     ps.print(getRankString(node1));
                     ps.print(";");
-                    ps.print(correctDBValue(count1));
+                    ps.print(correctDBValue(count1, false));
                     ps.print(";");
-                    ps.print(correctDBValue(count2));
+                    ps.print(correctDBValue(count2, false));
                     ps.println(";");
                 }
             }
@@ -88,15 +91,15 @@ public class GenestripComparator {
             }
              */
             return SPECIES_OR_BELOW;
-        } else if (r != null && r.equals(Rank.GENUS) || r.isBelow(Rank.GENUS)) {
+        } else if (r != null && (r.equals(Rank.GENUS) || r.isBelow(Rank.GENUS))) {
             return GENUS;
         } else {
             return ABOVE_GENUS;
         }
     }
 
-    protected long correctDBValue(long v) {
-        return v + 1;
+    protected long correctDBValue(long v, boolean full) {
+        return full ? v : v + 1;
     }
 
     protected void writeUnfoldedTaxids(String dbName) throws IOException {
@@ -141,13 +144,13 @@ public class GenestripComparator {
             }
 
             ErrCompInfo errCompInfo = new ErrCompInfo(res1.getGlobalStats().getKMers(),
-                    res1.getGlobalStats().getReads());
+                    res1.getGlobalStats().getReads(), res1.getGlobalStats().getReadsBPs());
             result.put(key, errCompInfo);
 
             Map<String, CountsPerTaxid> stats1 = res1.getTaxid2Stats();
             Map<String, CountsPerTaxid> stats2 = res2.getTaxid2Stats();
 
-            File out = new File(baseDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
+            File out = new File(resultsDir, dbName1 + "_" + dbName2 + "_" + key + "_gs_gs_comp.csv");
             try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
                 ps.println("taxid; rank; kmers 1; kmers 2; ukmers 1; ukmers 2; reads 1; reads 2");
                 for (SmallTaxTree.SmallTaxIdNode node1 : taxTreeRef1[0]) {
@@ -165,20 +168,20 @@ public class GenestripComparator {
                     ps.print(rs);
                     ps.print(';');
                     long k1 = c1 == null ? 0 : c1.getKMers();
-                    ps.print(correctDBValue(k1));
+                    ps.print(correctDBValue(k1, false));
                     ps.print(';');
                     long k2 = c2 == null ? 0 : c2.getKMers();
-                    ps.print(correctDBValue(k2));
+                    ps.print(correctDBValue(k2, false));
                     ps.print(';');
-                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers()));
+                    ps.print(correctDBValue(c1 == null ? 0 : c1.getUniqueKMers(), false));
                     ps.print(';');
-                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers()));
+                    ps.print(correctDBValue(c2 == null ? 0 : c2.getUniqueKMers(), false));
                     ps.print(';');
                     long r1 = c1 == null ? 0 : c1.getReads();
-                    ps.print(correctDBValue(r1));
+                    ps.print(correctDBValue(r1, false));
                     ps.print(';');
                     long r2 = c2 == null ? 0 : c2.getReads();
-                    ps.print(correctDBValue(r2));
+                    ps.print(correctDBValue(r2, false));
                     ps.println(';');
                     if (SPECIES_OR_BELOW.equals(rs)) {
                         errCompInfo.sumErrorStats(k1, r1, k2, r2);
@@ -190,22 +193,22 @@ public class GenestripComparator {
     }
 
     public void writeErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1) throws IOException {
-        File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
+        File errOut = new File(resultsDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
             errPs.println("no; key; reads; gs read len; " +
-                    "errs; kmer err; kmer err std dev; read err; read err std dev;");
-            int counter = 0;
+                    "errs; kmer err; kmer err std dev; read err; read err std dev; kmer diffs; read diffs; kmer diffs percent; read diffs percent;");
+            int counter = 1;
             for (String key : map1.keySet()) {
                 ErrCompInfo errCompInfo1 = map1.get(key);
                 errPs.print(counter);
                 errPs.print(';');
                 errPs.print(key);
                 errPs.print(';');
-                errPs.print(errCompInfo1.getReads());
+                errPs.print(LF.format(errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
+                errPs.print(LF.format(((double) errCompInfo1.getBps()) / errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(errCompInfo1.getErrs());
+                errPs.print(LF.format(errCompInfo1.getErrs()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getMeanKMersErr()));
                 errPs.print(';');
@@ -214,6 +217,14 @@ public class GenestripComparator {
                 errPs.print(DF.format(100 * errCompInfo1.getMeanReadsErr()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
+                errPs.print(';');
+                errPs.print(LF.format(errCompInfo1.getKmerDiffs()));
+                errPs.print(';');
+                errPs.print(LF.format(errCompInfo1.getReadDiffs()));
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getKmerDiffsRatio()));
+                errPs.print(';');
+                errPs.print(DF.format(100 * errCompInfo1.getReadDiffsRatio()));
                 errPs.println(';');
                 counter++;
             }
@@ -221,27 +232,27 @@ public class GenestripComparator {
     }
 
     public void combineErrInfos(String dbName1, String dbName2, Map<String, ErrCompInfo> map1, Map<String, ErrCompInfo> map2) throws IOException {
-        File errOut = new File(baseDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
+        File errOut = new File(resultsDir, dbName1 + "_" + dbName2 + "_errors_gs_ku_comp.csv");
         try (PrintStream errPs = new PrintStream(new FileOutputStream(errOut))) {
             errPs.println("no; key; reads; gs read len; " +
                     "gs errs; gs kmer err; gs kmer err std dev; gs read err; gs read err std dev; " +
                     "ku errs; ku kmer err; ku kmer err std dev; ku read err; ku read err std dev;");
-            int counter = 0;
+            int counter = 1;
             for (String key : map1.keySet()) {
                 ErrCompInfo errCompInfo1 = map1.get(key);
                 ErrCompInfo errCompInfo2 = map2 != null ? map2.get(key) : null;
                 if (errCompInfo2 == null) {
-                    errCompInfo2 = new ErrCompInfo(0,0);
+                    errCompInfo2 = new ErrCompInfo(0,0, 0);
                 }
                 errPs.print(counter);
                 errPs.print(';');
                 errPs.print(key);
                 errPs.print(';');
-                errPs.print(errCompInfo1.getReads());
+                errPs.print(LF.format(errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(DF.format(((double) errCompInfo1.getKMers()) / errCompInfo1.getReads()));
+                errPs.print(LF.format(((double) errCompInfo1.getBps()) / errCompInfo1.getReads()));
                 errPs.print(';');
-                errPs.print(errCompInfo1.getErrs());
+                errPs.print(LF.format(errCompInfo1.getErrs()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getMeanKMersErr()));
                 errPs.print(';');
@@ -251,7 +262,7 @@ public class GenestripComparator {
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo1.getReadsErrStdDev()));
                 errPs.print(';');
-                errPs.print(errCompInfo2.getErrs());
+                errPs.print(LF.format(errCompInfo2.getErrs()));
                 errPs.print(';');
                 errPs.print(DF.format(100 * errCompInfo2.getMeanKMersErr()));
                 errPs.print(';');
@@ -284,8 +295,9 @@ public class GenestripComparator {
     }
 
     public static class ErrCompInfo {
-        private long kmers;
-        private long reads;
+        private final long kmers;
+        private final long reads;
+        private final long bps;
 
         private int errs;
         private double kMersErrSum;
@@ -293,9 +305,34 @@ public class GenestripComparator {
         private double readsErrSum;
         private double readsErrSquareSum;
 
-        public ErrCompInfo(long kmers, long reads) {
+        private double kMersErrMean;
+        private double kMersErrM2;
+        private double readsErrMean;
+        private double readsErrM2;
+
+        private int kmerDiffs;
+        private int readDiffs;
+
+        public ErrCompInfo(long kmers, long reads, long bps) {
             this.kmers = kmers;
             this.reads = reads;
+            this.bps = bps;
+        }
+
+        public int getKmerDiffs() {
+            return kmerDiffs;
+        }
+
+        public int getReadDiffs() {
+            return readDiffs;
+        }
+
+        public double getKmerDiffsRatio() {
+            return ((double) kmerDiffs) / errs;
+        }
+
+        public double getReadDiffsRatio() {
+            return ((double) readDiffs) / errs;
         }
 
         public long getKMers() {
@@ -306,35 +343,59 @@ public class GenestripComparator {
             return reads;
         }
 
+        public long getBps() {
+            return bps;
+        }
+
         public int getErrs() {
             return errs;
         }
 
         public double getKMersErrStdDev() {
-            return Math.sqrt((kMersErrSquareSum - ((double) kMersErrSum * kMersErrSum) / errs) / (errs - 1));
+            // Supposed to be numerically more stable according to:
+            // https://math.stackexchange.com/questions/198336/how-to-calculate-standard-deviation-with-streaming-inputs
+            return Math.sqrt(kMersErrM2 / (errs - 1));
+            // return Math.sqrt((kMersErrSquareSum - ((double) kMersErrSum * kMersErrSum) / errs) / (errs - 1));
         }
 
         public double getReadsErrStdDev() {
-            return Math.sqrt((readsErrSquareSum - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
+            // Supposed to be numerically more stable according to:
+            // https://math.stackexchange.com/questions/198336/how-to-calculate-standard-deviation-with-streaming-inputs
+            return Math.sqrt(readsErrM2 / (errs - 1));
+           // return Math.sqrt((readsErrSquareSum - ((double) readsErrSum * readsErrSum) / errs) / (errs - 1));
         }
 
         public double getMeanKMersErr() {
-            return kMersErrSum / errs;
+            return kMersErrMean; // kMersErrSum / errs;
         }
 
         public double getMeanReadsErr() {
-            return readsErrSum / errs;
+            return readsErrMean; // readsErrSum / errs;
         }
 
         public void sumErrorStats(long k1, long r1, long k2, long r2) {
             errs++;
+            if (k1 != k2) {
+                kmerDiffs++;
+            }
+            if (r1 != r2) {
+                readDiffs++;
+            }
             double err = ((double) Math.abs(k1 - k2)) / (k1 + 1);
             kMersErrSum += err;
             kMersErrSquareSum += err * err;
 
+            double delta = err - kMersErrMean;
+            kMersErrMean += delta / errs;
+            kMersErrM2 += delta * (err - kMersErrMean);
+
             err = ((double) Math.abs(r1 - r2)) / (r1 + 1);
             readsErrSum += err;
             readsErrSquareSum += err * err;
+
+            delta = err - readsErrMean;
+            readsErrMean += delta / errs;
+            readsErrM2 += delta * (err - readsErrMean);
         }
     }
 }
