@@ -1,5 +1,6 @@
 package org.metagene.genestrip.exp;
 
+import org.metagene.genestrip.kucomp.GanonMatchComparator;
 import org.metagene.genestrip.kucomp.KrakenDBComparator;
 import org.metagene.genestrip.kucomp.KrakenMatchComparator;
 import org.metagene.genestrip.tax.Rank;
@@ -10,6 +11,12 @@ import java.util.Map;
 
 public class ExperimentRunner {
     public static void main(String[] args) throws IOException {
+        GanonMatchComparator gmc = new GanonMatchComparator(new File("./data"), new File("./results"));
+        gmc.accuracyCheckForSimulatedViralReadsGanon("viral", "ganon/virals.all");
+
+        KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
+        c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
+        /*
         KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"), new File("./results"));
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
@@ -52,5 +59,7 @@ public class ExperimentRunner {
         System.out.println("** Figure 7 and Figure 8 **");
         c1.compareWithKUResults("tick-borne", "microbial_db", null, "seventicks.txt", true);
         c1.aggregateCompareWithKUResults("tick-borne", "ticks.txt");
+
+         */
     }
 }

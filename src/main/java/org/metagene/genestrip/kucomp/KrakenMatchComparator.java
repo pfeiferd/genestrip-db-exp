@@ -24,7 +24,6 @@ import java.io.*;
 import java.util.*;
 
 import static org.metagene.genestrip.GSGoalKey.FASTQ_MAP;
-import static org.metagene.genestrip.GSGoalKey.TAXTREE;
 
 public class KrakenMatchComparator extends GenestripComparator {
     public KrakenMatchComparator(File baseDir, File resultsDir) {
@@ -311,7 +310,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         ObjectGoal<Database, GSProject> dbGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
         SmallTaxTree smallTaxTree = dbGoal.get().getTaxTree();
         MatchResultGoal matchResGoal = (MatchResultGoal) maker2.getGoal(GSGoalKey.MATCHRES);
-        int[] counters = new int[4];
+        int[] counters = new int[5];
         matchResGoal.setAfterMatchCallback(new FastqKMerMatcher.AfterMatchCallback() {
             @Override
             public void afterMatch(FastqKMerMatcher.MyReadEntry myReadEntry, boolean b) {
@@ -341,6 +340,9 @@ public class KrakenMatchComparator extends GenestripComparator {
                                 }
                             }
                         }
+                        else {
+                            counters[4]++;
+                        }
                     }
                     counters[0]++;
                 }
@@ -350,6 +352,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         System.out.println("Correct classifications GENUS: " + counters[1]);
         System.out.println("Correct classifications SPECIES: " + counters[2]);
         System.out.println("Correct classifications STRAIN: " + counters[3]);
+        System.out.println("Bad Ground Truth Descriptor: " + counters[4]);
         System.out.println("Total count: " + counters[0]);
         maker2.dumpAll();
     }
@@ -367,7 +370,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         ObjectGoal<TaxTree, GSProject> taxTreeGoal = (ObjectGoal<TaxTree, GSProject>) maker2.getGoal(GSGoalKey.TAXTREE);
         TaxTree taxTree = taxTreeGoal.get();
 
-        int[] counters = new int[4];
+        int[] counters = new int[5];
         KrakenResCountGoal krakenResCountGoal = new KrakenResCountGoal(project2,
                 (ObjectGoal<Map<String, StreamingResourceStream>, GSProject>) maker2.getGoal(GSGoalKey.FASTQ_MAP_TRANSFORM),
                 (ObjectGoal<Set<TaxTree.TaxIdNode>, GSProject>) maker2.getGoal(GSGoalKey.TAXNODES),
@@ -402,6 +405,9 @@ public class KrakenMatchComparator extends GenestripComparator {
                                     }
                                 }
                             }
+                            else {
+                                counters[4]++;
+                            }
                         }
                         counters[0]++;
                     }
@@ -413,6 +419,7 @@ public class KrakenMatchComparator extends GenestripComparator {
         System.out.println("Correct classifications GENUS: " + counters[1]);
         System.out.println("Correct classifications SPECIES: " + counters[2]);
         System.out.println("Correct classifications STRAIN: " + counters[3]);
+        System.out.println("Bad Ground Truth Descriptor: " + counters[4]);
         System.out.println("Total count: " + counters[0]);
         maker2.dumpAll();
     }
