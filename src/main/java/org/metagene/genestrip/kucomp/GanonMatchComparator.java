@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.metagene.genestrip.*;
 import org.metagene.genestrip.exp.GenestripComparator;
+import org.metagene.genestrip.goals.refseq.ExtractRefSeqCSVGoal;
 import org.metagene.genestrip.goals.refseq.ExtractRefSeqFastasGoal;
 import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.refseq.AccessionMap;
@@ -12,19 +13,54 @@ import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.TaxTree;
 import org.metagene.genestrip.util.ByteArrayUtil;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class GanonMatchComparator extends GenestripComparator {
+    private static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
+            .setDelimiter(';').setRecordSeparator('\n').build();
     private static final CSVFormat GANON_ALL_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
             .setDelimiter('\t').setRecordSeparator('\n').build();
 
     public GanonMatchComparator(File baseDir, File resultsDir) {
         super(baseDir, resultsDir);
+    }
+
+    // This format also works for KrakenUniq to build the custom database
+    public void csv2GanonInputFileFormat(String db, String pathPrefix, String fileSuffix) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, db, null, null, null, null, null, null,
+                null, null, null, false);
+        project.initConfigParam(GSConfigKey.THREADS, -1);
+
+        GSMaker maker = new GSMaker(project);
+
+        ExtractRefSeqCSVGoal extractRefSeqCSVGoal = (ExtractRefSeqCSVGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_CSV);
+        extractRefSeqCSVGoal.make();
+
+        try (CSVParser parser = CSV_FORMAT
+                .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
+            File ganonInputFile = new File(project.getResultsDir(), db + fileSuffix + ".tsv");
+            try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
+                int i = 0;
+                for (CSVRecord record : parser.getRecords()) {
+                    if (i > 0) {
+                        String descr = record.get(0);
+                        String taxid = record.get(1);
+                        out.print(pathPrefix);
+                        out.print(descr);
+                        out.print(".fasta.gz");
+                        out.print('\t');
+                        out.print(descr);
+                        out.print('\t');
+                        out.print(taxid);
+                        out.println();
+                    }
+                    i++;
+                }
+            }
+        }
     }
 
     public void accuracyCheckForSimulatedViralReadsGanon(String db, String ganonReportFile) throws IOException {
