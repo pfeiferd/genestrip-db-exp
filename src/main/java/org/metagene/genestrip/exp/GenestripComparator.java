@@ -36,20 +36,6 @@ public class GenestripComparator {
         this.resultsDir = resultsDir;
     }
 
-    public void extractRefSeqFastas(String db) throws IOException {
-        GSCommon config = new GSCommon(baseDir);
-        GSProject project = new GSProject(config, db, null, null, null, null, null, null,
-                null, null, null, false);
-        project.initConfigParam(GSConfigKey.THREADS, -1);
-
-        GSMaker maker = new GSMaker(project);
-
-        ExtractRefSeqFastasGoal goal = (ExtractRefSeqFastasGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_FASTA);
-        goal.make();
-        goal.get();
-        maker.dumpAll();
-    }
-
     public void compareCommonDBEntries(String dbName1, String dbName2) throws IOException {
         Database db1 = getDatabase(dbName1, false);
         SmallTaxTree tree1 = db1.getTaxTree();
