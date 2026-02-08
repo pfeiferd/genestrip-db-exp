@@ -18,8 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GanonMatchComparator extends GenestripComparator {
-    private static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
-            .setDelimiter(';').setRecordSeparator('\n').build();
     private static final CSVFormat GANON_ALL_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
             .setDelimiter('\t').setRecordSeparator('\n').build();
 
@@ -27,8 +25,7 @@ public class GanonMatchComparator extends GenestripComparator {
         super(baseDir, resultsDir);
     }
 
-    // This format also works for KrakenUniq to build the custom database
-    public void csv2GanonInputFileFormat(String db, String pathPrefix, String fileSuffix) throws IOException {
+    public void csv2GanonInputFileFormat(String db, String pathPrefix) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, null, null, null, null,
                 null, null, null, false);
@@ -41,7 +38,7 @@ public class GanonMatchComparator extends GenestripComparator {
 
         try (CSVParser parser = CSV_FORMAT
                 .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
-            File ganonInputFile = new File(project.getResultsDir(), db + fileSuffix + ".tsv");
+            File ganonInputFile = new File(project.getResultsDir(), db + "_ganon.tsv");
             try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
                 int i = 0;
                 for (CSVRecord record : parser.getRecords()) {

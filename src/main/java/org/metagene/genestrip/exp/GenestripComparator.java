@@ -1,6 +1,7 @@
 package org.metagene.genestrip.exp;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import org.apache.commons.csv.CSVFormat;
 import org.metagene.genestrip.*;
 import org.metagene.genestrip.goals.MatchResultGoal;
 import org.metagene.genestrip.goals.refseq.ExtractRefSeqFastasGoal;
@@ -21,6 +22,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class GenestripComparator {
+    protected static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
+            .setDelimiter(';').setRecordSeparator('\n').build();
     protected static final DecimalFormat LF = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US));
     protected static final DecimalFormat DF = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
 
