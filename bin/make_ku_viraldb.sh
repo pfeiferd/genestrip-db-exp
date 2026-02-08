@@ -8,9 +8,14 @@ cd $scriptdir/../ku/krakenuniq
 # Create a viral database
 mkdir -p ../viral_db
 # ./krakenuniq-download --db ../viral_db refseq/viral/Any
-./krakenuniq-download --db ../viral_db taxonomy
+#./krakenuniq-download --db ../viral_db taxonomy
 
 mkdir -p ../viral_db/library
+mkdir -p ../viral_db/taxonomy
+
+cp ../../data/common/nodes.dmp ../viral_db/taxonomy
+cp ../../data/common/names.dmp ../viral_db/taxonomy
+
 cp ../../data/projects/viral/*.fasta.gz ../viral_db/library
 cp ../../data/projects/viral/csv/viral_ku.map ../viral_db/library
 
