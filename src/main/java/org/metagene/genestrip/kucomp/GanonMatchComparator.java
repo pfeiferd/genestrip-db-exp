@@ -47,7 +47,7 @@ public class GanonMatchComparator extends GenestripComparator {
                         String taxid = record.get(1);
                         out.print(pathPrefix);
                         out.print(descr);
-                        out.print(".fasta.gz");
+                        out.print(".fa.gz");
                         out.print('\t');
                         out.print(descr);
                         out.print('\t');
