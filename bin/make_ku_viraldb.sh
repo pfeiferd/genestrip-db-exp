@@ -16,7 +16,7 @@ mkdir -p ../viral_db/taxonomy
 cp ../../data/common/nodes.dmp ../viral_db/taxonomy
 cp ../../data/common/names.dmp ../viral_db/taxonomy
 
-cp ../../data/projects/viral/*.fasta.gz ../viral_db/library
+cp ../../data/projects/viral/fasta/*.fasta.gz ../viral_db/library
 cp ../../data/projects/viral/csv/viral_ku.map ../viral_db/library
 
 export JELLYFISH_BIN=$(pwd)/jellyfish-install/bin/jellyfish
