@@ -340,6 +340,8 @@ public class KrakenMatchComparator extends GenestripComparator {
 
         ObjectGoal<AccessionMap, GSProject> accessCollGoal = (ObjectGoal<AccessionMap, GSProject>) maker2.getGoal(GSGoalKey.ACCMAP);
         AccessionMap map = accessCollGoal.get();
+        // This is important so that a potential database make loads the accession map and the tax tree from stratch:
+        accessCollGoal.cleanThis();
         ObjectGoal<Database, GSProject> dbGoal = (ObjectGoal<Database, GSProject>) maker2.getGoal(GSGoalKey.LOAD_DB);
         SmallTaxTree smallTaxTree = dbGoal.get().getTaxTree();
         MatchResultGoal matchResGoal = (MatchResultGoal) maker2.getGoal(GSGoalKey.MATCHRES);
@@ -351,7 +353,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                     if (myReadEntry.classNode != null) {
                         byte[] desc = myReadEntry.readDescriptor;
                         int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
-                        TaxTree.TaxIdNode node = map.get(desc, 2, pos, false);
+                        TaxTree.TaxIdNode node = map.get(desc, desc[1] == '>' ? 2 : 1, pos, false);
                         if (node != null) {
                             SmallTaxTree.SmallTaxIdNode snode = smallTaxTree.getNodeByTaxId(node.getTaxId());
                             SmallTaxTree.SmallTaxIdNode lca = smallTaxTree.getLeastCommonAncestor(snode, myReadEntry.classNode);
@@ -381,12 +383,20 @@ public class KrakenMatchComparator extends GenestripComparator {
                 }
             }
         });
+        matchResGoal.setAfterKeyCallcack(new MatchResultGoal.AfterKeyCallcack() {
+            @Override
+            public void afterKey(String key, MatchingResult res) {
+                System.out.println("+++ Genestrip +++");
+                System.out.println("Key: " + key);
+                System.out.println("Correct classifications GENUS: " + counters[1]);
+                System.out.println("Correct classifications SPECIES: " + counters[2]);
+                System.out.println("Correct classifications STRAIN: " + counters[3]);
+                System.out.println("Bad Ground Truth Descriptor: " + counters[4]);
+                System.out.println("Total count: " + counters[0]);
+                Arrays.fill(counters, 0);
+            }
+        });
         matchResGoal.make();
-        System.out.println("Correct classifications GENUS: " + counters[1]);
-        System.out.println("Correct classifications SPECIES: " + counters[2]);
-        System.out.println("Correct classifications STRAIN: " + counters[3]);
-        System.out.println("Bad Ground Truth Descriptor: " + counters[4]);
-        System.out.println("Total count: " + counters[0]);
         maker2.dumpAll();
     }
 

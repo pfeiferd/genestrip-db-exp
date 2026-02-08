@@ -104,7 +104,7 @@ public class GanonMatchComparator extends GenestripComparator {
         for (String descr : matchesMap.keySet()) {
             byte[] desc = descr.getBytes();
             int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
-            TaxTree.TaxIdNode node = map.get(desc, 1, pos, false);
+            TaxTree.TaxIdNode node = map.get(desc, desc[0] == '>' ? 1 : 0, pos, false);
             if (node != null) {
                 TaxTree.TaxIdNode classNode = matchesMap.get(descr);
                 TaxTree.TaxIdNode lca = taxTree.getLeastCommonAncestor(node, classNode);

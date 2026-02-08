@@ -18,3 +18,5 @@ ganon build-custom --input-file ../data/projects/viral/csv/viral_ganon.tsv --tax
 
 # Run ganon on simulated virus fastq from paper:
 ganon classify --db-prefix ../ganon/viral_db -s ../data/projects/viral/fastq/viral_fasta2fastq_fasta1.fastq.gz --output-all --output-all -o ../ganon/viralfastq1 --threads 32
+ganon classify --db-prefix ../ganon/viral_db -s ../data/projects/viral/fastq/iss_hiseq_viral_reads_R1.fastq ../data/projects/viral/fastq/iss_hiseq_viral_reads_R2.fastq --output-all --output-all -o ../ganon/iss_hiseq_viral --threads 32
+ganon classify --db-prefix ../ganon/viral_db -s ../data/projects/viral/fastq/iss_miseq_viral_reads_R1.fastq ../data/projects/viral/fastq/iss_miseq_viral_reads_R2.fastq --output-all --output-all -o ../ganon/iss_miseq_viral --threads 32
