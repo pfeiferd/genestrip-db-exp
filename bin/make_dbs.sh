@@ -3,7 +3,7 @@ set -e
 
 scriptdir=$(dirname "$0")
 
-cd $scriptdir/.
+cd $scriptdir/..
 
 # Prepare genomes for other systems via Genestrip
 mvn exec:exec@match -Dname=tick-borne -Dgoal=extractrefseqcsv
@@ -13,8 +13,9 @@ mvn exec:exec@match -Dname=viral -Dgoal=extractrefseqcsv
 # Prepare input files for custom DB builds of other systems.
 mvn exec:exec@inputcsv
 
-
 ### Ganon ###
+
+cd $scriptdir/..
 
 # Create a dirs
 mkdir -p ../ganon/viral_db
