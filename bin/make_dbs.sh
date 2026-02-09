@@ -15,7 +15,9 @@ mvn exec:exec@inputcsv
 
 ### Ganon ###
 
-cd $scriptdir
+cd $scriptdir/.
+
+pwd
 
 # Create a dirs
 mkdir -p ../ganon/viral_db
