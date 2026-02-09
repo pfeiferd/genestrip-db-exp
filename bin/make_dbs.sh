@@ -3,9 +3,7 @@ set -e
 
 scriptdir=$(dirname "$0")
 
-mkdir -p $scriptdir/..
-
-cd $scriptdir/..
+cd $scriptdir/.
 
 # Prepare genomes for other systems via Genestrip
 mvn exec:exec@match -Dname=tick-borne -Dgoal=extractrefseqcsv
