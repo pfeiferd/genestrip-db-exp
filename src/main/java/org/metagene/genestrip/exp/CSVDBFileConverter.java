@@ -68,8 +68,8 @@ public class CSVDBFileConverter {
 
         try (CSVParser parser = CSV_FORMAT
                 .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
-            File ganonInputFile = new File(project.getResultsDir(), db + "_ku.map");
-            try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
+            File kuInputFile = new File(project.getResultsDir(), db + "_ku.map");
+            try (PrintStream out = new PrintStream(new FileOutputStream(kuInputFile))) {
                 int i = 0;
                 for (CSVRecord record : parser.getRecords()) {
                     if (i > 0) {
@@ -89,7 +89,7 @@ public class CSVDBFileConverter {
     public static void main(String[] args) throws IOException {
         CSVDBFileConverter converter = new CSVDBFileConverter(new File("./data"));
 
-        String[] dbs = new String[] { "human_virus", "viral" };
+        String[] dbs = new String[] { "human_virus", "viral", "tick-borne" };
         for (int i = 0; i < dbs.length; i++) {
             converter.csv2GanonInputFileFormat(dbs[i], "../data/projects/" + dbs[i] + "/fasta/");
             converter.csv2KuMapFileFormat(dbs[i]);

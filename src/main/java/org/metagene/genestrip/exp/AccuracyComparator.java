@@ -62,7 +62,7 @@ public class AccuracyComparator {
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_accuracyReport.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt");
-//            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt");
+            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt");
 
             ps.println("fastq key; system; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             String system;
@@ -71,8 +71,8 @@ public class AccuracyComparator {
                 int total = counts[5] - counts[4]; // No correct result without ground truth available.
                 printCounts(ps, fastqKey, "genestrip", counts, total);
 
-//                counts = resKU.get(fastqKey);
-//                printCounts(ps, fastqKey, "krakenUniq", counts, total);
+                counts = resKU.get(fastqKey);
+                printCounts(ps, fastqKey, "krakenUniq", counts, total);
 
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all");
                 printCounts(ps, fastqKey, "ganon", counts, total);
