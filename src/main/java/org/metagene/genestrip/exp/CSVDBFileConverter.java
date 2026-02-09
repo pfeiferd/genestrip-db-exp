@@ -91,7 +91,7 @@ public class CSVDBFileConverter {
 
         String[] dbs = new String[] { "human_virus", "viral", "tick-borne" };
         for (int i = 0; i < dbs.length; i++) {
-            converter.csv2GanonInputFileFormat(dbs[i], "data/projects/" + dbs[i] + "/fasta/");
+            converter.csv2GanonInputFileFormat(dbs[i], "./data/projects/" + dbs[i] + "/fasta/");
             converter.csv2KuMapFileFormat(dbs[i]);
         }
     }
