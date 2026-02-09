@@ -18,7 +18,7 @@ mvn exec:exec@inputcsv
 # Create a dirs
 mkdir -p ganon/viral_db
 mkdir -p ganon/viral_lowfp_db
-mkdir -p ganon/human_db
+mkdir -p ganon/human_virus_db
 mkdir -p ganon/human_lowfp_db
 mkdir -p ganon/tick-borne_db
 mkdir -p ganon/tick-borne_lowfp_db
