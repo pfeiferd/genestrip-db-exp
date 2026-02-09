@@ -65,7 +65,6 @@ public class AccuracyComparator {
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt");
 
             ps.println("fastq key; system; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
-            String system;
             for (String fastqKey : fastqKeys) {
                 int[] counts = resGenestrip.get(fastqKey);
                 int total = counts[5] - counts[4]; // No correct result without ground truth available.
