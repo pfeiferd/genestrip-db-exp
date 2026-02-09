@@ -1,9 +1,7 @@
 package org.metagene.genestrip.exp;
 
-import org.metagene.genestrip.kucomp.GanonMatchComparator;
 import org.metagene.genestrip.kucomp.KrakenDBComparator;
 import org.metagene.genestrip.kucomp.KrakenMatchComparator;
-import org.metagene.genestrip.tax.Rank;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,15 +9,6 @@ import java.util.Map;
 
 public class ExperimentRunner {
     public static void main(String[] args) throws IOException {
-
-        /*
-        GanonMatchComparator gmc = new GanonMatchComparator(new File("./data"), new File("./results"));
-        gmc.accuracyCheckForSimulatedViralReadsGanon("viral", "ganon/iss_hiseq_viral.all");
-         */
-
-        KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
-        c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
-        /*
         KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"), new File("./results"));
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
@@ -32,9 +21,9 @@ public class ExperimentRunner {
         System.out.println("** Figure 3 **");
         c1.compareWithKUResults("viral", "viral_db", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", false);
 
-        System.out.println("** Text in context of Figure 3 **");
-        c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
-        c1.accuracyCheckForSimulatedViralReadsKU("viral", "viral_ku_comp.txt");
+//        System.out.println("** Text in context of Figure 3 **");
+//        c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
+//        c1.accuracyCheckForSimulatedViralReadsKU("viral", "viral_ku_comp.txt");
         System.out.println("** Figure 4 **");
         Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", null, "saliva.txt", false);
         System.out.println("** Table 3 **");
@@ -62,7 +51,5 @@ public class ExperimentRunner {
         System.out.println("** Figure 7 and Figure 8 **");
         c1.compareWithKUResults("tick-borne", "microbial_db", null, "seventicks.txt", true);
         c1.aggregateCompareWithKUResults("tick-borne", "ticks.txt");
-
-         */
     }
 }

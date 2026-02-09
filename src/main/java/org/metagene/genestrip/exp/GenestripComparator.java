@@ -24,6 +24,7 @@ import java.util.*;
 public class GenestripComparator {
     protected static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
             .setDelimiter(';').setRecordSeparator('\n').build();
+
     protected static final DecimalFormat LF = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US));
     protected static final DecimalFormat DF = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
 
