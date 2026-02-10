@@ -17,7 +17,7 @@ for db in viral viral_lowfp human_virus human_virus_lowfp;
 
     for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
-      ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}_1.fastq ./data/fastq/${id}_2.fastq --output-all --output-all -o ./ganon/${db}_${id} --threads 32
+      ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz --output-all --output-all -o ./ganon/${db}_${id} --threads 32
     done
   done
 
