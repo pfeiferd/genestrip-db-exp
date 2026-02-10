@@ -21,20 +21,16 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
 
-public class AccuracyComparator {
-    protected static final DecimalFormat LF = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US));
-    protected static final DecimalFormat DF = new DecimalFormat("#,##0.00", new DecimalFormatSymbols(Locale.US));
-
+public class AccuracyComparator extends GenestripComparator {
     private static final CSVFormat GANON_ALL_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
             .setDelimiter('\t').setRecordSeparator('\n').build();
 
     private final boolean format;
-    private final File baseDir;
     private final TaxTree taxTree;
     private final AccessionMap accessionMap;
 
     public AccuracyComparator(File baseDir, boolean format) throws IOException {
-        this.baseDir = baseDir;
+        super(baseDir, null);
         this.format = format;
 
         GSCommon config = new GSCommon(baseDir);
@@ -55,29 +51,33 @@ public class AccuracyComparator {
         maker.dumpAll();
     }
 
-    public void writeReportFile(String db, String... fastqKeys) throws IOException {
+    public void writeReportFile(String db, String checkDB, String... fastqKeys) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, null, null, null, null,
                 null, null, null, false);
+        SmallTaxTree checkTree = null;
+        if (checkDB != null) {
+            checkTree = getDatabase(checkDB, false).getTaxTree();
+        }
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_accuracyReport.csv")))) {
-            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt");
-            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt");
+            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt", checkTree);
+            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree);
 
             ps.println("fastq key; system; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
                 int[] counts = resGenestrip.get(fastqKey);
-                int total = counts[5] - counts[4]; // No correct result without ground truth available.
+                int total = counts[5]; // No correct results without ground truth available.
                 printCounts(ps, fastqKey, "genestrip", counts, total);
 
                 counts = resKU.get(fastqKey);
                 printCounts(ps, fastqKey, "krakenUniq", counts, total);
 
-                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all");
+                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree);
                 printCounts(ps, fastqKey, "ganon", counts, total);
 
-//                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all");
-//                printCounts(ps, fastqKey, "ganon_lowfp", counts, total);
+                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree);
+                printCounts(ps, fastqKey, "ganon_lowfp", counts, total);
             }
         }
     }
@@ -115,7 +115,7 @@ public class AccuracyComparator {
         return format ? DF.format(d) : String.valueOf(d);
     }
 
-    public int[] accuracyForSimulatedReadsGanon(String db, String ganonReportFile) throws IOException {
+    public int[] accuracyForSimulatedReadsGanon(String db, String ganonReportFile, SmallTaxTree checkTree) throws IOException {
         Map<String, TaxTree.TaxIdNode> matchesMap = new HashMap<String, TaxTree.TaxIdNode>();
         try (CSVParser parser = GANON_ALL_FORMAT
                 .parse(new InputStreamReader(new FileInputStream(new File(ganonReportFile))))) {
@@ -147,8 +147,10 @@ public class AccuracyComparator {
             int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
             TaxTree.TaxIdNode node = accessionMap.get(desc, desc[0] == '>' ? 1 : 0, pos, false);
             if (node != null) {
-                TaxTree.TaxIdNode classNode = matchesMap.get(descr);
-                updateMatchCounts(classNode, node, counters);
+                if (isAsSpeciesOrBelowInCheckTree(node, checkTree)) {
+                    TaxTree.TaxIdNode classNode = matchesMap.get(descr);
+                    updateMatchCounts(classNode, node, counters);
+                }
             } else {
                 counters[4]++;
             }
@@ -159,7 +161,7 @@ public class AccuracyComparator {
         return counters;
     }
 
-    public Map<String, int[]> accuracyForSimulatedReadsGenestrip(String db, String csvFile2) throws IOException {
+    public Map<String, int[]> accuracyForSimulatedReadsGenestrip(String db, String csvFile2, SmallTaxTree checkTree) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, csvFile2, null, null, null,
                 null, null, null, false);
@@ -175,8 +177,7 @@ public class AccuracyComparator {
             @Override
             public void afterMatch(FastqKMerMatcher.MatcherReadEntry myReadEntry, boolean b) {
                 synchronized (counters) {
-                    counters[5]++;
-                    handleMatch(myReadEntry.classNode == null ? null : myReadEntry.classNode.getTaxId(),  myReadEntry.readDescriptor, counters);
+                    handleMatch(myReadEntry.classNode == null ? null : myReadEntry.classNode.getTaxId(),  myReadEntry.readDescriptor, counters, checkTree);
                 }
             }
 
@@ -195,14 +196,30 @@ public class AccuracyComparator {
         return result;
     }
 
-    protected void handleMatch(String classTaxId, byte[] desc, int[] counters) {
+    protected void handleMatch(String classTaxId, byte[] desc, int[] counters, SmallTaxTree checkTree) {
         int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
         TaxTree.TaxIdNode node = accessionMap.get(desc, desc[1] == '>' ? 2 : 1, pos, false);
         if (node != null) {
-            TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
-            updateMatchCounts(classNode, node, counters);
+            if (isAsSpeciesOrBelowInCheckTree(node, checkTree)) {
+                TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
+                updateMatchCounts(classNode, node, counters);
+                counters[5]++;
+            }
         } else {
             counters[4]++;
+        }
+    }
+
+    private boolean isAsSpeciesOrBelowInCheckTree(TaxTree.TaxIdNode node, SmallTaxTree checkTree) {
+        if (checkTree != null) {
+            SmallTaxTree.SmallTaxIdNode snode = checkTree.getNodeByTaxId(node.getTaxId());
+            while (snode != null && !snode.getRank().equals(Rank.SPECIES)) {
+                snode = snode.getParent();
+            }
+            return snode != null;
+        }
+        else {
+            return true;
         }
     }
 
@@ -230,7 +247,7 @@ public class AccuracyComparator {
         }
     }
 
-    public Map<String, int[]> accuracyForSimulatedReadsKU(String db, String csvFile2) throws IOException {
+    public Map<String, int[]> accuracyForSimulatedReadsKU(String db, String csvFile2, SmallTaxTree checkTree) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, csvFile2, null, null, null,
                 null, null, null, false);
@@ -245,8 +262,7 @@ public class AccuracyComparator {
             @Override
             public void afterMatch(String krakenTaxid, byte[] readDescriptor) {
                 synchronized (counters) {
-                    counters[5]++;
-                    handleMatch(krakenTaxid, readDescriptor, counters);
+                    handleMatch(krakenTaxid, readDescriptor, counters, checkTree);
                 }
             }
 
@@ -274,6 +290,8 @@ public class AccuracyComparator {
     }
 
     public static void main(String[] args) throws IOException {
-        new AccuracyComparator(new File("./data"), false).writeReportFile("viral", "fastq1", "iss_hiseq", "iss_miseq");
+        AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
+        comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
     }
 }
