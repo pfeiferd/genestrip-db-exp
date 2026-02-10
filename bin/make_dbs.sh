@@ -36,7 +36,7 @@ basedir=$(pwd)
 
 ### KrakenUniq ###
 
-cd $basedir/../ku/krakenuniq
+cd $basedir/ku/krakenuniq
 
 # Create a viral database
 mkdir -p ../viral_db
