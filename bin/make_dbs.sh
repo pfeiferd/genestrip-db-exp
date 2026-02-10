@@ -67,7 +67,7 @@ cp ../../data/projects/viral/csv/viral_ku.map ../viral_db/library
 cp ../../data/projects/human_virus/fasta/*.fa.gz ../human_virus_db/library
 # KU only accepts unzipped files ending with fa, fna and so on
 gunzip ../human_virus_db/library/*.fa.gz
-cp ../../data/projects/human_virus_db/csv/human_virus_ku.map ../human_virus_db/library
+cp ../../data/projects/human_virus/csv/human_virus_ku.map ../human_virus_db/library
 
 # Not needed (yet):
 #cp ../../data/projects/tick-borne/fasta/*.fa.gz ../tick-borne_db/library
