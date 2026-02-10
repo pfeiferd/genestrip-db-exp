@@ -76,6 +76,8 @@ public class CSVDBFileConverter {
                         String descr = record.get(0);
                         String taxid = record.get(1);
                         out.print(descr);
+                        out.print("|kraken:taxid|");
+                        out.print(taxid);
                         out.print('\t');
                         out.print(taxid);
                         out.println();
