@@ -77,8 +77,8 @@ cp ../../data/projects/human_virus_db/csv/human_virus_ku.map ../human_virus_db/l
 
 export JELLYFISH_BIN=$(pwd)/jellyfish-install/bin/jellyfish
 
-../../cgmemtime/cgmemtime ./krakenuniq-build --db ../viral_db # &> make_ku_viral_db_cgmemtime.log
-../../cgmemtime/cgmemtime ./krakenuniq-build --db ../human_virus_db # &> make_ku_human_virus_db_cgmemtime.log
+./krakenuniq-build --db ../viral_db # &> make_ku_viral_db_cgmemtime.log
+./krakenuniq-build --db ../human_virus_db # &> make_ku_human_virus_db_cgmemtime.log
 # Not needed (yet):
 # ../../cgmemtime/cgmemtime ./krakenuniq-build --db ../tick-borne_db # &> make_ku_tick-borne_db_cgmemtime.log
 
