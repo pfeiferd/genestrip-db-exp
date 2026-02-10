@@ -168,8 +168,6 @@ public class AccuracyComparator extends GenestripComparator {
         project.initConfigParam(GSConfigKey.THREADS, -1);
 
         GSMaker maker = new GSMaker(project);
-        ObjectGoal<Database, GSProject> dbGoal = (ObjectGoal<Database, GSProject>) maker.getGoal(GSGoalKey.LOAD_DB);
-        SmallTaxTree smallTaxTree = dbGoal.get().getTaxTree();
         MatchResultGoal matchResGoal = (MatchResultGoal) maker.getGoal(GSGoalKey.MATCHRES);
         Map<String, int[]> result = new HashMap<>();
         int[] counters = new int[6];
