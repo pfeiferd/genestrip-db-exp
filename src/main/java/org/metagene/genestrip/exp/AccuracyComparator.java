@@ -74,10 +74,10 @@ public class AccuracyComparator extends GenestripComparator {
                 counts = resK2.get(fastqKey);
                 printCounts(ps, fastqKey, "k2", counts, total);
 
-                /*
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree);
                 printCounts(ps, fastqKey, "ganon", counts, total);
 
+                /*
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree);
                 printCounts(ps, fastqKey, "ganon_lowfp", counts, total);
                  */
