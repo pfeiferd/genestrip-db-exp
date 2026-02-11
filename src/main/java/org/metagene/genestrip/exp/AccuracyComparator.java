@@ -57,7 +57,7 @@ public class AccuracyComparator extends GenestripComparator {
             checkTree = getDatabase(checkDB, false).getTaxTree();
         }
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_accuracyReport.csv")))) {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracyReport.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt", checkTree);
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, false);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, true);
@@ -368,9 +368,9 @@ public class AccuracyComparator extends GenestripComparator {
 
     public static void main(String[] args) throws IOException {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
-        comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
 
-        //comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
     }
 }
