@@ -88,11 +88,46 @@ public class CSVDBFileConverter {
         }
     }
 
+    public void csv2NanosimInputFileFormat(String db, String pathPrefix) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, db, null, null, null, null, null, null,
+                null, null, null, false);
+        project.initConfigParam(GSConfigKey.THREADS, -1);
+
+        GSMaker maker = new GSMaker(project);
+
+        ExtractRefSeqCSVGoal extractRefSeqCSVGoal = (ExtractRefSeqCSVGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_CSV);
+        extractRefSeqCSVGoal.make();
+
+        try (CSVParser parser = CSV_FORMAT
+                .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
+            File ganonInputFile = new File(project.getResultsDir(), db + "_nanosim.tsv");
+            try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
+                int i = 0;
+                for (CSVRecord record : parser.getRecords()) {
+                    if (i > 0) {
+                        String descr = record.get(0);
+                        String taxid = record.get(1);
+                        out.print(taxid);
+                        out.print('\t');
+                        out.print(pathPrefix);
+                        out.print(descr);
+                        out.print(".fa.gz");
+                        out.println();
+                    }
+                    i++;
+                }
+            }
+        }
+    }
+
+
     public static void main(String[] args) throws IOException {
         CSVDBFileConverter converter = new CSVDBFileConverter(new File("./data"));
 
         String[] dbs = new String[] { "human_virus", "viral", "tick-borne" };
         for (int i = 0; i < dbs.length; i++) {
+            converter.csv2NanosimInputFileFormat(dbs[i], "./data/projects/" + dbs[i] + "/fasta/");
             converter.csv2GanonInputFileFormat(dbs[i], "./data/projects/" + dbs[i] + "/fasta/");
             converter.csv2KuMapFileFormat(dbs[i]);
         }
