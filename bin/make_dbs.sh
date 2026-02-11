@@ -109,15 +109,15 @@ cp ../../data/common/names.dmp ../human_virus_db/taxonomy
 
 for file in $basedir/ku/viral_db/library/*.fa
 do
-    kraken2-build --add-to-library $file --db ../viral_db
+    ./kraken2-build --no-masking --add-to-library $file --db ../viral_db
 done
-kraken2-build --build --db ../viral_db
+./kraken2-build --no-masking --build --db ../viral_db
 
 for file in $basedir/ku/human_virus_db/library/*.fa
 do
-    kraken2-build --add-to-library $file --db ../human_virus_db
+    ./kraken2-build --no-masking --add-to-library $file --db ../human_virus_db
 done
-kraken2-build --build --db ../human_virus_db
+./kraken2-build --no-masking --build --db ../human_virus_db
 
 ## Download ready made databases for tick analysis:
 
