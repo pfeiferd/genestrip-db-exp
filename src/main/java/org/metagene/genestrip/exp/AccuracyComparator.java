@@ -306,8 +306,10 @@ public class AccuracyComparator extends GenestripComparator {
                         "data/projects/" + checkDB + "/krakenout/" + checkDB + "_matchres_" + fastqKey + ".out", checkTree, true);
                 printCounts(ps, fastqKey, "genestrip", counts, counts[5]);
 
+                /*
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_" + fastqKey + ".all", "ganon/" + checkDB + "_" + fastqKey + ".all", checkTree, false);
                 printCounts(ps, fastqKey, "ganon", counts, counts[5]);
+                 */
 
                 counts = accuracyVia2ReportFiles("ku/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
                 printCounts(ps, fastqKey, "krakenUniq", counts, counts[5]);
