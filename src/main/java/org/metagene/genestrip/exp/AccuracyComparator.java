@@ -59,7 +59,8 @@ public class AccuracyComparator extends GenestripComparator {
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_accuracyReport.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt", checkTree);
-            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree);
+            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, false);
+            Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, true);
 
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
@@ -69,6 +70,9 @@ public class AccuracyComparator extends GenestripComparator {
 
                 counts = resKU.get(fastqKey);
                 printCounts(ps, fastqKey, "krakenUniq", counts, total);
+
+                counts = resK2.get(fastqKey);
+                printCounts(ps, fastqKey, "k2", counts, total);
 
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree);
                 printCounts(ps, fastqKey, "ganon", counts, total);
@@ -229,11 +233,14 @@ public class AccuracyComparator extends GenestripComparator {
         }
     }
 
-    public Map<String, int[]> accuracyForSimulatedReadsKU(String db, String csvFile2, SmallTaxTree checkTree) throws IOException {
+    public Map<String, int[]> accuracyForSimulatedReadsKU(String db, String csvFile2, SmallTaxTree checkTree, boolean k2) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, csvFile2, null, null, null,
                 null, null, null, false);
         project.initConfigParam(GSConfigKey.THREADS, -1);
+        if (k2) {
+            project.initConfigParam(GSConfigKey.KRAKEN_BIN, "./k2/kraken2/kraken2 classify");
+        }
 
         GSMaker maker = new GSMaker(project);
 
@@ -293,6 +300,9 @@ public class AccuracyComparator extends GenestripComparator {
 
                 counts = accuracyVia2ReportFiles("ku/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
                 printCounts(ps, fastqKey, "krakenUniq", counts, counts[5]);
+
+                counts = accuracyVia2ReportFiles("k2/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
+                printCounts(ps, fastqKey, "k2", counts, counts[5]);
             }
         }
     }
@@ -303,9 +313,6 @@ public class AccuracyComparator extends GenestripComparator {
         // Count the positives.
         for (String descr : gtMap.keySet()) {
             TaxTree.TaxIdNode match = gtMap.get(descr);
-            if ("90961".equals(match.getTaxId())) {
-                System.out.println("stop");
-            }
             if (isAsRequestedOrBelowInCheckTree(match, checkTree)) {
                 counters[5]++;
             }
@@ -354,7 +361,7 @@ public class AccuracyComparator extends GenestripComparator {
 
     public static void main(String[] args) throws IOException {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        //comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
         //comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
 
         comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
