@@ -99,6 +99,7 @@ public class CSVDBFileConverter {
         ExtractRefSeqCSVGoal extractRefSeqCSVGoal = (ExtractRefSeqCSVGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_CSV);
         extractRefSeqCSVGoal.make();
 
+        // Beware: NanoSim Simulator does not seem to accept gzipped fasta files.
         try (CSVParser parser = CSV_FORMAT
                 .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
             File ganonInputFile = new File(project.getResultsDir(), db + "_nanosim.tsv");
@@ -112,7 +113,7 @@ public class CSVDBFileConverter {
                         out.print('\t');
                         out.print(pathPrefix);
                         out.print(descr);
-                        out.print(".fa.gz");
+                        out.print(".fa");
                         out.println();
                     }
                     i++;

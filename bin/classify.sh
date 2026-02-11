@@ -10,8 +10,8 @@ basedir=$(pwd)
 
 mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt
 mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp.txt
-#mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt
-#mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt
+mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt
+mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt
 
 ## Ganon ##
 
@@ -22,10 +22,10 @@ for db in viral viral_lowfp human_virus human_virus_lowfp;
     ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq --output-all --output-all -o ./ganon/${db}_iss_hiseq --threads 32
     ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all --output-all -o ./ganon/${db}_iss_miseq --threads 32
 
- #   for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
- #   do
- #     ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz --output-all --output-all -o ./ganon/${db}_${id} --threads 32
- #   done
+    for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
+    do
+      ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz --output-all --output-all -o ./ganon/${db}_${id} --threads 32
+    done
   done
 
 ## KrakenUniq ##
@@ -36,10 +36,10 @@ for db in viral human_virus;
     ./ku/krakenuniq/krakenuniq --threads 10 --db ./ku/${db}_db --output ./ku/${db}_iss_hiseq.tsv ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq
     ./ku/krakenuniq/krakenuniq --threads 10 --db ./ku/${db}_db --output ./ku/${db}_iss_miseq.tsv ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq
 
-#   for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
-#    do
-#      ./ku/krakenuniq/krakenuniq --only-classified-output --threads 10 --db ./ku/${db}_db --output ./ku/${db}_${id}.tsv ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz
-#    done
+   for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
+    do
+      ./ku/krakenuniq/krakenuniq --only-classified-output --threads 10 --db ./ku/${db}_db --output ./ku/${db}_${id}.tsv ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz
+    done
   done
 
 ## Kraken2 ##
@@ -50,10 +50,10 @@ for db in viral human_virus;
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_iss_hiseq.tsv ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_iss_miseq.tsv ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq
 
-#   for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
-#    do
-#      # First restrict to classified fastq file, then generate output to reduce effective output size.
-#      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz
-#      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./k2/classified_${id}.fastq --output ./k2/${db}_${id}.tsv
-#    done
+   for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
+    do
+      # First restrict to classified fastq file, then generate output to reduce effective output size.
+      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz
+      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./k2/classified_${id}.fastq --output ./k2/${db}_${id}.tsv
+    done
   done
