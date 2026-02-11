@@ -10,15 +10,12 @@ import org.metagene.genestrip.make.ObjectGoal;
 import org.metagene.genestrip.match.FastqKMerMatcher;
 import org.metagene.genestrip.match.MatchingResult;
 import org.metagene.genestrip.refseq.AccessionMap;
-import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.tax.Rank;
 import org.metagene.genestrip.tax.SmallTaxTree;
 import org.metagene.genestrip.tax.TaxTree;
 import org.metagene.genestrip.util.ByteArrayUtil;
 
 import java.io.*;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 public class AccuracyComparator extends GenestripComparator {
@@ -64,7 +61,7 @@ public class AccuracyComparator extends GenestripComparator {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt", checkTree);
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree);
 
-            ps.println("fastq key; system; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
+            ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
                 int[] counts = resGenestrip.get(fastqKey);
                 int total = counts[5]; // No correct results without ground truth available.
@@ -86,6 +83,8 @@ public class AccuracyComparator extends GenestripComparator {
         ps.print(key);
         ps.print(';');
         ps.print(system);
+        ps.print(';');
+        ps.print(format(counts[0]));
         ps.print(';');
         ps.print(format(counts[1]));
         ps.print(';');
@@ -116,40 +115,19 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     public int[] accuracyForSimulatedReadsGanon(String db, String ganonReportFile, SmallTaxTree checkTree) throws IOException {
-        Map<String, TaxTree.TaxIdNode> matchesMap = new HashMap<String, TaxTree.TaxIdNode>();
-        try (CSVParser parser = GANON_ALL_FORMAT
-                .parse(new InputStreamReader(new FileInputStream(new File(ganonReportFile))))) {
-            // Ganon does multiple matches.
-            // We reduce it to a single match by computing the LCA in case of the multiple matches.
-            for (CSVRecord record : parser.getRecords()) {
-                String descr = record.get(0);
-                String ganonTaxid = record.get(1);
-                if (ganonTaxid != null) {
-                    TaxTree.TaxIdNode classNode = taxTree.getNodeByTaxId(ganonTaxid);
-                    if (classNode != null) {
-                        TaxTree.TaxIdNode match = matchesMap.get(descr);
-                        if (match != null) {
-                            match = taxTree.getLeastCommonAncestor(match, classNode);
-                        } else {
-                            match = classNode;
-                        }
-                        matchesMap.put(descr, match);
-                    } else {
-                        System.out.println("Invalid taxid from Ganon: " + ganonTaxid);
-                    }
-                }
-            }
-        }
-
+        Map<String, TaxTree.TaxIdNode> matchesMap = getUniqueClassMap(new File(ganonReportFile), false);
         int[] counters = new int[5];
         for (String descr : matchesMap.keySet()) {
             byte[] desc = descr.getBytes();
             int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
             TaxTree.TaxIdNode node = accessionMap.get(desc, desc[0] == '>' ? 1 : 0, pos, false);
             if (node != null) {
-                if (isAsSpeciesOrBelowInCheckTree(node, checkTree)) {
-                    TaxTree.TaxIdNode classNode = matchesMap.get(descr);
+                TaxTree.TaxIdNode classNode = matchesMap.get(descr);
+                if (isAsRequestedOrBelowInCheckTree(node, checkTree)) {
                     updateMatchCounts(classNode, node, counters);
+                }
+                else if (classNode != null && isAsRequestedOrBelowInCheckTree(classNode, checkTree)) {
+                    counters[0]++; // Count as classified.
                 }
             } else {
                 counters[4]++;
@@ -198,23 +176,29 @@ public class AccuracyComparator extends GenestripComparator {
         int pos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
         TaxTree.TaxIdNode node = accessionMap.get(desc, desc[1] == '>' ? 2 : 1, pos, false);
         if (node != null) {
-            if (isAsSpeciesOrBelowInCheckTree(node, checkTree)) {
-                TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
-                updateMatchCounts(classNode, node, counters);
+            TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
+            if (isAsRequestedOrBelowInCheckTree(node, checkTree)) {
                 counters[5]++;
+                updateMatchCounts(classNode, node, counters);
+            }
+            else if (classNode != null && isAsRequestedOrBelowInCheckTree(classNode, checkTree)) {
+                counters[0]++; // Count as classified.
             }
         } else {
             counters[4]++;
         }
     }
 
-    private boolean isAsSpeciesOrBelowInCheckTree(TaxTree.TaxIdNode node, SmallTaxTree checkTree) {
+    private boolean isAsRequestedOrBelowInCheckTree(TaxTree.TaxIdNode node, SmallTaxTree checkTree) {
         if (checkTree != null) {
             SmallTaxTree.SmallTaxIdNode snode = checkTree.getNodeByTaxId(node.getTaxId());
-            while (snode != null && !snode.getRank().equals(Rank.SPECIES)) {
+            while (snode != null) {
+                if (snode.isRequested()) {
+                    return true;
+                }
                 snode = snode.getParent();
             }
-            return snode != null;
+            return false;
         }
         else {
             return true;
@@ -224,7 +208,7 @@ public class AccuracyComparator extends GenestripComparator {
     private void updateMatchCounts(TaxTree.TaxIdNode classNode, TaxTree.TaxIdNode node, int[] counters) {
         if (classNode != null) {
             counters[0]++;
-            TaxTree.TaxIdNode lca = taxTree.getLeastCommonAncestor(node, classNode);
+            TaxTree.TaxIdNode lca = taxTree.getLowestCommonAncestor(node, classNode);
             while (lca != null && Rank.NO_RANK.equals(lca.getRank())) {
                 lca = lca.getParent();
             }
@@ -287,9 +271,92 @@ public class AccuracyComparator extends GenestripComparator {
         System.out.println("Total classified: " + counters[0]);
     }
 
+    public void writeReportFile2(String db, String checkDB, String... fastqKeys) throws IOException {
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, db, null, null, null, null, null, null,
+                null, null, null, false);
+        SmallTaxTree checkTree = null;
+        if (checkDB != null) {
+            checkTree = getDatabase(checkDB, false).getTaxTree();
+        }
+
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_accuracyReport2.csv")))) {
+            ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
+            for (String fastqKey : fastqKeys) {
+                int[] counts = accuracyVia2ReportFiles(
+                        "data/projects/" + db + "/krakenout/" + db + "_matchres_" + fastqKey + ".out",
+                        "data/projects/" + checkDB + "/krakenout/" + checkDB + "_matchres_" + fastqKey + ".out", checkTree, true);
+                printCounts(ps, fastqKey, "genestrip", counts, counts[5]);
+
+                counts = accuracyVia2ReportFiles("ganon/" + db + "_" + fastqKey + ".all", "ganon/" + checkDB + "_" + fastqKey + ".all", checkTree, false);
+                printCounts(ps, fastqKey, "ganon", counts, counts[5]);
+
+                counts = accuracyVia2ReportFiles("ku/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
+                printCounts(ps, fastqKey, "krakenUniq", counts, counts[5]);
+            }
+        }
+    }
+
+    protected int[] accuracyVia2ReportFiles(String groundTruthReportFile, String resFile, SmallTaxTree checkTree, boolean kraken) throws IOException {
+        Map<String, TaxTree.TaxIdNode> gtMap = getUniqueClassMap(new File(groundTruthReportFile), kraken);
+        int[] counters = new int[6];
+        // Count the positives.
+        for (String descr : gtMap.keySet()) {
+            TaxTree.TaxIdNode match = gtMap.get(descr);
+            if ("90961".equals(match.getTaxId())) {
+                System.out.println("stop");
+            }
+            if (isAsRequestedOrBelowInCheckTree(match, checkTree)) {
+                counters[5]++;
+            }
+        }
+        Map<String, TaxTree.TaxIdNode> resMap = getUniqueClassMap(new File(resFile), kraken);
+        for (String key : resMap.keySet()) {
+            TaxTree.TaxIdNode classNode = resMap.get(key);
+            TaxTree.TaxIdNode node = gtMap.get(key);
+            if (node != null && isAsRequestedOrBelowInCheckTree(node, checkTree)) {
+                updateMatchCounts(classNode, node, counters);
+            }
+            else if (isAsRequestedOrBelowInCheckTree(classNode, checkTree)) {
+                counters[0]++; // Count as classified.
+            }
+        }
+        return counters;
+    }
+
+    // Ganon does multiple matches.
+    // We reduce it to a single match by computing the LCA in case of the multiple matches.
+    // The method works also for Kraken-based output files.
+    protected Map<String, TaxTree.TaxIdNode> getUniqueClassMap(File ganonFile, boolean kraken) throws IOException {
+        Map<String, TaxTree.TaxIdNode> gtMap = new HashMap<>();
+        try (CSVParser parser = GANON_ALL_FORMAT
+                .parse(new InputStreamReader(new FileInputStream(ganonFile)))) {
+            for (CSVRecord record : parser.getRecords()) {
+                String descr = record.get(kraken ? 1 : 0);
+                String taxid = record.get(kraken ? 2 : 1);
+                TaxTree.TaxIdNode node = taxTree.getNodeByTaxId(taxid);
+                if (node != null) {
+                    TaxTree.TaxIdNode match = gtMap.get(descr);
+                    if (match != null) {
+                        match = taxTree.getLowestCommonAncestor(match, node);
+                    } else {
+                        match = node;
+                    }
+                    gtMap.put(descr, match);
+                }
+                else if (!"0".equals(taxid)) {
+                    System.err.println("Invalid taxid in report file: " + taxid);
+                }
+            }
+        }
+        return gtMap;
+    }
+
     public static void main(String[] args) throws IOException {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
-        comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+
+        comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
     }
 }
