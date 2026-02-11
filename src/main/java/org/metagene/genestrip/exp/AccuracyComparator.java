@@ -59,8 +59,11 @@ public class AccuracyComparator extends GenestripComparator {
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_accuracyReport.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt", checkTree);
+            /*
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, false);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, true);
+
+             */
 
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
@@ -68,11 +71,14 @@ public class AccuracyComparator extends GenestripComparator {
                 int total = counts[5]; // No correct results without ground truth available.
                 printCounts(ps, fastqKey, "genestrip", counts, total);
 
+                /*
                 counts = resKU.get(fastqKey);
                 printCounts(ps, fastqKey, "krakenUniq", counts, total);
 
                 counts = resK2.get(fastqKey);
                 printCounts(ps, fastqKey, "k2", counts, total);
+
+                 */
 
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree);
                 printCounts(ps, fastqKey, "ganon", counts, total);
@@ -128,6 +134,9 @@ public class AccuracyComparator extends GenestripComparator {
             if (node != null) {
                 TaxTree.TaxIdNode classNode = matchesMap.get(descr);
                 if (isAsRequestedOrBelowInCheckTree(node, checkTree)) {
+                    if (node != classNode) {
+                        System.out.println("stop");
+                    }
                     updateMatchCounts(classNode, node, counters);
                 }
                 else if (classNode != null && isAsRequestedOrBelowInCheckTree(classNode, checkTree)) {
@@ -240,6 +249,8 @@ public class AccuracyComparator extends GenestripComparator {
         project.initConfigParam(GSConfigKey.THREADS, -1);
         if (k2) {
             project.initConfigParam(GSConfigKey.KRAKEN_BIN, "./k2/kraken2/kraken2 classify");
+            project.initConfigParam(GSConfigKey.KRAKEN_DB, "./k2/" + db + "_db");
+            project.initConfigParam(GSConfigKey.KRAKEN_EXEC_EXPR, "{0} classify --threads 10 -db {1} {2}");
         }
 
         GSMaker maker = new GSMaker(project);
@@ -361,9 +372,9 @@ public class AccuracyComparator extends GenestripComparator {
 
     public static void main(String[] args) throws IOException {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
-        //comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
 
-        comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
     }
 }
