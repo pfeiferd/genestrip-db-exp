@@ -130,6 +130,31 @@
 								<argument>-C</argument>
 								<argument>writeKrakenStyleOut=true</argument>
 								<argument>-C</argument>
+								<argument>writeAll=true</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>matchrep2</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>java</executable>
+							<includeProjectDependencies>true</includeProjectDependencies>
+							<includePluginDependencies>true</includePluginDependencies>
+							<arguments>
+								<argument>-Xmx24G</argument>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>org.metagene.genestrip.Main</argument>
+								<argument>${gs.project.name}</argument>
+								<argument>${gs.project.goal}</argument>
+								<argument>-m</argument>
+								<argument>${gs.project.fqmap}</argument>
+								<argument>-C</argument>
+								<argument>writeKrakenStyleOut=true</argument>
+								<argument>-C</argument>
 								<argument>writeAll=false</argument>
 							</arguments>
 						</configuration>
