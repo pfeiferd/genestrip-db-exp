@@ -10,8 +10,8 @@ basedir=$(pwd)
 
 mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt
 mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp.txt
-#mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=saliva.txt
-#mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt
+#mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt
+#mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt
 
 ## Ganon ##
 
