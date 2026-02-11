@@ -26,13 +26,13 @@ basedir=$(pwd)
 ##mkdir -p ganon/tick-borne_lowfp_db
 #
 ## Build ganon databases
-#ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level species --threads 32
-#ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level species --threads 32 --max-fp 0.0000001
-#ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level species --threads 32
-#ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level species --threads 32 --max-fp 0.0000001
+#ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level leaves --threads 32
+#ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
+#ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level leaves --threads 32
+#ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
 ## Not needed (yet):
-##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_db --level species --threads 32
-##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_lowfp_db --level species --threads 32 --max-fp 0.0000001
+##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_db --level leaves --threads 32
+##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
 
 ### KrakenUniq ###
 
