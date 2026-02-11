@@ -244,7 +244,7 @@ public class AccuracyComparator extends GenestripComparator {
                 null, null, null, false);
         project.initConfigParam(GSConfigKey.THREADS, -1);
         if (k2) {
-            project.initConfigParam(GSConfigKey.KRAKEN_BIN, "./k2/kraken2/kraken2 classify");
+            project.initConfigParam(GSConfigKey.KRAKEN_BIN, "./k2/kraken2/kraken2");
             project.initConfigParam(GSConfigKey.KRAKEN_DB, "./k2/" + db + "_db");
             project.initConfigParam(GSConfigKey.KRAKEN_EXEC_EXPR, "{0} classify --threads 10 -db {1} {2}");
         }
