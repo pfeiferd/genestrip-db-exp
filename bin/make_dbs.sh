@@ -82,6 +82,44 @@ export JELLYFISH_BIN=$(pwd)/jellyfish-install/bin/jellyfish
 # Not needed (yet):
 # ../../cgmemtime/cgmemtime ./krakenuniq-build --db ../tick-borne_db # &> make_ku_tick-borne_db_cgmemtime.log
 
+### Kraken 2 ###
+
+cd $basedir/k2/kraken2
+
+# Create a viral database
+mkdir -p ../viral_db
+mkdir -p ../human_virus_db
+mkdir -p ../tick-borne_db
+
+mkdir -p ../viral_db/library
+mkdir -p ../viral_db/taxonomy
+mkdir -p ../human_virus_db/library
+mkdir -p ../human_virus_db/taxonomy
+# Not needed (yet):
+#mkdir -p ../tick-borne_db/library
+#mkdir -p ../tick-borne_db/taxonomy
+
+cp ../../data/common/nodes.dmp ../viral_db/taxonomy
+cp ../../data/common/names.dmp ../viral_db/taxonomy
+cp ../../data/common/nodes.dmp ../human_virus_db/taxonomy
+cp ../../data/common/names.dmp ../human_virus_db/taxonomy
+# Not needed (yet):
+#cp ../../data/common/nodes.dmp ../tick-borne_db/taxonomy
+#cp ../../data/common/names.dmp ../tick-borne_db/taxonomy
+
+for file in $basedir/ku/viral_db/library/*.fa
+do
+    kraken2-build --add-to-library $file --db ../viral_db
+done
+kraken2-build --build --db ../viral_db
+
+for file in $basedir/ku/human_virus_db/library/*.fa
+do
+    kraken2-build --add-to-library $file --db ../human_virus_db
+done
+kraken2-build --build --db ../human_virus_db
+
+## Download ready made databases for tick analysis:
 
 ### KrakenUniq microbial-db ###
 
@@ -96,6 +134,22 @@ tar -xf kuniq_microbialdb_minus_kdb.20230808.tar
 rm kuniq_microbialdb_minus_kdb.20230808.tar
 wget https://genome-idx.s3.amazonaws.com/kraken/uniq/krakendb-2023-08-08-MICROBIAL/database.kdb
 
-### Kraken 2 ###
+### Kraken 2
 
-# TODO
+cd $basedir/k2/kraken2
+
+mkdir -p ../standard_db
+
+cd ../standard_db_db
+wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20251015.tar.gz
+gunzip k2_standard_20251015.tar.gz
+tar -xf k2_standard_20251015.tar
+rm k2_standard_20251015.tar
+
+### Ganon
+
+cd $basedir
+
+mkdir -p ganon/standard_db
+
+ganon build --source refseq --organism-group archaea bacteria fungi viral --threads 48 --complete-genomes --db-prefix ganon/standard_db
