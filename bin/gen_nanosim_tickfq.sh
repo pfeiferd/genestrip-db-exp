@@ -6,7 +6,7 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
-nanosimdir = ${basedir}/../Nanosim/src
+nanosimdir = ${basedir}/../NanoSim/src
 
 conda activate nanosim
 
