@@ -1,0 +1,3 @@
+# Fastq files previously generate via NanoSim
+tick1_sim tick1_sim.fast
+

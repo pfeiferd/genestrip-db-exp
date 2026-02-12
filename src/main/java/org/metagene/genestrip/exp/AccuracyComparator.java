@@ -48,7 +48,7 @@ public class AccuracyComparator extends GenestripComparator {
         maker.dumpAll();
     }
 
-    public void writeReportFile(String db, String checkDB, String mapFile, boolean nanoSim, String... fastqKeys) throws IOException {
+    public void writeReportFile(String db, String checkDB, String mapFile, boolean nanoSim) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, null, null, null, null,
                 null, null, null, false);
@@ -63,7 +63,7 @@ public class AccuracyComparator extends GenestripComparator {
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, nanoSim);
 
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
-            for (String fastqKey : fastqKeys) {
+            for (String fastqKey : resGenestrip.keySet()) {
                 int[] counts = resGenestrip.get(fastqKey);
                 int total = counts[5]; // No correct results without ground truth available.
                 printCounts(ps, fastqKey, "genestrip", counts, total);
@@ -79,6 +79,38 @@ public class AccuracyComparator extends GenestripComparator {
 
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, nanoSim);
                 printCounts(ps, fastqKey, "ganon_lowfp", counts, total);
+            }
+        }
+    }
+
+    public void writeTickBorneSimReport() throws IOException {
+        String db = "tick-borne";
+        String checkDB = db;
+        String mapFile = "ticks_sim.txt";
+        GSCommon config = new GSCommon(baseDir);
+        GSProject project = new GSProject(config, "tick-borne", null, null, null, null, null, null,
+                null, null, null, false);
+        SmallTaxTree checkTree = getDatabase(checkDB, false).getTaxTree();
+
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
+            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true);
+            Map<String, int[]> resKU = accuracyForSimulatedReadsKU("microbial", mapFile, checkTree, false, true);
+            Map<String, int[]> resK2 = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, true);
+
+            ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
+            for (String fastqKey : resGenestrip.keySet()) {
+                int[] counts = resGenestrip.get(fastqKey);
+                int total = counts[5]; // No correct results without ground truth available.
+                printCounts(ps, fastqKey, "genestrip", counts, total);
+
+                counts = resKU.get(fastqKey);
+                printCounts(ps, fastqKey, "krakenUniq", counts, total);
+
+                counts = resK2.get(fastqKey);
+                printCounts(ps, fastqKey, "k2", counts, total);
+
+                counts = accuracyForSimulatedReadsGanon("standard", "ganon/" + db + "_" + fastqKey + ".all", checkTree, true);
+                printCounts(ps, fastqKey, "ganon", counts, total);
             }
         }
     }
@@ -383,8 +415,10 @@ public class AccuracyComparator extends GenestripComparator {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
         //comp.writeReportFile("viral", null, "viral_acc_comp.txt", false, "fastq1", "iss_hiseq", "iss_miseq");
         //comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", false, "fastq1", "iss_hiseq", "iss_miseq");
-        comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", true, "tick1_sim");
 
         //comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+
+        // Simulated tick files:
+        comp.writeTickBorneSimReport();
     }
 }
