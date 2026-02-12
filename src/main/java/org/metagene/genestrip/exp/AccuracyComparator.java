@@ -77,10 +77,8 @@ public class AccuracyComparator extends GenestripComparator {
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree);
                 printCounts(ps, fastqKey, "ganon", counts, total);
 
-                /*
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree);
                 printCounts(ps, fastqKey, "ganon_lowfp", counts, total);
-                 */
             }
         }
     }
@@ -130,9 +128,11 @@ public class AccuracyComparator extends GenestripComparator {
             if (node != null) {
                 TaxTree.TaxIdNode classNode = matchesMap.get(descr);
                 if (isAsRequestedOrBelowInCheckTree(node, checkTree)) {
+                    /*
                     if (node != classNode) {
                         System.out.println("stop");
                     }
+                     */
                     updateMatchCounts(classNode, node, counters);
                 }
                 else if (classNode != null && isAsRequestedOrBelowInCheckTree(classNode, checkTree)) {
@@ -368,8 +368,8 @@ public class AccuracyComparator extends GenestripComparator {
 
     public static void main(String[] args) throws IOException {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        //comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
-        //comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile("human_virus", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
 
         comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
     }
