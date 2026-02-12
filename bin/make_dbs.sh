@@ -36,6 +36,8 @@ ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
 
 done
+
+echo Hello
 ### KrakenUniq ###
 
 cd $basedir/ku/krakenuniq
