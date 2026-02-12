@@ -6,6 +6,7 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
+if ["a" == "b"]; then
 # Prepare genomes for other systems via Genestrip
 mvn exec:exec@match -Dname=human_virus -Dgoal=extractrefseqcsv
 mvn exec:exec@match -Dname=viral -Dgoal=extractrefseqcsv
@@ -34,6 +35,7 @@ ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_db --level leaves --threads 32
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
 
+fi
 ### KrakenUniq ###
 
 cd $basedir/ku/krakenuniq
@@ -114,6 +116,7 @@ do
 done
 ./kraken2-build --no-masking --build --db ../human_virus_db
 
+
 ## Download ready made databases for tick analysis:
 
 ### KrakenUniq microbial-db ###
@@ -147,4 +150,4 @@ cd $basedir
 
 mkdir -p ganon/standard_db
 
-ganon build --source refseq --organism-group archaea bacteria fungi viral --threads 48 --complete-genomes --db-prefix ganon/standard_db
+ganon build --source refseq --organism-group bacteria --threads 48 --complete-genomes --db-prefix ganon/standard_db
