@@ -59,20 +59,15 @@ cp ../../data/common/names.dmp ../human_virus_db/taxonomy
 #cp ../../data/common/nodes.dmp ../tick-borne_db/taxonomy
 #cp ../../data/common/names.dmp ../tick-borne_db/taxonomy
 
-cp ../../data/projects/viral/fasta/*.fa.gz ../viral_db/library
 # KU only accepts unzipped files ending with fa, fna and so on
-gunzip ../viral_db/library/*.fa.gz
+cp ../../data/projects/viral/fasta/*.fa ../viral_db/library
 cp ../../data/projects/viral/csv/viral_ku.map ../viral_db/library
 
-cp ../../data/projects/human_virus/fasta/*.fa.gz ../human_virus_db/library
-# KU only accepts unzipped files ending with fa, fna and so on
-gunzip ../human_virus_db/library/*.fa.gz
+cp ../../data/projects/human_virus/fasta/*.fa ../human_virus_db/library
 cp ../../data/projects/human_virus/csv/human_virus_ku.map ../human_virus_db/library
 
 # Not needed (yet):
-#cp ../../data/projects/tick-borne/fasta/*.fa.gz ../tick-borne_db/library
-## KU only accepts unzipped files ending with fa, fna and so on
-#gunzip ../tick-borne_db/library/*.fa.gz
+#cp ../../data/projects/tick-borne/fasta/*.fa ../tick-borne_db/library
 #cp ../../data/projects/viral/csv/tick-borne_ku.map ../tick-borne_db/library
 
 export JELLYFISH_BIN=$(pwd)/jellyfish-install/bin/jellyfish
