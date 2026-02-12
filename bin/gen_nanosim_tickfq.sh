@@ -11,7 +11,7 @@ nanosimdir=${basedir}/../NanoSim/src
 #conda init
 #conda activate nanosim
 
-for file in tick1 tick2
+for file in tick1 #tick2
 do
   ${nanosimdir}/read_analysis.py metagenome -q --fastq -gl data/projects/viral/csv/viral_nanosim.tsv -i data/fastq/${file}.fastq.gz  -t 24
   #${nanosimdir}/read_analysis.py metagenome --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -i data/fastq/tick1.fastq.gz  -t 24
