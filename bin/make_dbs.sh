@@ -6,30 +6,30 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
-## Prepare genomes for other systems via Genestrip
-#mvn exec:exec@match -Dname=tick-borne -Dgoal=extractrefseqcsv
-#mvn exec:exec@match -Dname=human_virus -Dgoal=extractrefseqcsv
-#mvn exec:exec@match -Dname=viral -Dgoal=extractrefseqcsv
-#
-## Prepare input files for custom DB builds of other systems.
-#mvn exec:exec@inputcsv
-#
+# Prepare genomes for other systems via Genestrip
+mvn exec:exec@match -Dname=human_virus -Dgoal=extractrefseqcsv
+mvn exec:exec@match -Dname=viral -Dgoal=extractrefseqcsv
+mvn exec:exec@match -Dname=tick-borne -Dgoal=extractrefseqcsv
+
+# Prepare input files for custom DB builds of other systems.
+mvn exec:exec@inputcsv
+
 #### Ganon ###
-#
-## Create a dirs
-#mkdir -p ganon/viral_db
-#mkdir -p ganon/viral_lowfp_db
-#mkdir -p ganon/human_virus_db
-#mkdir -p ganon/human_lowfp_db
-## Not needed (yet):
-##mkdir -p ganon/tick-borne_db
-##mkdir -p ganon/tick-borne_lowfp_db
-#
-## Build ganon databases
-#ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level leaves --threads 32
-#ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
-#ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level leaves --threads 32
-#ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
+
+# Create a dirs
+mkdir -p ganon/viral_db
+mkdir -p ganon/viral_lowfp_db
+mkdir -p ganon/human_virus_db
+mkdir -p ganon/human_lowfp_db
+# Not needed (yet):
+#mkdir -p ganon/tick-borne_db
+#mkdir -p ganon/tick-borne_lowfp_db
+
+# Build ganon databases
+ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level leaves --threads 32
+ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
+ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level leaves --threads 32
+ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
 ## Not needed (yet):
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_db --level leaves --threads 32
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
