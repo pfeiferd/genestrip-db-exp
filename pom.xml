@@ -4,6 +4,7 @@
 	<artifactId>genestrip-db-exp</artifactId>
 	<version>1.6</version>
 
+
 	<properties>
 		<gs.project.name>${name}</gs.project.name>
 		<gs.project.goal>${goal}</gs.project.goal>
