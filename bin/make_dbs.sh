@@ -6,7 +6,7 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
-if ["a" == "b"]; then
+if ['a' == 'b']; then
 # Prepare genomes for other systems via Genestrip
 mvn exec:exec@match -Dname=human_virus -Dgoal=extractrefseqcsv
 mvn exec:exec@match -Dname=viral -Dgoal=extractrefseqcsv
