@@ -8,6 +8,7 @@ basedir=$(pwd)
 
 nanosimdir=${basedir}/../NanoSim/src
 
+conda init
 conda activate nanosim
 
 for file in tick1 tick2
