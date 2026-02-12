@@ -40,7 +40,7 @@ public class CSVDBFileConverter {
                         String taxid = record.get(1);
                         out.print(pathPrefix);
                         out.print(descr);
-                        out.print(".fa.gz");
+                        out.print(".fa");
                         out.print('\t');
                         out.print(descr);
                         out.print('\t');
