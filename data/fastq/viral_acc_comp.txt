@@ -1,4 +1,4 @@
-fastq1 viral_fasta2fastq_fasta1.fastq.gz
+fastq1 viral_fasta2fastq_fasta1.fastq
 iss_hiseq viral_iss_hiseq_reads_R1.fastq
 iss_hiseq viral_iss_hiseq_reads_R2.fastq
 iss_miseq viral_iss_miseq_reads_R1.fastq
