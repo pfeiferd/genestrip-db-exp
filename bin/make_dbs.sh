@@ -135,7 +135,7 @@ cd $basedir/k2/kraken2
 
 mkdir -p ../standard_db
 
-cd ../standard_db_db
+cd ../standard_db
 wget https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20251015.tar.gz
 gunzip k2_standard_20251015.tar.gz
 tar -xf k2_standard_20251015.tar
