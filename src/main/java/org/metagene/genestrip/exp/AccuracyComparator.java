@@ -57,7 +57,7 @@ public class AccuracyComparator extends GenestripComparator {
             checkTree = getDatabase(checkDB, false).getTaxTree();
         }
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracyReport.csv")))) {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt", checkTree);
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, false);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, true);
@@ -294,7 +294,7 @@ public class AccuracyComparator extends GenestripComparator {
             checkTree = getDatabase(checkDB, false).getTaxTree();
         }
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_accuracyReport2.csv")))) {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_rel_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
                 int[] counts = accuracyVia2ReportFiles(
