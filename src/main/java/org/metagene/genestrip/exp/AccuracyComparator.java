@@ -48,7 +48,7 @@ public class AccuracyComparator extends GenestripComparator {
         maker.dumpAll();
     }
 
-    public void writeReportFile(String db, String checkDB, boolean nanoSim, String... fastqKeys) throws IOException {
+    public void writeReportFile(String db, String checkDB, String mapFile, boolean nanoSim, String... fastqKeys) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, null, null, null, null,
                 null, null, null, false);
@@ -58,9 +58,9 @@ public class AccuracyComparator extends GenestripComparator {
         }
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
-            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, "viral_acc_comp.txt", checkTree, nanoSim);
-            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, false, nanoSim);
-            Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, "viral_acc_comp.txt", checkTree, true, nanoSim);
+            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim);
+            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, nanoSim);
+            Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, nanoSim);
 
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
@@ -197,6 +197,7 @@ public class AccuracyComparator extends GenestripComparator {
     protected void handleMatch(String classTaxId, byte[] desc, int[] counters, SmallTaxTree checkTree, boolean nanosim) {
         TaxTree.TaxIdNode node = nodeFromDesc(desc, nanosim);
         if (node != null) {
+            // ByteArrayUtil.println(desc, System.out);
             TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
             if (isAsRequestedOrBelowInCheckTree(node, checkTree)) {
                 counters[5]++;
@@ -380,9 +381,10 @@ public class AccuracyComparator extends GenestripComparator {
 
     public static void main(String[] args) throws IOException {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        comp.writeReportFile("viral", null, false, "fastq1", "iss_hiseq", "iss_miseq");
-        comp.writeReportFile("human_virus", "human_virus", false, "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile("viral", null, "viral_acc_comp.txt", false, "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", false, "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", true, "tick1_sim");
 
-        comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        //comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
     }
 }

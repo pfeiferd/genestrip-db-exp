@@ -9,9 +9,6 @@ import java.util.Map;
 
 public class ExperimentRunner {
     public static void main(String[] args) throws IOException {
-        AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        comp.writeReportFile("viral", null, "fastq1", "iss_hiseq", "iss_miseq");
-
         KrakenDBComparator c2 = new KrakenDBComparator(new File("./data"), new File("./results"));
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
