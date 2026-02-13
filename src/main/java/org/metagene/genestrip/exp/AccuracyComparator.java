@@ -413,12 +413,12 @@ public class AccuracyComparator extends GenestripComparator {
 
     public static void main(String[] args) throws IOException {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
-        //comp.writeReportFile("viral", null, "viral_acc_comp.txt", false, "fastq1", "iss_hiseq", "iss_miseq");
-        //comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", false, "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile("viral", null, "viral_acc_comp.txt", false);
+        comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", false);
 
-        //comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
 
         // Simulated tick files:
-        comp.writeTickBorneSimReport();
+        //comp.writeTickBorneSimReport();
     }
 }

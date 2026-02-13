@@ -154,7 +154,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                 }
                 File out = new File(resultsDir, dbName + "_" + key + "_genus_agg_gs_ku_comp.csv");
                 try (PrintStream ps = new PrintStream(new FileOutputStream(out))) {
-                    ps.println("taxid;kmers 1;kmers 2;reads 1;reads 2");
+                    ps.println("taxid;kmers 1;kmers 2;reads 1;reads 2;");
                     for (String taxid : sumsMap.keySet()) {
                         long[] sums = sumsMap.get(taxid);
                         ps.print(taxid);
@@ -221,7 +221,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                 if (full) {
                     ps.print("name;");
                 }
-                ps.println("taxid;rank;kmers 1;kmers 2;reads 1;reads 2");
+                ps.println("taxid;rank;kmers 1;kmers 2;reads 1;reads 2;");
                 for (SmallTaxTree.SmallTaxIdNode node : tree) {
                     String taxId = node.getTaxId();
                     if (full || kuTaxid2KMer.get(taxId) != null) {
