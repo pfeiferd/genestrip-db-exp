@@ -6,12 +6,13 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
+
 ## Genestrip ##
 
-#mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt
-#mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp.txt
-#mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt
-#mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt
+mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt
+mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp.txt
+mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt
+mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt
 
 ## Ganon ##
 
@@ -23,7 +24,7 @@ for db in viral viral_lowfp human_virus human_virus_lowfp;
     ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all --output-all -o ./ganon/${db}_iss_miseq --threads 32
   done
 
-# Now low fp for human saliva - we don't need it and it is so slow.
+# No low fp for human saliva - we don't need it and it is so slow.
 for db in viral human_virus;
   do
     for id in ERR1395613 # ERR1395610 SRR5571991 SRR5571990 SRR5571985;
@@ -62,6 +63,8 @@ for db in viral human_virus;
     done
   done
 
+for x in ; do
+
 # Ganon on simulated tick files
 for id in tick1_sim #tick2 tick2_sim ...
   do
@@ -74,3 +77,4 @@ for id in tick1 #tick2 ...
     ganon classify --db-prefix ./ganon/standard_db -s ./data/fastq/${id}.fastq.gz --output-all -o ./ganon/${id} --threads 32
   done
 
+done
