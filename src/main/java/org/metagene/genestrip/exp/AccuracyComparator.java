@@ -180,9 +180,16 @@ public class AccuracyComparator extends GenestripComparator {
 
     protected TaxTree.TaxIdNode nodeFromDesc(byte[] desc, boolean nanosim) {
         if (!nanosim) {
-            int startPos = ByteArrayUtil.indexOf(desc, 0, desc.length, '>');
+            int startPos;
+            if (desc[0] == '@') {
+                startPos = desc[1] == '>' ? 2 : 1;
+            }
+            else {
+                startPos = desc[0] == '>' ? 1 : 0;
+            }
             int endPos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
-            return accessionMap.get(desc, startPos + 1, endPos, false);
+            // ByteArrayUtil.println(desc, System.out);
+            return accessionMap.get(desc, startPos, endPos, false);
         }
         else {
             int startPos = ByteArrayUtil.indexOf(desc, 1, desc.length, '-');
