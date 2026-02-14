@@ -7,6 +7,9 @@ cd $scriptdir/..
 basedir=$(pwd)
 
 
+# General note: We skipped the *_2.fastq.gz files from the human saliva analysis because the files are so huge
+# and analysis takes too long - in particular under ganon...
+
 ## Genestrip ##
 
 mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt
@@ -29,7 +32,7 @@ for db in viral human_virus;
   do
     for id in ERR1395613 # ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
-      ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz --output-all --output-all -o ./ganon/${db}_${id} --threads 32
+      ganon classify --db-prefix ./ganon/${db}_db --output-all --output-all -o ./ganon/${db}_${id} --threads 32 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
     done
   done
 
@@ -43,7 +46,7 @@ for db in viral human_virus;
 
    for id in ERR1395613 # ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
-      ./ku/krakenuniq/krakenuniq --only-classified-output --threads 10 --db ./ku/${db}_db --output ./ku/${db}_${id}.tsv ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz
+      ./ku/krakenuniq/krakenuniq --only-classified-output --threads 10 --db ./ku/${db}_db --output ./ku/${db}_${id}.tsv ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
     done
   done
 
@@ -58,7 +61,7 @@ for db in viral human_virus;
    for id in ERR1395613 # ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
       # First restrict to classified fastq file, then generate output to reduce effective output size.
-      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz ./data/fastq/${id}_2.fastq.gz
+      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
       ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./k2/classified_${id}.fastq --output ./k2/${db}_${id}.tsv
     done
   done
