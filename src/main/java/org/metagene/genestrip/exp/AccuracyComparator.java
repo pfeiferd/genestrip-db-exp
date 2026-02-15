@@ -337,7 +337,7 @@ public class AccuracyComparator extends GenestripComparator {
         System.out.println("Total classified: " + counters[0]);
     }
 
-    public void writeReportFile2(String db, String checkDB, String... fastqKeys) throws IOException {
+    public void writeReportFile2(String name, String db, String checkDB, String... fastqKeys) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, null, null, null, null,
                 null, null, null, false);
@@ -346,7 +346,7 @@ public class AccuracyComparator extends GenestripComparator {
             checkTree = getDatabase(checkDB, false).getTaxTree();
         }
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_rel_accuracy.csv")))) {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_" + name + "_rel_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
                 int[] counts = accuracyVia2ReportFiles(
@@ -355,6 +355,9 @@ public class AccuracyComparator extends GenestripComparator {
                 printCounts(ps, fastqKey, "genestrip", counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_" + fastqKey + ".all", "ganon/" + checkDB + "_" + fastqKey + ".all", checkTree, false);
+                printCounts(ps, fastqKey, "ganon", counts, counts[5]);
+
+                counts = accuracyVia2ReportFiles("ganon/" + db + "_lowfp_" + fastqKey + ".all", "ganon/" + checkDB + "_lowfp_" + fastqKey + ".all", checkTree, false);
                 printCounts(ps, fastqKey, "ganon", counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles("ku/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
@@ -424,10 +427,10 @@ public class AccuracyComparator extends GenestripComparator {
         comp.writeReportFile("viral", null, "viral_acc_comp.txt", false);
         comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", false);
 
-        comp.writeReportFile2("viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
+        comp.writeReportFile2("sim", "viral", "human_virus", "fastq1", "iss_hiseq", "iss_miseq");
          */
 
-        comp.writeReportFile2("viral", "human_virus", "ERR1395613");
+        comp.writeReportFile2("saliva", "viral", "human_virus", "ERR1395613");
 
         // Simulated tick files:
         //comp.writeTickBorneSimReport();
