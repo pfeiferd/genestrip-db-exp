@@ -27,8 +27,8 @@ for db in viral viral_lowfp human_virus human_virus_lowfp;
     ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all --output-all -o ./ganon/${db}_iss_miseq --threads 32
   done
 
-# No low fp for human saliva - we don't need it and it is so slow.
-for db in viral human_virus;
+# Wrong: (No now fp for human saliva - we don't need it and it is so slow...)
+for db in viral human_virus viral_lowfp human_virus_lowfp;
   do
     for id in ERR1395613 # ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
@@ -61,8 +61,8 @@ for db in viral human_virus;
    for id in ERR1395613 # ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
       # First restrict to classified fastq file, then generate output to reduce effective output size.
-      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
-      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./k2/classified_${id}.fastq --output ./k2/${db}_${id}.tsv
+      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_${db}_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
+      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./k2/classified_${db}_${id}.fastq --output ./k2/${db}_${id}.tsv
     done
   done
 
