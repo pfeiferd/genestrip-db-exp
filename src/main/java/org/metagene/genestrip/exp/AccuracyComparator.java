@@ -380,16 +380,46 @@ public class AccuracyComparator extends GenestripComparator {
             }
         }
         Map<String, TaxTree.TaxIdNode> resMap = getUniqueClassMap(new File(resFile), kraken);
+        /*
+        HashMap<TaxTree.TaxIdNode, Integer> truePositiveTaxons = new HashMap<>();
+        HashMap<TaxTree.TaxIdNode, Integer> falsePositiveTaxons = new HashMap<>();
+        HashMap<TaxTree.TaxIdNode, TaxTree.TaxIdNode> falsePositiveMismatchSamples = new HashMap<>();
+        int total = 0;
+         */
         for (String key : resMap.keySet()) {
             TaxTree.TaxIdNode classNode = resMap.get(key);
             TaxTree.TaxIdNode node = gtMap.get(key);
             if (node != null && isAsRequestedOrBelowInCheckTree(node, checkTree)) {
+                /*
+                Integer c = truePositiveTaxons.get(classNode);
+                if (c == null) {
+                    c = 0;
+                }
+                truePositiveTaxons.put(classNode, c + 1);
+                 */
                 updateMatchCounts(classNode, node, counters);
             }
             else if (isAsRequestedOrBelowInCheckTree(classNode, checkTree)) {
+                /*
+                Integer c = falsePositiveTaxons.get(classNode);
+                if (c == null) {
+                    c = 0;
+                    falsePositiveMismatchSamples.put(classNode, node);
+                }
+                falsePositiveTaxons.put(classNode, c + 1);
+                total++;
+                 */
                 counters[0]++; // Count as classified.
             }
         }
+        /*
+        System.out.println(falsePositiveMismatchSamples);
+        System.out.println(falsePositiveTaxons);
+        System.out.println(falsePositiveTaxons.size());
+        System.out.println(total);
+        System.out.println("True positive taxons: " + truePositiveTaxons.size());
+        System.out.println(truePositiveTaxons);
+         */
         return counters;
     }
 
