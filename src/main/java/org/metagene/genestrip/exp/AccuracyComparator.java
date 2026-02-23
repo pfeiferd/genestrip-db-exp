@@ -22,6 +22,25 @@ public class AccuracyComparator extends GenestripComparator {
     private static final CSVFormat GANON_ALL_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
             .setDelimiter('\t').setRecordSeparator('\n').build();
 
+    public enum Sys {
+        KRAKEN_UNIQ("\\ku"),
+        KRAKEN2("\\ktwo"),
+        KRAKEN2_HIGH_CONF("\\ktwohf"),
+        GANON("\\ganon"),
+        GANON_LOWFP("\\ganonlowfpr"),
+        GENESTRIP("\\genestrip"),;
+
+        private final String formatText;
+
+        Sys(String formatText) {
+            this.formatText = formatText;
+        }
+
+        public String getFormatText() {
+            return formatText;
+        }
+    }
+
     private final boolean format;
     private final TaxTree taxTree;
     private final AccessionMap accessionMap;
@@ -68,18 +87,18 @@ public class AccuracyComparator extends GenestripComparator {
                 int[] geneStripCounts = resGenestrip.get(fastqKey);
                 int total = geneStripCounts[5]; // No correct results without ground truth available.
 
-                printCounts(ps, fastqKey, "krakenUniq", resKU.get(fastqKey), total);
+                printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, resKU.get(fastqKey), total);
 
-                printCounts(ps, fastqKey, "k2", resK2.get(fastqKey), total);
-                printCounts(ps, fastqKey, "k2HighConf", resK2HighConf.get(fastqKey), total);
+                printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
+                printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, resK2HighConf.get(fastqKey), total);
 
                 int[] counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree, nanoSim);
-                printCounts(ps, fastqKey, "ganon", counts, total);
+                printCounts(ps, fastqKey, Sys.GANON, counts, total);
 
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, nanoSim);
-                printCounts(ps, fastqKey, "ganon_lowfp", counts, total);
+                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
 
-                printCounts(ps, fastqKey, "genestrip", geneStripCounts, total);
+                printCounts(ps, fastqKey, Sys.GENESTRIP, geneStripCounts, total);
             }
         }
     }
@@ -104,26 +123,26 @@ public class AccuracyComparator extends GenestripComparator {
                 int[] genestripCounts = resGenestrip.get(fastqKey);
                 int total = genestripCounts[5]; // No correct results without ground truth available.
 
-                printCounts(ps, fastqKey, "krakenUniq", resKU.get(fastqKey), total);
+                printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, resKU.get(fastqKey), total);
 
-                printCounts(ps, fastqKey, "k2", resK2.get(fastqKey), total);
-                printCounts(ps, fastqKey, "k2HighConf", resK2HighConf.get(fastqKey), total);
+                printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
+                printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, resK2HighConf.get(fastqKey), total);
 
                 int[] counts = accuracyForSimulatedReadsGanon("standard", "ganon/" + db + "_" + fastqKey + ".all", checkTree, true);
-                printCounts(ps, fastqKey, "ganon", counts, total);
+                printCounts(ps, fastqKey, Sys.GANON, counts, total);
 
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, true);
-                printCounts(ps, fastqKey, "ganon_lowfp", counts, total);
+                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
 
-                printCounts(ps, fastqKey, "genestrip", genestripCounts, total);
+                printCounts(ps, fastqKey, Sys.GENESTRIP, genestripCounts, total);
             }
         }
     }
 
-    private void printCounts(PrintStream ps, String key, String system, int[] counts, int total) {
-        ps.print(key);
+    private void printCounts(PrintStream ps, String key, Sys system, int[] counts, int total) {
+        ps.print(format(system, key));
         ps.print(';');
-        ps.print(system);
+        ps.print(format(system));
         ps.print(';');
         ps.print(format(counts[0]));
         ps.print(';');
@@ -153,6 +172,26 @@ public class AccuracyComparator extends GenestripComparator {
 
     private String format(double d) {
         return format ? DF.format(d) : String.valueOf(d);
+    }
+
+    private String format(Sys sys) {
+        return format ? sys.getFormatText() : sys.name();
+    }
+
+    private String format(Sys sys, String key) {
+        if (!format) {
+            return key;
+        }
+        switch (key) {
+            case "iss_hiseq":
+                return "\\hiseq{" + key + "}";
+            case "iss_miseq":
+                return "\\lowseq{" + key + "}";
+            case "fastq1":
+                return "\\fastqone{" + key + "}";
+            default:
+                return key;
+        }
     }
 
     public int[] accuracyForSimulatedReadsGanon(String db, String ganonReportFile, SmallTaxTree checkTree, boolean nanosim) throws IOException {
@@ -354,18 +393,18 @@ public class AccuracyComparator extends GenestripComparator {
                         "data/projects/" + checkDB + "/krakenout/" + checkDB + "_matchres_" + fastqKey + ".out", checkTree, true);
 
                 int[] counts = accuracyVia2ReportFiles("ku/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
-                printCounts(ps, fastqKey, "krakenUniq", counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, counts, geneStripCounts[5]);
 
                 counts = accuracyVia2ReportFiles("k2/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
-                printCounts(ps, fastqKey, "k2", counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.KRAKEN2, counts, geneStripCounts[5]);
 
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_" + fastqKey + ".all", "ganon/" + checkDB + "_" + fastqKey + ".all", checkTree, false);
-                printCounts(ps, fastqKey, "ganon", counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.GANON, counts, geneStripCounts[5]);
 
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_lowfp_" + fastqKey + ".all", "ganon/" + checkDB + "_lowfp_" + fastqKey + ".all", checkTree, false);
-                printCounts(ps, fastqKey, "ganon_lowfp", counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, geneStripCounts[5]);
 
-                printCounts(ps, fastqKey, "genestrip", geneStripCounts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.GENESTRIP, geneStripCounts, geneStripCounts[5]);
             }
         }
     }

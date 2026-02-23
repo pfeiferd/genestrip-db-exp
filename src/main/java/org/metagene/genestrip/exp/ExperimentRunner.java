@@ -19,13 +19,13 @@ public class ExperimentRunner {
         c2.reportKMerComparisons("viral", "viral_db", null, false);
 
         System.out.println("** Figure 3 **");
-        c1.compareWithKUResults("viral", "viral_db", "viral_ku_comp_fasta.txt", "viral_ku_comp.txt", false);
+        c1.compareWithKUResults("viral", "viral_db", "viral_ku_comp.txt", false, true);
 
 //        System.out.println("** Text in context of Figure 3 **");
 //        c1.accuracyCheckForSimulatedViralReads("viral", "viral_ku_comp.txt");
 //        c1.accuracyCheckForSimulatedViralReadsKU("viral", "viral_ku_comp.txt");
         System.out.println("** Figure 4 **");
-        Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", null, "saliva.txt", false);
+        Map<String, GenestripComparator.ErrCompInfo> res3 = c1.compareWithKUResults("viral", "viral_db", "saliva.txt", false, true);
         System.out.println("** Table 3 **");
         c1.writeErrInfos("viral", "viral_db", res3);
 
@@ -49,7 +49,7 @@ public class ExperimentRunner {
         c2.reportKMerComparisons("tick-borne", "microbial_db", "943", true);
 
         System.out.println("** Figure 7 and Figure 8 **");
-        c1.compareWithKUResults("tick-borne", "microbial_db", null, "seventicks.txt", true);
+        c1.compareWithKUResults("tick-borne", "microbial_db", "seventicks.txt", true, false);
         c1.aggregateCompareWithKUResults("tick-borne", "ticks.txt");
     }
 }

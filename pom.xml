@@ -71,6 +71,22 @@
 				<version>3.1.0</version>
 				<executions>
 					<execution>
+						<id>viralfastq</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>java</executable>
+							<includeProjectDependencies>true</includeProjectDependencies>
+							<includePluginDependencies>true</includePluginDependencies>
+							<arguments>
+								<argument>-classpath</argument>
+								<classpath />
+								<argument>org.metagene.genestrip.exp.GetViralFastq</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
 						<id>db</id>
 						<goals>
 							<goal>exec</goal>

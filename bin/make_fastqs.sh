@@ -5,6 +5,8 @@ scriptdir=$(dirname "$0")
 
 cd $scriptdir/..
 
+mvn exec:exec@viralfastq
+
 # Generate simulated viral data over all RefSeq viruses using iss
 mkdir -p iss
 mkdir -p iss/viral
