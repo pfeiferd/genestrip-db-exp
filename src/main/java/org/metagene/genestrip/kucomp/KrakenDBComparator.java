@@ -165,6 +165,7 @@ public class KrakenDBComparator extends GenestripComparator {
             }
         }
 
+        /*
         System.out.println("Genestrip:");
         System.out.println(kmerSumsPerGenusG);
         System.out.println("KU:");
@@ -183,6 +184,7 @@ public class KrakenDBComparator extends GenestripComparator {
             }
         }
         System.out.println("MacroAverage: " + macroAverageSum / count);
+         */
 
         System.out.println("Absolute error: " + err);
         System.out.println("Entries: " + entries);
