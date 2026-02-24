@@ -225,7 +225,7 @@ public class AccuracyComparator extends GenestripComparator {
 
     protected TaxTree.TaxIdNode nodeFromDesc(byte[] desc, boolean nanosim) {
         if (!nanosim) {
-            ByteArrayUtil.println(desc, System.out);
+            // ByteArrayUtil.println(desc, System.out);
             int startPos;
             if (desc[0] == '@' || desc[0] == '\t') {
                 startPos = desc[1] == '>' ? 2 : 1;
