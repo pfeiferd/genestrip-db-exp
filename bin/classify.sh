@@ -50,8 +50,11 @@ for db in viral human_virus;
 for db in viral human_virus;
   do
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_fastq1.tsv ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz
+    ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_fastq1.tsv ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_iss_hiseq.tsv ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq
+    ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_iss_hiseq.tsv ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_iss_miseq.tsv ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq
+    ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_iss_miseq.tsv ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq
 
    for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
