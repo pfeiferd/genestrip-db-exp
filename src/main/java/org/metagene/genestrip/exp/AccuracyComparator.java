@@ -77,8 +77,8 @@ public class AccuracyComparator extends GenestripComparator {
         }
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
-            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim);
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, nanoSim);
+            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0, nanoSim);
             Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0.8, nanoSim);
 
@@ -223,14 +223,14 @@ public class AccuracyComparator extends GenestripComparator {
 
     protected TaxTree.TaxIdNode nodeFromDesc(byte[] desc, boolean nanosim) {
         if (!nanosim) {
+            ByteArrayUtil.println(desc, System.out);
             int startPos;
-            if (desc[0] == '@') {
+            if (desc[0] == '@' || desc[0] == '\t') {
                 startPos = desc[1] == '>' ? 2 : 1;
             } else {
                 startPos = desc[0] == '>' ? 1 : 0;
             }
             int endPos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
-            // ByteArrayUtil.println(desc, System.out);
             return accessionMap.get(desc, startPos, endPos, false);
         } else {
             int startPos = ByteArrayUtil.indexOf(desc, 1, desc.length, '-');
@@ -388,23 +388,22 @@ public class AccuracyComparator extends GenestripComparator {
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_" + name + "_rel_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
-                int[] geneStripCounts = accuracyVia2ReportFiles(
-                        "data/projects/" + db + "/krakenout/" + db + "_matchres_" + fastqKey + ".out",
-                        "data/projects/" + checkDB + "/krakenout/" + checkDB + "_matchres_" + fastqKey + ".out", checkTree, true);
-
                 int[] counts = accuracyVia2ReportFiles("ku/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
-                printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles("k2/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
-                printCounts(ps, fastqKey, Sys.KRAKEN2, counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.KRAKEN2, counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_" + fastqKey + ".all", "ganon/" + checkDB + "_" + fastqKey + ".all", checkTree, false);
-                printCounts(ps, fastqKey, Sys.GANON, counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.GANON, counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_lowfp_" + fastqKey + ".all", "ganon/" + checkDB + "_lowfp_" + fastqKey + ".all", checkTree, false);
-                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, geneStripCounts[5]);
+                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, counts[5]);
 
-                printCounts(ps, fastqKey, Sys.GENESTRIP, geneStripCounts, geneStripCounts[5]);
+                counts = accuracyVia2ReportFiles(
+                        "data/projects/" + db + "/krakenout/" + db + "_matchres_" + fastqKey + ".out",
+                        "data/projects/" + checkDB + "/krakenout/" + checkDB + "_matchres_" + fastqKey + ".out", checkTree, true);
+                printCounts(ps, fastqKey, Sys.GENESTRIP, counts, counts[5]);
             }
         }
     }
