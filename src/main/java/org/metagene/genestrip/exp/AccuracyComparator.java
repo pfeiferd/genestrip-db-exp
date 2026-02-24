@@ -397,7 +397,7 @@ public class AccuracyComparator extends GenestripComparator {
                 printCounts(ps, fastqKey, Sys.KRAKEN2, counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles("k2/" + db + "_highconf_" + fastqKey + ".tsv", "ku/" + checkDB + "_highconf_" + fastqKey + ".tsv", checkTree, true);
-                printCounts(ps, fastqKey, Sys.KRAKEN2, counts, counts[5]);
+                printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_" + fastqKey + ".all", "ganon/" + checkDB + "_" + fastqKey + ".all", checkTree, false);
                 printCounts(ps, fastqKey, Sys.GANON, counts, counts[5]);
