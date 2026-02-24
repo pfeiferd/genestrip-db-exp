@@ -25,7 +25,7 @@ public class AccuracyComparator extends GenestripComparator {
     public enum Sys {
         KRAKEN_UNIQ("\\ku"),
         KRAKEN2("\\ktwo"),
-        KRAKEN2_HIGH_CONF("\\ktwohf"),
+        KRAKEN2_HIGH_CONF("\\ktwohc"),
         GANON("\\ganon"),
         GANON_LOWFP("\\ganonlowfpr"),
         GENESTRIP("\\genestrip"),;
@@ -186,11 +186,11 @@ public class AccuracyComparator extends GenestripComparator {
         }
         switch (key) {
             case "iss_hiseq":
-                return "\\hiseq{" + key + "}";
+                return "\\hiseq{" + sys + "}";
             case "iss_miseq":
-                return "\\lowseq{" + key + "}";
+                return "\\miseq{" + sys + "}";
             case "fastq1":
-                return "\\fastqone{" + key + "}";
+                return "\\fastqone{" + sys + "}";
             default:
                 return key;
         }
@@ -251,7 +251,7 @@ public class AccuracyComparator extends GenestripComparator {
 
         GSMaker maker = new GSMaker(project);
         MatchResultGoal matchResGoal = (MatchResultGoal) maker.getGoal(GSGoalKey.MATCHRES);
-        Map<String, int[]> result = new HashMap<>();
+        Map<String, int[]> result = new LinkedHashMap<>();
         int[] counters = new int[6];
         matchResGoal.setAfterMatchCallback(new MatchResultGoal.AfterMatchCallback() {
             @Override
