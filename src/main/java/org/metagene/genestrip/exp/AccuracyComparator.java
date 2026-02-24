@@ -42,12 +42,14 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     private final boolean format;
+    private final boolean textFormat;
     private final TaxTree taxTree;
     private final AccessionMap accessionMap;
 
-    public AccuracyComparator(File baseDir, boolean format) throws IOException {
-        super(baseDir, null);
+    public AccuracyComparator(File baseDir, File resDir, boolean format, boolean textFormat) throws IOException {
+        super(baseDir, resDir);
         this.format = format;
+        this.textFormat = textFormat;
 
         GSCommon config = new GSCommon(baseDir);
         // Project name does not matter for as long as it exits.
@@ -76,7 +78,7 @@ public class AccuracyComparator extends GenestripComparator {
             checkTree = getDatabase(checkDB, false).getTaxTree();
         }
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, nanoSim);
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0, nanoSim);
@@ -112,7 +114,7 @@ public class AccuracyComparator extends GenestripComparator {
                 null, null, null, false);
         SmallTaxTree checkTree = getDatabase(checkDB, false).getTaxTree();
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true);
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU("microbial", mapFile, checkTree, false, 0, true);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0, true);
@@ -175,11 +177,11 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     private String format(Sys sys) {
-        return format ? sys.getFormatText() : sys.name();
+        return textFormat ? sys.getFormatText() : sys.name();
     }
 
     private String format(Sys sys, String key) {
-        if (!format) {
+        if (!textFormat) {
             return key;
         }
         switch (key) {
@@ -385,7 +387,7 @@ public class AccuracyComparator extends GenestripComparator {
             checkTree = getDatabase(checkDB, false).getTaxTree();
         }
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(project.getResultsDir(), db + "_" + name + "_rel_accuracy.csv")))) {
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + "_" + name + "_rel_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : fastqKeys) {
                 int[] counts = accuracyVia2ReportFiles("ku/" + db + "_" + fastqKey + ".tsv", "ku/" + checkDB + "_" + fastqKey + ".tsv", checkTree, true);
@@ -489,7 +491,7 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     public static void main(String[] args) throws IOException {
-        AccuracyComparator comp = new AccuracyComparator(new File("./data"), false);
+        AccuracyComparator comp = new AccuracyComparator(new File("./data"), new File("./results"), false, true);
 
         comp.writeReportFile("viral", null, "viral_acc_comp.txt", false);
         comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", false);
