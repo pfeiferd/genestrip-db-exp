@@ -497,10 +497,11 @@ public class AccuracyComparator extends GenestripComparator {
         AccuracyComparator comp = new AccuracyComparator(new File("./data"), new File("./results"), false, true);
 
         comp.writeReportFile("viral", null, "viral_acc_comp.txt", false);
+        comp.writeReportFile("viral", "human_virus", "viral_acc_comp.txt", false);
         comp.writeReportFile("human_virus", "human_virus", "viral_acc_comp.txt", false);
 
         comp.writeReportFile2("sim", "viral", "human_virus",
-                "fastq1", "iss_hiseq", "iss_miseq");
+                "fastq1", "iss_miseq", "iss_hiseq");
         comp.writeReportFile2("saliva", "viral", "human_virus",
                 "SRR5571985",
                 "ERR1395613",
