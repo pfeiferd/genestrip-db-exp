@@ -62,11 +62,15 @@ public class KrakenDBComparator extends GenestripComparator {
     }
 
     public void reportKMerComparisons(String genestripDB, String krakenDB, String filterTaxid, boolean full) throws IOException {
+        reportKMerComparisons(genestripDB, krakenDB, filterTaxid, full, full);
+    }
+
+    public void reportKMerComparisons(String genestripDB, String krakenDB, String filterTaxid, boolean full, boolean notPlusOne) throws IOException {
         Map<String, Long> kuTaxid2KMer = getKrakenDBCounts(getKrakenCountsFile(krakenDB));
 
         File countsFile = new File(resultsDir, genestripDB + (filterTaxid == null ? "" : "_" + filterTaxid) + "_gs_ku_dbcomp.csv");
         try (PrintStream out = new PrintStream(new FileOutputStream(countsFile))) {
-            printJointStoreInfo(getDatabase(genestripDB, false), out, kuTaxid2KMer, filterTaxid, full);
+            printJointStoreInfo(getDatabase(genestripDB, false), out, kuTaxid2KMer, filterTaxid, full, notPlusOne);
         }
     }
 
@@ -91,7 +95,7 @@ public class KrakenDBComparator extends GenestripComparator {
         return new File(baseDir, "../ku/" + krakenDB + "/database.kdb.counts");
     }
 
-    public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer, String filterTaxid, boolean full) {
+    public void printJointStoreInfo(Database database, PrintStream out, Map<String, Long> kuTaxid2KMer, String filterTaxid, boolean full, boolean notPlusOne) {
         out.println("taxid; rank; kmers 1; kmers 2;");
 
         long inDataErr = 0;
@@ -143,9 +147,9 @@ public class KrakenDBComparator extends GenestripComparator {
                     out.print(';');
                     out.print(getRankString(taxNode));
                     out.print(';');
-                    out.print(correctDBValue(g, full));
+                    out.print(correctDBValue(g, notPlusOne));
                     out.print(';');
-                    out.print(correctDBValue(h, full));
+                    out.print(correctDBValue(h, notPlusOne));
                     out.println(';');
     //            }
             }

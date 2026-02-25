@@ -16,7 +16,7 @@ public class ExperimentRunner {
         c1.writeUnfoldedTaxids("human_virus");
 
         System.out.println("** Appendix Figure 3 **");
-        c2.reportKMerComparisons("viral", "viral_db", null, false);
+        c2.reportKMerComparisons("viral", "viral_db", null, false, false);
 
         System.out.println("** Text Section 3.1, Appendix Figure 3 **");
         c1.compareWithKUResults("viral", "viral_db", "viral_acc_comp.txt", false, true);
@@ -26,9 +26,11 @@ public class ExperimentRunner {
         c1.writeErrInfos("viral", "viral_db", res3);
 
         System.out.println("** Figure 5 **");
+        c2.reportKMerComparisons("human_virus", "human_virus_db", null, true, true);
         c1.compareCommonDBEntries("viral", "human_virus");
         // Use taxids from Genestrip's human virus database as basis for tax ids.
         c2.reportKrakenDBComparison("human_virus", "viral_db", "human_virus_db");
+        c2.reportKMerComparisons("human_virus", "human_virus_db", null, true, false);
 
         System.out.println("** Figure 6 **");
         Map<String, GenestripComparator.ErrCompInfo> res1 = c1.compareResults("viral", "human_virus", "saliva.txt");
