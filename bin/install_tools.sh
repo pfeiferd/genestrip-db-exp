@@ -10,25 +10,37 @@ scriptdir=$(dirname "$0")
 # For ganon see:
 # https://pirovc.github.io/ganon/start/#install
 
+# gm - prerequisites on Ubuntu
+echo "Preparing system... installing prerequisites"
+sudo apt update
+sudo apt install libbz2-dev zlib1g-dev
+
+echo "DONE"
+echo ""
+
 ### cgmemtime ###
 
 cd $scriptdir/..
+basedir=$(pwd)
 
-wget https://github.com/gsauthof/cgmemtime/archive/refs/heads/master.zip
-unzip master.zip
-mv  cgmemtime-master  cgmemtime
-cd  cgmemtime
-# Let's print to stdout:
-sed -i 's/print_result(stderr/print_result(stdout/' cgmemtime.c
-make
-
-cd $scriptdir/..
-rm master.zip
+# gm fix - only build cgmemtime if not already there
+if [ ! -d "cgmemtime" ]; then
+  wget https://github.com/gsauthof/cgmemtime/archive/refs/heads/master.zip
+  unzip master.zip
+  mv  cgmemtime-master  cgmemtime
+  cd  cgmemtime
+  # Let's print to stdout:
+  sed -i 's/print_result(stderr/print_result(stdout/' cgmemtime.c
+  make
+  cd $scriptdir/..
+  rm master.zip
+fi
 
 ### sra-tools ###
 
 cd $scriptdir/..
 
+rm -Rf sra-tools
 mkdir -p sra-tools
 cd sra-tools
 
