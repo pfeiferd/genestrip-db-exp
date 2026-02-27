@@ -14,7 +14,7 @@ nanosimdir=${basedir}/../NanoSim/src
 for file in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
 do
   #${nanosimdir}/read_analysis.py metagenome -q --fastq -gl data/projects/viral/csv/viral_nanosim.tsv -i data/fastq/${file}.fastq.gz  -t 24
-  ${nanosimdir}/read_analysis.py metagenome --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -i data/fastq/${file}.fastq.gz  -t 24
+  ${nanosimdir}/read_analysis.py metagenome -q --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -i data/fastq/${file}.fastq.gz  -t 24
 
   reads=$(zcat data/fastq/${file}.fastq.gz | wc -l | awk '{print $1/4}')
   sed -i "s/Abundance/$reads/g" training_quantification.tsv
