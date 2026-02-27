@@ -1,6 +1,7 @@
 package org.metagene.genestrip.exp;
 
 import org.metagene.genestrip.bloom.AbstractKMerBloomFilter;
+import org.metagene.genestrip.bloom.KMerProbFilter;
 import org.metagene.genestrip.store.Database;
 import org.metagene.genestrip.store.KMerSortedArray;
 import org.metagene.genestrip.tax.SmallTaxTree;
@@ -19,7 +20,7 @@ public class DBAccessSpeedCheck extends GenestripComparator {
     public long[] testDBAccessSpeed(String db, int tries) throws IOException {
         Database database = getDatabase(db, false);
         KMerSortedArray<SmallTaxTree.SmallTaxIdNode> kMerSortedArray = database.convertKMerStore();
-        AbstractKMerBloomFilter filter = kMerSortedArray.getFilter();
+        KMerProbFilter filter = kMerSortedArray.getFilter();
         long[] data = new long[tries];
         for (int i = 0; i < tries; i++) {
             data[i] = rand.nextLong();
@@ -50,7 +51,7 @@ public class DBAccessSpeedCheck extends GenestripComparator {
     public static void main(String[] args) throws IOException {
         DBAccessSpeedCheck check = new DBAccessSpeedCheck(new File("./data"));
 
-        for (String db : new String[] { "viral", "human_virus", "tick-borne" }) {
+        for (String db : new String[] { "human_virus", "viral" /*,  "tick-borne"*/ }) {
             long[] res = check.testDBAccessSpeed(db, 1000000000);
 
             System.out.println(res[0]);
