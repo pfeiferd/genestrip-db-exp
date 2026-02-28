@@ -6,6 +6,11 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
+# Genestrip DBs
+mvn exec:exec@db -Dname=human_virus -Dgoal=dbinfo
+mvn exec:exec@db -Dname=viral -Dgoal=dbinfo
+mvn exec:exec@db -Dname=tick-borne -Dgoal=dbinfo
+
 # Prepare genomes for other systems via Genestrip
 mvn exec:exec@match -Dname=human_virus -Dgoal=extractrefseqcsv
 mvn exec:exec@match -Dname=viral -Dgoal=extractrefseqcsv
