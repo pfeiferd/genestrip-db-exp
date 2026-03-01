@@ -11,9 +11,9 @@ nanosimdir=${basedir}/../NanoSim/src
 #conda init
 #conda activate nanosim
 
-cp ./data/common/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna.gz ./data/projects/tick-borne/fasta
-gunzip ./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna.gz
-sed -i '1i\6945\t./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna' data/projects/tick-borne/csv/tick-borne_nanosim.tsv
+#cp ./data/common/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna.gz ./data/projects/tick-borne/fasta
+#gunzip ./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna.gz
+#sed -i '1i\6945\t./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna' data/projects/tick-borne/csv/tick-borne_nanosim.tsv
 
 for file in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
 do
