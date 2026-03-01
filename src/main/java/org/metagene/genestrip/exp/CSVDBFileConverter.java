@@ -110,6 +110,8 @@ public class CSVDBFileConverter {
                         String descr = record.get(0);
                         String taxid = record.get(1);
                         out.print(taxid);
+                        out.print('_');
+                        out.print(i);
                         out.print('\t');
                         out.print(pathPrefix);
                         out.print(descr);
