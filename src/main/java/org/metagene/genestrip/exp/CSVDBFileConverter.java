@@ -7,6 +7,8 @@ import org.metagene.genestrip.*;
 import org.metagene.genestrip.goals.refseq.ExtractRefSeqCSVGoal;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CSVDBFileConverter {
     protected static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder().setQuote(null).setCommentMarker('#')
@@ -99,27 +101,36 @@ public class CSVDBFileConverter {
         ExtractRefSeqCSVGoal extractRefSeqCSVGoal = (ExtractRefSeqCSVGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_CSV);
         extractRefSeqCSVGoal.make();
 
+        Map<String, File> taxid2LargestFile = new HashMap<String, File>();
+
         // Beware: NanoSim Simulator does not seem to accept gzipped fasta files.
+
+        // Keep the longest file for each taxid - could not get it to work otherwise.
         try (CSVParser parser = CSV_FORMAT
                 .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
-            File ganonInputFile = new File(project.getResultsDir(), db + "_nanosim.tsv");
-            try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
-                int i = 0;
-                for (CSVRecord record : parser.getRecords()) {
-                    if (i > 0) {
-                        String descr = record.get(0);
-                        String taxid = record.get(1);
-                        out.print(taxid);
-                        out.print('-');
-                        out.print(i);
-                        out.print('\t');
-                        out.print(pathPrefix);
-                        out.print(descr);
-                        out.print(".fa");
-                        out.println();
+            int i = 0;
+            for (CSVRecord record : parser.getRecords()) {
+                if (i > 0) {
+                    String descr = record.get(0);
+                    String taxid = record.get(1);
+                    String fullPath = pathPrefix + descr + ".fa";
+                    File faFile = new File(fullPath);
+                    File other = taxid2LargestFile.get(taxid);
+                    if (other == null || faFile.length() > other.length()) {
+                        taxid2LargestFile.put(taxid, faFile);
                     }
-                    i++;
                 }
+                i++;
+            }
+        }
+        File ganonInputFile = new File(project.getResultsDir(), db + "_nanosim.tsv");
+        try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
+            for (String taxid : taxid2LargestFile.keySet()) {
+                File file = taxid2LargestFile.get(taxid);
+                out.print(taxid);
+                out.print('\t');
+                out.print(file.toString());
+                out.println();
             }
         }
     }
@@ -128,7 +139,7 @@ public class CSVDBFileConverter {
     public static void main(String[] args) throws IOException {
         CSVDBFileConverter converter = new CSVDBFileConverter(new File("./data"));
 
-        String[] dbs = new String[] { "human_virus", "viral", "tick-borne" };
+        String[] dbs = new String[]{"human_virus", "viral", "tick-borne"};
         for (int i = 0; i < dbs.length; i++) {
             converter.csv2NanosimInputFileFormat(dbs[i], "./data/projects/" + dbs[i] + "/fasta/");
             converter.csv2GanonInputFileFormat(dbs[i], "./data/projects/" + dbs[i] + "/fasta/");
