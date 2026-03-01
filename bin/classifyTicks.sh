@@ -6,14 +6,10 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
-
-# General note: We skipped the *_2.fastq.gz files from the human saliva analysis because the files are so huge
-# and analysis takes too long - in particular under ganon...
-
 ## Genestrip ##
 
-mvn exec:exec@matchrep2 -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt
-mvn exec:exec@matchrep2 -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt
+mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt
+mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt
 
 ## Ganon ##
 
