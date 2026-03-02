@@ -28,7 +28,8 @@ public class AccuracyComparator extends GenestripComparator {
         KRAKEN2_HIGH_CONF("\\ktwohc"),
         GANON("\\ganon"),
         GANON_LOWFP("\\ganonlowfpr"),
-        GENESTRIP("\\genestrip"),;
+        GENESTRIP("\\genestrip"),
+        GENESTRIP_HIGH_SENS("\\genestriphs");
 
         private final String formatText;
 
@@ -113,11 +114,11 @@ public class AccuracyComparator extends GenestripComparator {
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, false);
+            Map<String, int[]> resGenestripHighSens = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, true);
             /*
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU("microbial", mapFile, checkTree, false, 0, true);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0, true);
             Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0.8, true);
-
              */
 
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
@@ -139,6 +140,8 @@ public class AccuracyComparator extends GenestripComparator {
                  */
 
                 printCounts(ps, fastqKey, Sys.GENESTRIP, genestripCounts, total);
+                printCounts(ps, fastqKey, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens.get(fastqKey), total);
+
             }
         }
     }
@@ -240,8 +243,17 @@ public class AccuracyComparator extends GenestripComparator {
             int startPos = ByteArrayUtil.indexOf(desc, 1, desc.length, '-');
             int endPos = ByteArrayUtil.indexOf(desc, 2, desc.length, '_');
             int nextDash = ByteArrayUtil.indexOf(desc, startPos + 1, desc.length, '-');
-            desc[nextDash] = '_';
-            return accessionMap.get(desc, startPos + 1, endPos, false, true);
+            if (nextDash != -1) {
+                desc[nextDash] = '_';
+            }
+            desc[endPos] = '.';
+            TaxTree.TaxIdNode res = null;
+            // Try 9 versions since stupid NanoSim has cut off the version info.
+            for (int i = 1; i < 10 && res == null; i++) {
+                desc[endPos + 1] = (byte) ('0' + i);
+                res = accessionMap.get(desc, startPos + 1, endPos + 2, false);
+            }
+            return res;
         }
     }
 
@@ -282,7 +294,7 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     protected void handleMatch(String classTaxId, byte[] desc, int[] counters, SmallTaxTree checkTree, boolean nanosim) {
-        //ByteArrayUtil.println(desc, System.out);
+        // ByteArrayUtil.println(desc, System.out);
         TaxTree.TaxIdNode node = nodeFromDesc(desc, nanosim);
         if (node != null) {
             TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
