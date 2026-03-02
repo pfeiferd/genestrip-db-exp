@@ -24,5 +24,5 @@ do
   sed -i "s/Abundance/$reads/g" training_quantification.tsv
   #${nanosimdir}/simulator.py metagenome --fastq -gl data/projects/viral/csv/viral_nanosim.tsv -t 24 -a training_quantification.tsv
   ${nanosimdir}/simulator.py metagenome --perfect --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -t 1 -a training_quantification.tsv
-  mv simulated_sample0_unaligned_reads.fastq data/fastq/${file}_sim.fastq
+  mv simulated_sample0_aligned_reads.fastq data/fastq/${file}_sim.fastq
 done
