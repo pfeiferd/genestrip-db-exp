@@ -80,7 +80,7 @@ public class AccuracyComparator extends GenestripComparator {
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, nanoSim);
-            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim);
+            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim, false);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0, nanoSim);
             Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0.8, nanoSim);
 
@@ -109,13 +109,10 @@ public class AccuracyComparator extends GenestripComparator {
         String db = "tick-borne";
         String checkDB = db;
         String mapFile = "ticks_sim.txt";
-        GSCommon config = new GSCommon(baseDir);
-        GSProject project = new GSProject(config, "tick-borne", null, null, null, null, null, null,
-                null, null, null, false);
         SmallTaxTree checkTree = getDatabase(checkDB, false).getTaxTree();
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
-            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true);
+            Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, false);
             /*
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU("microbial", mapFile, checkTree, false, 0, true);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0, true);
@@ -248,11 +245,14 @@ public class AccuracyComparator extends GenestripComparator {
         }
     }
 
-    public Map<String, int[]> accuracyForSimulatedReadsGenestrip(String db, String csvFile2, SmallTaxTree checkTree, boolean nanosim) throws IOException {
+    public Map<String, int[]> accuracyForSimulatedReadsGenestrip(String db, String csvFile2, SmallTaxTree checkTree, boolean nanosim, boolean highSens) throws IOException {
         GSCommon config = new GSCommon(baseDir);
         GSProject project = new GSProject(config, db, null, null, csvFile2, null, null, null,
                 null, null, null, false);
         project.initConfigParam(GSConfigKey.THREADS, -1);
+        if (highSens) {
+            project.initConfigParam(GSConfigKey.MIN_KMERS_FOR_CLASS, 1);
+        }
 
         GSMaker maker = new GSMaker(project);
         MatchResultGoal matchResGoal = (MatchResultGoal) maker.getGoal(GSGoalKey.MATCHRES);
@@ -285,7 +285,6 @@ public class AccuracyComparator extends GenestripComparator {
         //ByteArrayUtil.println(desc, System.out);
         TaxTree.TaxIdNode node = nodeFromDesc(desc, nanosim);
         if (node != null) {
-            ByteArrayUtil.println(desc, System.out);
             TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
             if (isAsRequestedOrBelowInCheckTree(node, checkTree)) {
                 counters[5]++;
