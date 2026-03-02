@@ -112,7 +112,7 @@ public class AccuracyComparator extends GenestripComparator {
         String mapFile = "ticks_sim.txt";
         SmallTaxTree checkTree = getDatabase(checkDB, false).getTaxTree();
 
-        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
+            Map<String, Integer> totals = new HashMap<>();
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, false);
             Map<String, int[]> resGenestripHighSens = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, true);
             /*
@@ -121,11 +121,12 @@ public class AccuracyComparator extends GenestripComparator {
             Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0.8, true);
              */
 
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : resGenestrip.keySet()) {
                 int[] genestripCounts = resGenestrip.get(fastqKey);
                 int total = genestripCounts[5]; // No correct results without ground truth available.
-
+                totals.put(fastqKey, total);
                 /*
                 printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, resKU.get(fastqKey), total);
 
@@ -141,8 +142,12 @@ public class AccuracyComparator extends GenestripComparator {
 
                 printCounts(ps, fastqKey, Sys.GENESTRIP, genestripCounts, total);
                 printCounts(ps, fastqKey, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens.get(fastqKey), total);
-
             }
+        }
+        try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_ma_accuracy.csv")))) {
+            ps.println("system; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
+            printMACounts(ps, Sys.GENESTRIP, resGenestrip, totals);
+            printMACounts(ps, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens, totals);
         }
     }
 
@@ -168,6 +173,35 @@ public class AccuracyComparator extends GenestripComparator {
             ps.print(format(recall));
             ps.print(';');
             ps.print(format(f1));
+            ps.print(';');
+        }
+        ps.println();
+    }
+
+    private void printMACounts(PrintStream ps, Sys system, Map<String, int[]> mapCounts, Map<String, Integer> totals) {
+        ps.print(format(system));
+        ps.print(';');
+        for (int i = 1; i <= 2; i++) {
+            double avgPrecision = 0;
+            double avgRecall = 0;
+            double avgF1 = 0;
+            int c = 0;
+            for (String fastqKey : mapCounts.keySet()) {
+                int[] counts = mapCounts.get(fastqKey);
+                double precision = ((double) counts[i]) / counts[0];
+                double recall = ((double) counts[i]) / totals.get(fastqKey);
+                double f1 = 2 / ((1 / precision) + (1 / recall));
+
+                avgPrecision += precision;
+                avgRecall += recall;
+                avgF1 += f1;
+                c++;
+            }
+            ps.print(format(avgPrecision / c));
+            ps.print(';');
+            ps.print(format(avgRecall / c));
+            ps.print(';');
+            ps.print(format(avgF1 / c));
             ps.print(';');
         }
         ps.println();
