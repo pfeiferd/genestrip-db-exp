@@ -46,14 +46,14 @@ public class AccuracyComparator extends GenestripComparator {
     private final TaxTree taxTree;
     private final AccessionMap accessionMap;
 
-    public AccuracyComparator(File baseDir, File resDir, boolean format, boolean textFormat) throws IOException {
+    public AccuracyComparator(String db, File baseDir, File resDir, boolean format, boolean textFormat) throws IOException {
         super(baseDir, resDir);
         this.format = format;
         this.textFormat = textFormat;
 
         GSCommon config = new GSCommon(baseDir);
         // Project name does not matter for as long as it exits.
-        GSProject project = new GSProject(config, "viral", null, null, null, null, null, null,
+        GSProject project = new GSProject(config, db, null, null, null, null, null, null,
                 null, null, null, false);
         project.initConfigParam(GSConfigKey.THREADS, -1);
 
@@ -116,15 +116,19 @@ public class AccuracyComparator extends GenestripComparator {
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true);
+            /*
             Map<String, int[]> resKU = accuracyForSimulatedReadsKU("microbial", mapFile, checkTree, false, 0, true);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0, true);
             Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0.8, true);
+
+             */
 
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : resGenestrip.keySet()) {
                 int[] genestripCounts = resGenestrip.get(fastqKey);
                 int total = genestripCounts[5]; // No correct results without ground truth available.
 
+                /*
                 printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, resKU.get(fastqKey), total);
 
                 printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
@@ -135,6 +139,7 @@ public class AccuracyComparator extends GenestripComparator {
 
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, true);
                 printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
+                 */
 
                 printCounts(ps, fastqKey, Sys.GENESTRIP, genestripCounts, total);
             }
@@ -277,9 +282,10 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     protected void handleMatch(String classTaxId, byte[] desc, int[] counters, SmallTaxTree checkTree, boolean nanosim) {
+        //ByteArrayUtil.println(desc, System.out);
         TaxTree.TaxIdNode node = nodeFromDesc(desc, nanosim);
         if (node != null) {
-            // ByteArrayUtil.println(desc, System.out);
+            ByteArrayUtil.println(desc, System.out);
             TaxTree.TaxIdNode classNode = classTaxId == null ? null : taxTree.getNodeByTaxId(classTaxId);
             if (isAsRequestedOrBelowInCheckTree(node, checkTree)) {
                 counters[5]++;
@@ -494,7 +500,8 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     public static void main(String[] args) throws IOException {
-        AccuracyComparator comp = new AccuracyComparator(new File("./data"), new File("./results"), false, true);
+        /*
+        AccuracyComparator comp = new AccuracyComparator("viral", new File("./data"), new File("./results"), false, true);
 
         comp.writeReportFile("viral", null, "viral_acc_comp.txt", false);
         comp.writeReportFile("viral", "human_virus", "viral_acc_comp.txt", false);
@@ -508,7 +515,10 @@ public class AccuracyComparator extends GenestripComparator {
                 "SRR5571991",
                 "ERR1395610",
                 "SRR5571990");
+
+         */
         // Simulated tick files:
-        //comp.writeTickBorneSimReport();
+        AccuracyComparator comp2 = new AccuracyComparator("tick-borne", new File("./data"), new File("./results"), false, true);
+        comp2.writeTickBorneSimReport();
     }
 }
