@@ -4,6 +4,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.metagene.genestrip.*;
+import org.metagene.genestrip.fasta.AbstractFastaReader;
 import org.metagene.genestrip.goals.refseq.ExtractRefSeqCSVGoal;
 
 import java.io.*;
@@ -101,7 +102,25 @@ public class CSVDBFileConverter {
         ExtractRefSeqCSVGoal extractRefSeqCSVGoal = (ExtractRefSeqCSVGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_CSV);
         extractRefSeqCSVGoal.make();
 
+        int[] infoLines = new int[1];
+
         // Beware: NanoSim Simulator does not seem to accept gzipped fasta files.
+        AbstractFastaReader reader = new AbstractFastaReader(4096) {
+            @Override
+            protected void dataLine() {
+            }
+
+            @Override
+            protected void infoLine() {
+                infoLines[0]++;
+            }
+
+            @Override
+            public void readFasta(File file) throws IOException {
+                infoLines[0] = 0;
+                super.readFasta(file);
+            }
+        };
 
         try (CSVParser parser = CSV_FORMAT
                 .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
@@ -114,7 +133,8 @@ public class CSVDBFileConverter {
                         String taxid = record.get(1);
                         String fullPath = pathPrefix + descr + ".fa";
                         File faFile = new File(fullPath);
-                        if (faFile.length() > 10 * 1024) { // No too short files or minimap gets confused
+                        reader.readFasta(faFile);
+                        if (infoLines[0] == 1) { // More than one info line and NanoSim gets confused...
                             out.print(taxid + "x" + i);
                             out.print('\t');
                             out.print(fullPath);
