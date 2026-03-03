@@ -8,8 +8,19 @@ basedir=$(pwd)
 
 ## Genestrip ##
 
-mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt
-mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt
+for db in standard;
+  do
+   for id in tick1_sim tick2_sim;
+    do
+      ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./data/fastq/${id}_1.fastq.gz --output ./k2/${db}_${id}.tsv
+      # Same again with high confidence of 0.8
+      ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db ./data/fastq/${id}_1.fastq.gz --output ./k2/${db}_highconf_${id}.tsv
+    done
+  done
+
+#mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt
+#mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt
+
 
 ## Ganon ##
 
