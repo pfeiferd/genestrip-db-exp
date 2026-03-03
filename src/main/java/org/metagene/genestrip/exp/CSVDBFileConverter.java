@@ -105,50 +105,25 @@ public class CSVDBFileConverter {
         int[] infoLines = new int[1];
 
         // Beware: NanoSim Simulator does not seem to accept gzipped fasta files.
-        AbstractFastaReader reader = new AbstractFastaReader(4096) {
-            @Override
-            protected void dataLine() {
-            }
-
-            @Override
-            protected void infoLine() {
-                infoLines[0]++;
-            }
-
-            @Override
-            public void readFasta(File file) throws IOException {
-                infoLines[0] = 0;
-                super.readFasta(file);
-            }
-        };
 
         try (CSVParser parser = CSV_FORMAT
                 .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
             File ganonInputFile = new File(project.getResultsDir(), db + "_nanosim.tsv");
             try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
                 int i = 0;
-                int excluded = 0;
                 for (CSVRecord record : parser.getRecords()) {
                     if (i > 0) {
                         String descr = record.get(0);
                         String taxid = record.get(1);
                         String fullPath = pathPrefix + descr + ".fa";
-                        File faFile = new File(fullPath);
-                        reader.readFasta(faFile);
-                        if (infoLines[0] == 1) { // More than one info line and NanoSim gets confused...
-                            out.print(taxid + "x" + i);
-                            out.print('\t');
-                            out.print(fullPath);
-                            out.println();
-                        }
-                        else {
-                            excluded++;
-                        }
+                        //File faFile = new File(fullPath);
+                        out.print(taxid + "x" + i);
+                        out.print('\t');
+                        out.print(fullPath);
+                        out.println();
                     }
                     i++;
                 }
-                System.out.println("Alle files: " + i);
-                System.out.println("Excluded files: " + excluded);
             }
         }
 
@@ -183,7 +158,7 @@ public class CSVDBFileConverter {
                 out.println();
             }
         }
-        */
+         */
     }
 
 
