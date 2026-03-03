@@ -120,7 +120,7 @@ public class CSVDBFileConverter {
                         // Just use files with some minimal size - otherwise read cannot
                         // be randomly generated. Also computation takes too long.
                         if (faFile.length() > 1024) {
-                            out.print(taxid);
+                            out.print(taxid + "x" + i);
                             out.print('\t');
                             out.print(fullPath);
                             out.println();
