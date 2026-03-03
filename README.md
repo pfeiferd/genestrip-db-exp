@@ -36,7 +36,10 @@ Similarly, ISS then be executable anywhere from the command line via `iss`.
 Regarding NanoSim, we have used conda for its installation and
 *always* run `conda activate nanosim` to enable it execution.
 Moreover, `nanosimdir` should be an exported shell variable pointing to the `src` folder of NanoSim, i.e,
-where its cors script `read_analysis.py` and `simulator.py` are stored.
+where its core script `read_analysis.py` and `simulator.py` are stored.
+
+*Important:* For NanoSim to work in this context you must change the source code of `read_analysis.py`:
+In line 170 please change insert `-I 24G` after `call("minimap2 `
 
 Then, please `cd` to `genestrip-db-exp/bin` and execute the shell scripts there
 in this given order:
