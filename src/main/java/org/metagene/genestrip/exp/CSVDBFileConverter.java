@@ -101,9 +101,33 @@ public class CSVDBFileConverter {
         ExtractRefSeqCSVGoal extractRefSeqCSVGoal = (ExtractRefSeqCSVGoal) maker.getGoal(GSGoalKey.EXTRACT_REFSEQ_CSV);
         extractRefSeqCSVGoal.make();
 
-        Map<String, File> taxid2LargestFile = new HashMap<String, File>();
-
         // Beware: NanoSim Simulator does not seem to accept gzipped fasta files.
+
+        try (CSVParser parser = CSV_FORMAT
+                .parse(new InputStreamReader(new FileInputStream(extractRefSeqCSVGoal.getFile())))) {
+            File ganonInputFile = new File(project.getResultsDir(), db + "_nanosim.tsv");
+            try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
+                int i = 0;
+                for (CSVRecord record : parser.getRecords()) {
+                    if (i > 0) {
+                        String descr = record.get(0);
+                        String taxid = record.get(1);
+                        String fullPath = pathPrefix + descr + ".fa";
+                        File faFile = new File(fullPath);
+                        if (faFile.length() > 2048) { // No too short files or minimap gets confused
+                            out.print(taxid + "_" + i);
+                            out.print('\t');
+                            out.print(fullPath);
+                            out.println();
+                        }
+                    }
+                    i++;
+                }
+            }
+        }
+
+        /*
+        Map<String, File> taxid2LargestFile = new HashMap<String, File>();
 
         // Keep the longest file for each taxid - could not get it to work otherwise.
         try (CSVParser parser = CSV_FORMAT
@@ -133,6 +157,7 @@ public class CSVDBFileConverter {
                 out.println();
             }
         }
+        */
     }
 
 
