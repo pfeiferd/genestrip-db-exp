@@ -126,7 +126,6 @@ public class AccuracyComparator extends GenestripComparator {
                 int total = genestripCounts[5]; // No correct results without ground truth available.
                 totals.put(fastqKey, total);
                 printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, resKU.get(fastqKey), total);
-
                 printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, resK2HighConf.get(fastqKey), total);
 
@@ -146,6 +145,9 @@ public class AccuracyComparator extends GenestripComparator {
             ps.println("system; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             printMACounts(ps, Sys.GENESTRIP, resGenestrip, totals);
             printMACounts(ps, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens, totals);
+            printMACounts(ps, Sys.KRAKEN_UNIQ, resKU, totals);
+            printMACounts(ps, Sys.KRAKEN2, resK2, totals);
+            printMACounts(ps, Sys.KRAKEN2_HIGH_CONF, resK2HighConf, totals);
         }
     }
 
