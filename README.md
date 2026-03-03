@@ -32,25 +32,30 @@ Please first install [Ganon](https://pirovc.github.io/ganon/start/#install),
 [NanoSim](https://github.com/bcgsc/NanoSim?tab=readme-ov-file#installation) manually. 
 (We were not able to support a compact installation script for these tools.)
 Ganon should then be executable anywhere from the command line via `ganon`.
-Similarly, ISS then be executable anywhere from the command line via `iss`.
+Similarly, ISS should then be executable anywhere from the command line via `iss`.
 Regarding NanoSim, we have used conda for its installation and
-*always* run `conda activate nanosim` to enable it execution.
+*always* run `conda activate nanosim` to enable its execution.
 Moreover, `nanosimdir` should be an exported shell variable pointing to the `src` folder of NanoSim, i.e,
-where its core script `read_analysis.py` and `simulator.py` are stored.
+where its core scripts `read_analysis.py` and `simulator.py` are stored.
 
 *Important:* For NanoSim to work in this context you must change the source code of `read_analysis.py`:
-In line 170 please change insert `-I 24G` after `call("minimap2 `
+In line 170 please insert `-I 24G` after `call("minimap2 `.
+
+To speed up NanoSim's simulation one can optionally insert `return` in line 1640 of `simulator.py`.
+This avoids the generation of additional fastq files containing "unaligned" reads. They are not needed here,
+but we did not find another way of suppressing this step in NanoSim.
 
 Then, please `cd` to `genestrip-db-exp/bin` and execute the shell scripts there
 in this given order:
 
-1) `sh ./install_tools.sh` installs most necessary tools including KrakenUniq, Kraken 2, SRA tools and cgmemtime in respective folders. Please consult the [KrakenUniq README](https://github.com/fbreitwieser/krakenuniq/blob/master/README.md#installation) if this step partially fails in order to provide potential fixes.
+1) `sh ./install_tools.sh` installs other necessary tools including KrakenUniq, Kraken 2, SRA tools and cgmemtime in respective folders.
+ If the KrakenUniq install (partially) fails, then please consult the [KrakenUniq README](https://github.com/fbreitwieser/krakenuniq/blob/master/README.md#installation)  in order to provide potential fixes.
 2) `sh ./make_db.sh` prepares the *k*-mer databases necessary for the experiments. 
 Beware: This incurs a download of all viral and bacterial genomes from the RefSeq, triggers the generation of three Genestrip databases, downloads large KrakenUniq and Kraken 2 databases and generates ganon databases.
-3) `sh ./make_fastqs.sh` downloads or generates fastq files necessary for the experiments.
+3) `sh ./make_fastqs.sh` downloads fastq files or generates fastq files necessary for the experiments.
 4) `sh ./gen_nanonsim_tickfq.sh` generates simulated, tick-related fastq files via NanoSim.
 
-## Running the experiments (without performance experiments)
+## Classification quality experiments
 
 Please first `cd` to `genestrip-db-exp/bin`.
 

@@ -116,11 +116,15 @@ public class CSVDBFileConverter {
                         String descr = record.get(0);
                         String taxid = record.get(1);
                         String fullPath = pathPrefix + descr + ".fa";
-                        //File faFile = new File(fullPath);
-                        out.print(taxid + "x" + i);
-                        out.print('\t');
-                        out.print(fullPath);
-                        out.println();
+                        File faFile = new File(fullPath);
+                        // Just use files with some minimal size - otherwise read cannot
+                        // be randomly generated. Also computation takes too long.
+                        if (faFile.length() > 1024) {
+                            out.print(taxid + "x" + i);
+                            out.print('\t');
+                            out.print(fullPath);
+                            out.println();
+                        }
                     }
                     i++;
                 }
