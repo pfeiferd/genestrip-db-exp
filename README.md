@@ -58,12 +58,7 @@ Please first `cd` to `genestrip-db-exp/bin`.
 
 ### DB generation performance
 
-Please first `cd` to `genestrip-db-exp/bin`.
-
-1) Under *Linux*, please install [`cgmemtime`](https://github.com/gsauthof/cgmemtime) which should be used
-instead of `/usr/bin/time`. To do so, execute `sh ./install_cgmemtime_linux.sh`. (However, `/usr/bin/time` is used under *macOS*.)
-2) To run the database generation-experiments, execute
-`sh ./run_gendb_perf_exps_macos.sh` or `sh ./run_gendb_perf_exps_linux.sh`, respectively.
+Please first `cd` to `genestrip-db-exp/bin`. To run the database generation-experiments execute `sh ./run_gendb_perf_exps_linux.sh`.
 
 Afterward, you will find log files like `db_gen_human_virus.log` etc. under `genestrip-db-exp/results/logs`.
 
@@ -73,23 +68,19 @@ Please first `cd` to `genestrip-db-exp/bin`.
 
 **To run the classification performance experiments with Genestrip:**
 
-**Important:** `sh ./run_gendb_perf_exps_macos.sh` or `sh ./run_gendb_perf_exps_linux.sh` most have been
+**Important:** `sh ./run_gendb_perf_exps_linux.sh` most have been
 run beforehand so that the necessary databases exist.
-Under Linux, `cgmemtime` must have been installed via `sh ./install_cgmemtime_linux.sh` (see above).
 
-1) Execute `sh ./run_match_ticks_perf_exps_macos.sh` or `sh ./run_match_ticks_perf_exps_linux.sh`.
-2) Execute `sh ./run_match_saliva_perf_exps_macos.sh` or `sh ./run_match_saliva_perf_exps_linux.sh`.
+1) Execute `sh ./run_match_ticks_perf_exps_linux.sh`.
+2) Execute `sh ./run_match_saliva_perf_exps_linux.sh`.
 
 Afterward, you will find log files like `match_tick-borne_tick1.log` etc. under `genestrip-db-exp/results/logs`.
 
 **To run the classification performance experiments with KrakenUniq:**
 
-**Important:** KrakenUniq does not support multithreading under macOS,
-so for fair results, corresponding scripts should be run under Linux (although there exist corresponding scripts for macOS).
-
-1) Execute `sh ./run_ku_ticks_perf_exps_macos.sh` or `sh ./run_ku_ticks_perf_exps_linux.sh`.
-2) Execute `sh ./run_ku_saliva_perf_exps_macos.sh` or `sh ./run_ku_saliva_perf_exps_linux.sh`.
+1) Execute `sh ./run_ku_ticks_perf_exps_linux.sh`.
+2) Execute `sh ./run_ku_saliva_perf_exps_linux.sh`.
 
 Afterward, you will find log files like `match_ku_mb_tick1.log` etc. under `genestrip-db-exp/results/logs`.
 
-**Note:** There are additional scripts, files and folders that are currently not used to produce the experiments' results.
+**Note:** There are additional scripts, files and folders that are currently not needed to produce the experiments' results.
