@@ -115,9 +115,9 @@ public class AccuracyComparator extends GenestripComparator {
             Map<String, Integer> totals = new HashMap<>();
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, false);
             Map<String, int[]> resGenestripHighSens = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, true);
-            //Map<String, int[]> resKU = accuracyForSimulatedReadsKU("microbial", mapFile, checkTree, false, 0, true);
-            Map<String, int[]> resK2 = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0, true);
-            Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU("standard", mapFile, checkTree, true, 0.8, true);
+            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, true);
+            Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0, true);
+            Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0.8, true);
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
@@ -386,6 +386,9 @@ public class AccuracyComparator extends GenestripComparator {
                 null, null, null, false);
         project.initConfigParam(GSConfigKey.THREADS, -1);
         if (k2) {
+            if ("tick-borne".equals(db)) {
+                db = "standard";
+            }
             project.initConfigParam(GSConfigKey.KRAKEN_BIN, "./k2/kraken2/k2");
             project.initConfigParam(GSConfigKey.KRAKEN_DB, "./k2/" + db + "_db");
             project.initConfigParam(GSConfigKey.KRAKEN_EXEC_EXPR, "{0} classify --threads 10 --db {1} {2}" + (conf > 0 ? " --confidence " + conf : ""));
