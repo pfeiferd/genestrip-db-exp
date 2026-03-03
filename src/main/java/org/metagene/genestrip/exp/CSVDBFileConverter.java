@@ -127,6 +127,7 @@ public class CSVDBFileConverter {
             File ganonInputFile = new File(project.getResultsDir(), db + "_nanosim.tsv");
             try (PrintStream out = new PrintStream(new FileOutputStream(ganonInputFile))) {
                 int i = 0;
+                int excluded = 0;
                 for (CSVRecord record : parser.getRecords()) {
                     if (i > 0) {
                         String descr = record.get(0);
@@ -140,9 +141,14 @@ public class CSVDBFileConverter {
                             out.print(fullPath);
                             out.println();
                         }
+                        else {
+                            excluded++;
+                        }
                     }
                     i++;
                 }
+                System.out.println("Alle files: " + i);
+                System.out.println("Excluded files: " + excluded);
             }
         }
 
