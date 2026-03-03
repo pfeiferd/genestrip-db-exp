@@ -45,6 +45,7 @@ in this given order:
 2) `sh ./make_db.sh` prepares the *k*-mer databases necessary for the experiments. 
 Beware: This incurs a download of all viral and bacterial genomes from the RefSeq, triggers the generation of three Genestrip databases, downloads large KrakenUniq and Kraken 2 databases and generates ganon databases.
 3) `sh ./make_fastqs.sh` downloads or generates fastq files necessary for the experiments.
+4) `sh ./gen_nanonsim_tickfq.sh` generates simulated, tick-related fastq files via NanoSim.
 
 ## Running the experiments (without performance experiments)
 

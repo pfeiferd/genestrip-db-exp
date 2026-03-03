@@ -151,6 +151,8 @@ rm k2_standard_20251015.tar
 
 cd $basedir
 
-mkdir -p ganon/standard_db
+mkdir -p ganon/tick-borne_db
+mkdir -p ganon/tick-borne_lowfp_db
 
-ganon build --source refseq --organism-group bacteria --threads 48 --complete-genomes --db-prefix ganon/standard_db
+ganon build --source refseq --organism-group bacteria --taxid 9606 6945 --threads 48 --complete-genomes --db-prefix ganon/tick-borne_db --level leaves
+ganon build --source refseq --organism-group bacteria --taxid 9606 6945 --threads 48 --complete-genomes --db-prefix ganon/tick-borne_lowfp_db --level leaves --max-fp 0.0000001
