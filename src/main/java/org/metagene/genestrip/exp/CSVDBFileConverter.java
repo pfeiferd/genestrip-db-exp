@@ -114,8 +114,8 @@ public class CSVDBFileConverter {
                         String taxid = record.get(1);
                         String fullPath = pathPrefix + descr + ".fa";
                         File faFile = new File(fullPath);
-                        if (faFile.length() > 2048) { // No too short files or minimap gets confused
-                            out.print(taxid + "_" + i);
+                        if (faFile.length() > 10 * 1024) { // No too short files or minimap gets confused
+                            out.print(taxid + "x" + i);
                             out.print('\t');
                             out.print(fullPath);
                             out.println();
