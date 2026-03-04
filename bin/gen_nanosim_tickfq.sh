@@ -20,6 +20,7 @@ else
   gunzip ./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna.gz
 fi
 
+# This does not work: Abundances become 99% tick DNA - we don't want that.
 #sed -i '1i\6945\t./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna' data/projects/tick-borne/csv/tick-borne_nanosim.tsv
 
 # Generate fastq files with tick DNA only
@@ -35,6 +36,8 @@ do
   rm reference_metagenome.fasta
 done
 
+# Mixing in tick DNA - too complicated (for now) - we leave it as it is.
+for x in ; do
 # Generate fastq files with bacterial DNA only
 for file in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
 do
@@ -53,4 +56,6 @@ done
 for file in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
 do
   cat data/fastq/${file}_sim.fastq data/fastq/${file}_tick_only_sim.fastq > data/fastq/${file}_mixed_sim.fastq
+done
+
 done
