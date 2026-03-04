@@ -1,10 +1,10 @@
 # Fastq files previously generate via NanoSim
 tick1_sim tick1_sim.fastq
-#tick2_sim tick2_sim.fastq
-#tick3_sim tick3_sim.fastq
-#tick4_sim tick4_sim.fastq
-#tick5_sim tick5_sim.fastq
-#tick6_sim tick6_sim.fastq
-#tick7_sim tick7_sim.fastq
-#tick8_sim tick8_sim.fastq
+tick2_sim tick2_sim.fastq
+tick3_sim tick3_sim.fastq
+tick4_sim tick4_sim.fastq
+tick5_sim tick5_sim.fastq
+tick6_sim tick6_sim.fastq
+tick7_sim tick7_sim.fastq
+tick8_sim tick8_sim.fastq
 
