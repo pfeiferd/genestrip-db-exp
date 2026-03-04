@@ -96,7 +96,7 @@
 							<includeProjectDependencies>true</includeProjectDependencies>
 							<includePluginDependencies>true</includePluginDependencies>
 							<arguments>
-								<argument>-Xmx28G</argument>
+								<argument>-Xmx32G</argument>
 								<argument>-classpath</argument>
 								<classpath />
 								<argument>org.metagene.genestrip.Main</argument>
