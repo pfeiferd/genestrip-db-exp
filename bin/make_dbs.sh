@@ -154,5 +154,5 @@ cd $basedir
 mkdir -p ganon/tick-borne_db
 mkdir -p ganon/tick-borne_lowfp_db
 
-ganon build --source refseq --organism-group bacteria --taxid 9606 6945 --threads 48 --complete-genomes --db-prefix ganon/tick-borne_db --level leaves
-ganon build --source refseq --organism-group bacteria --taxid 9606 6945 --threads 48 --complete-genomes --db-prefix ganon/tick-borne_lowfp_db --level leaves --max-fp 0.0000001
+ganon build --taxonomy-files data/common/nodes.dmp data/common/names.dmp --source refseq --organism-group bacteria --threads 48 --complete-genomes --db-prefix ganon/tick-borne_db
+ganon build --taxonomy-files data/common/nodes.dmp data/common/names.dmp --source refseq --organism-group bacteria --threads 48 --complete-genomes --db-prefix ganon/tick-borne_lowfp_db --max-fp 0.0000001
