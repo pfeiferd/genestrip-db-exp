@@ -6,9 +6,10 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
-## Genestrip ##
-
+# NONE of the following is needed (yet) - it does not get execute since the x-loop is empty.
+for x in ; do
 for db in standard;
+  # Kraken 2
   do
    for id in tick1_sim tick2_sim tick3_sim tick4_sim tick5_sim tick6_sim tick7_sim tick8_sim;
     do
@@ -18,28 +19,26 @@ for db in standard;
     done
   done
 
-#mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt
-#mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt
+  ## Genestrip ##
+  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt
+  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt
+done
 
 
 ## Ganon ##
-
-for x in ; do
-
-for db in tick-borne tick-borne_lowfp;
+for db in tick-borne # tick-borne_lowfp;
   do
 
   # Ganon on simulated tick files
-  for id in tick1_sim #tick2 tick2_sim ...
+  for id in tick1_sim tick2_sim tick3_sim tick4_sim tick5_sim tick6_sim tick7_sim tick8_sim
     do
       ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32
     done
 
   # Ganon on tick files
-  for id in tick1 #tick2 ...
+  for id in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
     do
       ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}.fastq.gz --output-all -o ./ganon/${db}_${id} --threads 32
     done
   done
 
-done
