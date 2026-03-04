@@ -548,6 +548,7 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     public static void main(String[] args) throws IOException {
+        System.out.println(Runtime.getRuntime().availableProcessors());
         /*
         AccuracyComparator comp = new AccuracyComparator("viral", new File("./data"), new File("./results"), false, true);
 
