@@ -118,6 +118,7 @@ public class AccuracyComparator extends GenestripComparator {
         Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, true);
         Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0, true);
         Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0.4, true);
+        Map<String, int[]> resGanon = new LinkedHashMap<>();
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
@@ -129,10 +130,11 @@ public class AccuracyComparator extends GenestripComparator {
                 printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, resK2HighConf.get(fastqKey), total);
 
-                /*
                 int[] counts = accuracyForSimulatedReadsGanon("standard", "ganon/" + db + "_" + fastqKey + ".all", checkTree, true);
                 printCounts(ps, fastqKey, Sys.GANON, counts, total);
+                resGanon.put(fastqKey, counts);
 
+                /*
                 counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, true);
                 printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
                  */
@@ -143,11 +145,12 @@ public class AccuracyComparator extends GenestripComparator {
         }
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_ma_accuracy.csv")))) {
             ps.println("system; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
-            printMACounts(ps, Sys.GENESTRIP, resGenestrip, totals);
-            printMACounts(ps, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens, totals);
             printMACounts(ps, Sys.KRAKEN_UNIQ, resKU, totals);
             printMACounts(ps, Sys.KRAKEN2, resK2, totals);
             printMACounts(ps, Sys.KRAKEN2_HIGH_CONF, resK2HighConf, totals);
+            printMACounts(ps, Sys.GANON, resGanon, totals);
+            printMACounts(ps, Sys.GENESTRIP, resGenestrip, totals);
+            printMACounts(ps, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens, totals);
         }
     }
 
