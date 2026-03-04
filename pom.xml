@@ -102,6 +102,8 @@
 								<argument>org.metagene.genestrip.Main</argument>
 								<argument>${gs.project.name}</argument>
 								<argument>${gs.project.goal}</argument>
+								<argument>-C</argument>
+								<argument>threads=19</argument>
 							</arguments>
 						</configuration>
 					</execution>
