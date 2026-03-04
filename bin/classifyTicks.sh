@@ -26,7 +26,7 @@ done
 
 
 ## Ganon ##
-for db in tick-borne # tick-borne_lowfp;
+for db in tick-borne; # tick-borne_lowfp;
   do
 
   # Ganon on simulated tick files
