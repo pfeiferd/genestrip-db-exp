@@ -30,10 +30,10 @@ for db in tick-borne; # tick-borne_lowfp;
   do
 
   # Ganon on simulated tick files
-  for id in tick2_sim tick3_sim tick4_sim tick5_sim tick6_sim tick7_sim tick8_sim;
-    do
-      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32
-    done
+  #for id in tick2_sim tick3_sim tick4_sim tick5_sim tick6_sim tick7_sim tick8_sim;
+  #  do
+  #    ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32
+  #  done
 
   # Ganon on tick files
   for id in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
