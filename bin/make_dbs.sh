@@ -156,4 +156,4 @@ mkdir -p ganon/tick-borne_lowfp_db
 
 ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_db --max-fp 0.01
 # Too large in size - so not generated:
-#ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_lowfp_db --max-fp 0.001
+ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_lowfp_db --max-fp 0.001
