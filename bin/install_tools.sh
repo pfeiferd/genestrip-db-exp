@@ -66,6 +66,8 @@ cd krakenuniq
 
 # This file must be deleted, it leads to a compile error as it is not C++
 rm src/gzstream/version
+# Fix missing include:
+sed -i '1i\#include <stdint.h>' src/uid_mapping.hpp
 # Now we can build...
 ./install_krakenuniq.sh -j .
 
