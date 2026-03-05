@@ -38,9 +38,9 @@ fi
 
 ### sra-tools ###
 
-cd $scriptdir/..
+cd ${basedir}
 
-rm -Rf sra-tools
+rm -rf sra-tools
 mkdir -p sra-tools
 cd sra-tools
 
@@ -51,6 +51,8 @@ mv sratoolkit.3.2.1-alma_linux64 sratoolkit
 rm sratoolkit.3.2.1-alma_linux64.tar
 
 ### kraken-uniq ###
+
+cd ${basedir}
 
 mkdir -p ku
 cd ku
@@ -69,6 +71,8 @@ rm src/gzstream/version
 
 
 ### kraken 2 ###
+
+cd ${basedir}
 
 mkdir -p k2
 cd k2
