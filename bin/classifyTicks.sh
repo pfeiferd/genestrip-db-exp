@@ -26,13 +26,17 @@ done
 
 
 ## Ganon ##
+
+# Make sure Nanosim is deactivated as it is associated with an older version of Ganon!
+# conda deactivate
+
 for db in tick-borne; # tick-borne_lowfp;
   do
 
   # Ganon on simulated tick files
   for id in tick2_sim tick3_sim tick4_sim tick5_sim tick6_sim tick7_sim tick8_sim;
     do
-      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32 --fpr-query 1e-1
+      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32 --fpr-query 1e-1 --rel-cutoff 0.25 --rel-filter 0
     done
 
   # Ganon on tick files
