@@ -56,7 +56,7 @@ mkdir -p ku
 cd ku
 
 # We simply use the latest GitHub version... (currently v1.0.4)
-rm -RF krakenuniq
+rm -rf krakenuniq
 git clone https://github.com/fbreitwieser/krakenuniq.git
 # if error uint32_t appears, create a fixed version of uid_mapping.hpp with #include <cstdint> and report-cols.hpp in $basedir/bin/fixes/ku/ folder. 
 # cp $basedir/bin/fixes/ku/*.hpp krakenuniq/src
