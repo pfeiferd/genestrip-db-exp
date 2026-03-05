@@ -68,6 +68,7 @@ cd krakenuniq
 rm src/gzstream/version
 # Fix missing include:
 sed -i '1i\#include <stdint.h>' src/uid_mapping.hpp
+sed -i '13s/class//' src/report-cols.hpp
 # Now we can build...
 ./install_krakenuniq.sh -j .
 
