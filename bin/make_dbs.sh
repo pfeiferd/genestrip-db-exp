@@ -32,9 +32,9 @@ mkdir -p ganon/human_lowfp_db
 
 # Build ganon databases
 ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level leaves --threads 32
-ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
+ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.001
 ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level leaves --threads 32
-ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
+ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level leaves --threads 32 --max-fp 0.001
 ## Not needed (yet):
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_db --level leaves --threads 32
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
@@ -154,5 +154,6 @@ cd $basedir
 mkdir -p ganon/tick-borne_db
 mkdir -p ganon/tick-borne_lowfp_db
 
-ganon build --taxonomy-files data/common/nodes.dmp data/common/names.dmp --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_db
-ganon build --taxonomy-files data/common/nodes.dmp data/common/names.dmp --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_lowfp_db --max-fp 0.0000001
+ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_db --max-fp 0.01
+# Too large in size - so not generated:
+#ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_lowfp_db --max-fp 0.001
