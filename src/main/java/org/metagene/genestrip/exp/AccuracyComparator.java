@@ -281,7 +281,7 @@ public class AccuracyComparator extends GenestripComparator {
             int endPos = ByteArrayUtil.indexOf(desc, 5, desc.length, '_');
             return accessionMap.get(desc, startPos, endPos, false);
         } else {
-            int startPos = ByteArrayUtil.indexOf(desc, 1, desc.length, '-');
+            int startPos = ByteArrayUtil.indexOf(desc, 0, desc.length, '-');
             int endPos = ByteArrayUtil.indexOf(desc, 2, desc.length, '_');
             int nextDash = ByteArrayUtil.indexOf(desc, startPos + 1, desc.length, '-');
             if (nextDash != -1) {
