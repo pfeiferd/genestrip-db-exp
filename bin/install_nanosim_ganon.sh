@@ -36,9 +36,3 @@ conda activate nanosim
 # Doesn't seem to work on a MAC (I can't compile it, I can't install it via conda).
 # Therefore just on Linux:
 conda install -c bioconda -c conda-forge ganon
-
-# Requires FTP to work.
-ganon build --db-prefix viral_cg_rs --source refseq --organism-group viral --complete-genomes --threads 24
-
-# Run ganon on simulated virus fastq from paper:
-ganon classify --db-prefix viral_cg_rs data/projects/viral/fastq/viral_fasta2fastq_fasta1.fastq.gz --output-all results --threads 32
