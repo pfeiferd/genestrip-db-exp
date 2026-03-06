@@ -7,6 +7,8 @@ cd $scriptdir/..
 basedir=$(pwd)
 
 # Genestrip DBs
+cd $basedir
+
 mvn exec:exec@db -Dname=human_virus -Dgoal=dbinfo
 mvn exec:exec@db -Dname=viral -Dgoal=dbinfo
 mvn exec:exec@db -Dname=tick-borne -Dgoal=dbinfo
@@ -22,6 +24,7 @@ mvn exec:exec@inputcsv
 #### Ganon ###
 
 # Create a dirs
+mkdir -p ganon
 mkdir -p ganon/viral_db
 mkdir -p ganon/viral_lowfp_db
 mkdir -p ganon/human_virus_db
@@ -151,6 +154,7 @@ rm k2_standard_20251015.tar
 
 cd $basedir
 
+mkdir -p ganon
 mkdir -p ganon/tick-borne_db
 mkdir -p ganon/tick-borne_lowfp_db
 
