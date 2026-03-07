@@ -12,22 +12,33 @@ basedir=$(pwd)
 
 ## Genestrip ##
 
-mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt
-mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp.txt
-mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt
-mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt
+mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt -DminKMersForClass=4
+mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp.txt -DminKMersForClass=4
+mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt -DminKMersForClass=4
+mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt -DminKMersForClass=4
+
+mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp2.txt -DminKMersForClass=1
+mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp2.txt -DminKMersForClass=1
+mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva2.txt -DminKMersForClass=1
+mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva2.txt  -DminKMersForClass=1
 
 ## Ganon ##
 
 # Run ganon on simulated virus fastq from paper:
-for db in viral viral_lowfp human_virus human_virus_lowfp;
+for db in viral human_virus;
   do
-    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz --output-all -o ./ganon/${db}_fastq1 --threads 32
-    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_hiseq --threads 32
-    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_miseq --threads 32
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz --output-all -o ./ganon/${db}_lowfp_fastq1 --threads 32
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq --output-all -o ./ganon/${db}_lowfp_iss_hiseq --threads 32
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all -o ./ganon/${db}_lowfp_iss_miseq --threads 32
+
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz --output-all -o ./ganon/${db}_fastq1 --threads 32 -rel-cutoff 0 --rel-filter 0
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_hiseq --threads 32 -rel-cutoff 0 --rel-filter 0
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_miseq --threads 32 -rel-cutoff 0 --rel-filter 0
+
     for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
-      ganon classify --db-prefix ./ganon/${db}_db ---output-all -o ./ganon/${db}_${id} --threads 32 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
+      ganon classify --db-prefix ./ganon/${db}_db ---output-all -o ./ganon/${db}_lowfp_${id} --threads 32 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
+      ganon classify --db-prefix ./ganon/${db}_db ---output-all -o ./ganon/${db}_${id} --threads 32 --rel-cutoff 0 --rel-filter 0 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
     done
   done
 
@@ -50,11 +61,11 @@ for db in viral human_virus;
 for db in viral human_virus;
   do
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_fastq1.tsv ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz
-    ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_fastq1.tsv ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz
+    ./k2/kraken2/k2 classify --confidence 0.5 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_fastq1.tsv ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_iss_hiseq.tsv ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq
-    ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_iss_hiseq.tsv ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq
+    ./k2/kraken2/k2 classify --confidence 0.5 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_iss_hiseq.tsv ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq
     ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --output ./k2/${db}_iss_miseq.tsv ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq
-    ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_iss_miseq.tsv ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq
+    ./k2/kraken2/k2 classify --confidence 0.5 --threads 10 --db ./k2/${db}_db --output ./k2/${db}_highconf_iss_miseq.tsv ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq
 
    for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
@@ -62,8 +73,8 @@ for db in viral human_virus;
       ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_${db}_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
       ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./k2/classified_${db}_${id}.fastq --output ./k2/${db}_${id}.tsv
 
-      # Same again with high confidence of 0.8
-      ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_highconf_${db}_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
-      ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db ./k2/classified_highconf_${db}_${id}.fastq --output ./k2/${db}_highconf_${id}.tsv
+      # Same again with high confidence of 0.5
+      ./k2/kraken2/k2 classify --confidence 0.5 --threads 10 --db ./k2/${db}_db --classified-out ./k2/classified_highconf_${db}_${id}.fastq --output - ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
+      ./k2/kraken2/k2 classify --confidence 0.5 --threads 10 --db ./k2/${db}_db ./k2/classified_highconf_${db}_${id}.fastq --output ./k2/${db}_highconf_${id}.tsv
     done
   done

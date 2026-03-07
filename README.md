@@ -18,7 +18,7 @@ The rest of the of system is a bunch of shell scripts that can be executed on an
 You need a large disk with at least 2.5 TB free space and a high network bandwidth (with Internet access) to download and store the necessary data.
 You need at least 128 GB of RAM for the result data to be computed. The computations may take several days...
 
-This version of Genestrip-DB-Exp is tied to Genestrip [Version 2.4](https://github.com/pfeiferd/genestrip/releases/tag/v2.5).
+This version of Genestrip-DB-Exp is tied to Genestrip [Version 2.5](https://github.com/pfeiferd/genestrip/releases/tag/v2.5).
 The original experiments were based on the [RefSeq Release 233](https://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER).
 Using later version of the RefSeq might bring (slightly) different results than the original runs.
 
@@ -27,7 +27,7 @@ Using later version of the RefSeq might bring (slightly) different results than 
 You need at least 2,5 TB of disk space (ideally on SSD drive) for the experiments.
 You need excellent internet bandwidth in order to download over 1,5 TB of data.
 
-Please first install [Ganon](https://pirovc.github.io/ganon/start/#install),
+Please first install [Ganon 2](https://pirovc.github.io/ganon/start/#install),
 [ISS](https://insilicoseq.readthedocs.io/en/latest/iss/install.html) and 
 [NanoSim](https://github.com/bcgsc/NanoSim?tab=readme-ov-file#installation) manually. 
 (We were not able to support a compact installation script for these tools.)

@@ -10,6 +10,7 @@
 		<gs.project.goal>${goal}</gs.project.goal>
 		<gs.project.fqmap>${fqmap}</gs.project.fqmap>
 		<gs.project.fqfile>${fqfile}</gs.project.fqfile>
+		<gs.project.minKMersForClass>${minKMersForClass}</gs.project.minKMersForClass>
 	</properties>
 	
 	<name>genestrip-db-exp</name>
@@ -125,6 +126,8 @@
 								<argument>${gs.project.goal}</argument>
 								<argument>-m</argument>
 								<argument>${gs.project.fqmap}</argument>
+								<argument>-C</argument>
+								<argument>minKMersForClass=${gs.project.minKMersForClass}</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -150,6 +153,8 @@
 								<argument>writeKrakenStyleOut=true</argument>
 								<argument>-C</argument>
 								<argument>writeAll=true</argument>
+								<argument>-C</argument>
+								<argument>minKMersForClass=${gs.project.minKMersForClass}</argument>
 							</arguments>
 						</configuration>
 					</execution>

@@ -14,14 +14,16 @@ for db in standard;
    for id in tick1_sim tick2_sim tick3_sim tick4_sim tick5_sim tick6_sim tick7_sim tick8_sim;
     do
       ./k2/kraken2/k2 classify --threads 10 --db ./k2/${db}_db ./data/fastq/${id}.fastq --output ./k2/${db}_${id}.tsv
-      # Same again with high confidence of 0.8
-      ./k2/kraken2/k2 classify --confidence 0.8 --threads 10 --db ./k2/${db}_db ./data/fastq/${id}.fastq --output ./k2/${db}_highconf_${id}.tsv
+      # Same again with high confidence of 0.5
+      ./k2/kraken2/k2 classify --confidence 0.5 --threads 10 --db ./k2/${db}_db ./data/fastq/${id}.fastq --output ./k2/${db}_highconf_${id}.tsv
     done
   done
 
   ## Genestrip ##
-  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt
-  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt
+  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt -DminKMersForClass=4
+  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim.txt -DminKMersForClass=4
+  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks2.txt -DminKMersForClass=1
+  mvn exec:exec@matchrep -Dname=tick-borne -Dgoal=match -Dfqmap=ticks_sim2.txt -DminKMersForClass=1
 done
 
 
@@ -36,13 +38,15 @@ for db in tick-borne; # tick-borne_lowfp;
   # Ganon on simulated tick files
   for id in tick1_sim tick2_sim tick3_sim tick4_sim tick5_sim tick6_sim tick7_sim tick8_sim;
     do
-      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32 --rel-cutoff 0 --rel-filter 0 # --fpr-query 1e-0
+      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_all_${id} --threads 32 --rel-cutoff 0 --rel-filter 0 --fpr-query 1e-0
+      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32 --rel-cutoff 0 --rel-filter 0
     done
 
   # Ganon on tick files
 #  for id in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
 #    do
-#      ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/${id}.fastq.gz --output-all -o ./ganon/${db}_${id} --threads 32
+#      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_all_${id} --threads 32 --rel-cutoff 0 --rel-filter 0 --fpr-query 1e-0
+#      ganon classify --db-prefix ${basedir}/ganon/${db}_db -s ./data/fastq/${id}.fastq --output-all -o ./ganon/${db}_${id} --threads 32 --rel-cutoff 0 --rel-filter 0
 #    done
   done
 
