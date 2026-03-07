@@ -1,0 +1,12 @@
+# From https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10328957/
+# All MinION samples:
+high_sens_tick1 tick1.fastq.gz
+high_sens_tick2 tick2.fastq.gz
+high_sens_tick3 tick3.fastq.gz
+high_sens_tick4 tick4.fastq.gz
+# The tick 5 fastq did not get processed via KrakenUniq... KrakenUniq hangs at some point...
+high_sens_tick5 tick5.fastq.gz
+high_sens_tick6 tick6.fastq.gz
+high_sens_tick7 tick7.fastq.gz
+high_sens_tick8 tick8.fastq.gz
+

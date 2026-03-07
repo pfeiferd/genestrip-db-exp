@@ -1,0 +1,6 @@
+#tick1_sim tick1_sim.fastq
+high_sens_fastq1 viral_fasta2fastq_fasta1.fastq
+high_sens_iss_miseq viral_iss_miseq_reads_R1.fastq
+high_sens_iss_miseq viral_iss_miseq_reads_R2.fastq
+high_sens_iss_hiseq viral_iss_hiseq_reads_R1.fastq
+high_sens_iss_hiseq viral_iss_hiseq_reads_R2.fastq
