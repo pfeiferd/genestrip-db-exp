@@ -6,7 +6,6 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
-for x in ; do
 mvn exec:exec@viralfastq
 
 # Generate simulated viral data over all RefSeq viruses using iss
@@ -31,8 +30,6 @@ wget https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR1728110
 wget https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281099 -O tick6.fastq.gz
 wget https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281116 -O tick7.fastq.gz
 wget https://www.be-md.ncbi.nlm.nih.gov/Traces/sra-reads-be/fastq?acc=SRR17281115 -O tick8.fastq.gz
-
-done
 
 # Download human saliva fastq using sra-tools
 bin=${basedir}/sra-tools/sratoolkit/bin
