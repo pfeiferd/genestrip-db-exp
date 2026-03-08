@@ -80,10 +80,11 @@ public class AccuracyComparator extends GenestripComparator {
         }
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
-            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, nanoSim);
+            Map<String, int[]> resGenestripHighSens = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim, true);
             Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, nanoSim, false);
+            Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, nanoSim);
             Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0, nanoSim);
-            Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0.8, nanoSim);
+            Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0.5, nanoSim);
 
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
             for (String fastqKey : resGenestrip.keySet()) {
@@ -95,12 +96,14 @@ public class AccuracyComparator extends GenestripComparator {
                 printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, resK2HighConf.get(fastqKey), total);
 
-                int[] counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree, nanoSim);
-                printCounts(ps, fastqKey, Sys.GANON, counts, total);
-
-                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, nanoSim);
+                int[] counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, nanoSim);
                 printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
 
+                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree, nanoSim);
+                printCounts(ps, fastqKey, Sys.GANON, counts, total);
+
+
+                printCounts(ps, fastqKey, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.GENESTRIP, geneStripCounts, total);
             }
         }
@@ -113,14 +116,13 @@ public class AccuracyComparator extends GenestripComparator {
         SmallTaxTree checkTree = getDatabase(checkDB, false).getTaxTree();
 
         Map<String, Integer> totals = new HashMap<>();
-        Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, false);
-        /*
         Map<String, int[]> resGenestripHighSens = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, true);
+        Map<String, int[]> resGenestrip = accuracyForSimulatedReadsGenestrip(db, mapFile, checkTree, true, false);
         Map<String, int[]> resKU = accuracyForSimulatedReadsKU(db, mapFile, checkTree, false, 0, true);
         Map<String, int[]> resK2 = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0, true);
         Map<String, int[]> resK2HighConf = accuracyForSimulatedReadsKU(db, mapFile, checkTree, true, 0.4, true);
-         */
         Map<String, int[]> resGanon = new LinkedHashMap<>();
+        Map<String, int[]> resGanonLowFP = new LinkedHashMap<>();
 
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_accuracy.csv")))) {
             ps.println("fastq key; system; classified; correct genus; correct species; total; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
@@ -128,33 +130,31 @@ public class AccuracyComparator extends GenestripComparator {
                 int[] genestripCounts = resGenestrip.get(fastqKey);
                 int total = genestripCounts[5]; // No correct results without ground truth available.
                 totals.put(fastqKey, total);
-                /*
                 printCounts(ps, fastqKey, Sys.KRAKEN_UNIQ, resKU.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, resK2HighConf.get(fastqKey), total);
-                 */
 
-                int[] counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree, true);
+                int[] counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, true);
+                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
+                resGanonLowFP.put(fastqKey, counts);
+
+                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree, true);
                 printCounts(ps, fastqKey, Sys.GANON, counts, total);
                 resGanon.put(fastqKey, counts);
 
-                /*
-                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, true);
-                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
-                 */
-
+                printCounts(ps, fastqKey, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.GENESTRIP, genestripCounts, total);
-                //printCounts(ps, fastqKey, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens.get(fastqKey), total);
             }
         }
         try (PrintStream ps = new PrintStream(new FileOutputStream(new File(resultsDir, db + (checkDB == null ? "" : "_" + checkDB) + "_ma_accuracy.csv")))) {
             ps.println("system; precision genus; recall genus; f1 genus; precision species; recall species; f1 species;");
-//            printMACounts(ps, Sys.KRAKEN_UNIQ, resKU, totals);
-//            printMACounts(ps, Sys.KRAKEN2, resK2, totals);
-//            printMACounts(ps, Sys.KRAKEN2_HIGH_CONF, resK2HighConf, totals);
+            printMACounts(ps, Sys.KRAKEN_UNIQ, resKU, totals);
+            printMACounts(ps, Sys.KRAKEN2, resK2, totals);
+            printMACounts(ps, Sys.KRAKEN2_HIGH_CONF, resK2HighConf, totals);
+            printMACounts(ps, Sys.GANON_LOWFP, resGanonLowFP, totals);
             printMACounts(ps, Sys.GANON, resGanon, totals);
+            printMACounts(ps, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens, totals);
             printMACounts(ps, Sys.GENESTRIP, resGenestrip, totals);
-//            printMACounts(ps, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens, totals);
         }
     }
 
@@ -467,6 +467,11 @@ public class AccuracyComparator extends GenestripComparator {
                 printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles(
+                        "data/projects/" + db + "/krakenout/" + db + "_matchres_high_sens_" + fastqKey + ".out",
+                        "data/projects/" + checkDB + "/krakenout/" + checkDB + "_matchres_high_sens_" + fastqKey + ".out", checkTree, true);
+                printCounts(ps, fastqKey, Sys.GENESTRIP_HIGH_SENS, counts, counts[5]);
+
+                counts = accuracyVia2ReportFiles(
                         "data/projects/" + db + "/krakenout/" + db + "_matchres_" + fastqKey + ".out",
                         "data/projects/" + checkDB + "/krakenout/" + checkDB + "_matchres_" + fastqKey + ".out", checkTree, true);
                 printCounts(ps, fastqKey, Sys.GENESTRIP, counts, counts[5]);
@@ -556,7 +561,6 @@ public class AccuracyComparator extends GenestripComparator {
 
     public static void main(String[] args) throws IOException {
         System.out.println(Runtime.getRuntime().availableProcessors());
-        /*
         AccuracyComparator comp = new AccuracyComparator("viral", new File("./data"), new File("./results"), false, true);
 
         comp.writeReportFile("viral", null, "viral_acc_comp.txt", false);
@@ -572,7 +576,6 @@ public class AccuracyComparator extends GenestripComparator {
                 "ERR1395610",
                 "SRR5571990");
 
-         */
         // Simulated tick files:
         AccuracyComparator comp2 = new AccuracyComparator("tick-borne", new File("./data"), new File("./results"), false, true);
         comp2.writeTickBorneSimReport();
