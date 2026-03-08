@@ -37,8 +37,8 @@ for db in viral human_virus;
 
     for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
-      ganon classify --db-prefix ./ganon/${db}_db ---output-all -o ./ganon/${db}_lowfp_${id} --threads 32 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
-      ganon classify --db-prefix ./ganon/${db}_db ---output-all -o ./ganon/${db}_${id} --threads 32 --rel-cutoff 0 --rel-filter 0 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
+      ganon classify --db-prefix ./ganon/${db}_db --output-all -o ./ganon/${db}_lowfp_${id} --threads 32 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
+      ganon classify --db-prefix ./ganon/${db}_db --output-all -o ./ganon/${db}_${id} --threads 32 --rel-cutoff 0 --rel-filter 0 -s ./data/fastq/${id}_1.fastq.gz #./data/fastq/${id}_2.fastq.gz
     done
   done
 
