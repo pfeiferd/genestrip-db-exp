@@ -31,9 +31,9 @@ for db in viral human_virus;
     ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq --output-all -o ./ganon/${db}_lowfp_iss_hiseq --threads 32
     ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all -o ./ganon/${db}_lowfp_iss_miseq --threads 32
 
-    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz --output-all -o ./ganon/${db}_fastq1 --threads 32 -rel-cutoff 0 --rel-filter 0
-    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_hiseq --threads 32 -rel-cutoff 0 --rel-filter 0
-    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_miseq --threads 32 -rel-cutoff 0 --rel-filter 0
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_fasta2fastq_fasta1.fastq.gz --output-all -o ./ganon/${db}_fastq1 --threads 32 --rel-cutoff 0 --rel-filter 0
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_hiseq_reads_R1.fastq ./data/fastq/viral_iss_hiseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_hiseq --threads 32 --rel-cutoff 0 --rel-filter 0
+    ganon classify --db-prefix ./ganon/${db}_db -s ./data/fastq/viral_iss_miseq_reads_R1.fastq ./data/fastq/viral_iss_miseq_reads_R2.fastq --output-all -o ./ganon/${db}_iss_miseq --threads 32 --rel-cutoff 0 --rel-filter 0
 
     for id in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
     do
