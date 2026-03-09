@@ -37,10 +37,10 @@ mkdir -p ganon/human_lowfp_db
 
 # Build ganon databases
 # Here, we need '--leaves' to accurately measure classification quality in the viral scenario
-ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level leaves --threads 32 --max-fp 0.01
-ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.001
-ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level leaves --threads 32 --max-fp 0.01
-ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level leaves --threads 32 --max-fp 0.001
+ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level leaves --threads 32 --max-fp 0.001 --filter-type hibf
+#ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.001
+ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level leaves --threads 32 --max-fp 0.001 --filter-type hibf
+#ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_lowfp_db --level leaves --threads 32 --max-fp 0.001
 ## Not needed (yet):
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_db --level leaves --threads 32
 ##ganon build-custom --input-file data/projects/tick-borne/csv/tick-borne_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/tick-borne_lowfp_db --level leaves --threads 32 --max-fp 0.0000001
@@ -163,6 +163,6 @@ mkdir -p ganon
 mkdir -p ganon/tick-borne_db
 mkdir -p ganon/tick-borne_lowfp_db
 
-ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_db --max-fp 0.01
+ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_db --max-fp 0.001 --filter-type hibf
 # Too large in size - got on out of memory under 128 MG RAM, so not generated:
 #ganon build --source refseq --organism-group bacteria --threads 48 --db-prefix ganon/tick-borne_lowfp_db --max-fp 0.001
