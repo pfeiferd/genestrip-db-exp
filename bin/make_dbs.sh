@@ -36,6 +36,7 @@ mkdir -p ganon/human_lowfp_db
 #mkdir -p ganon/tick-borne_lowfp_db
 
 # Build ganon databases
+# Here, we need '--leaves' to accurately measure classification quality in the viral scenario
 ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_db --level leaves --threads 32 --max-fp 0.01
 ganon build-custom --input-file data/projects/viral/csv/viral_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/viral_lowfp_db --level leaves --threads 32 --max-fp 0.001
 ganon build-custom --input-file data/projects/human_virus/csv/human_virus_ganon.tsv --taxonomy-files data/common/nodes.dmp data/common/names.dmp --db-prefix ganon/human_virus_db --level leaves --threads 32 --max-fp 0.01
