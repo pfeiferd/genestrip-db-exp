@@ -75,21 +75,12 @@ Afterward, you will find log files like `db_gen_human_virus.log` etc. under `gen
 
 Please first `cd` to `genestrip-db-exp/bin`.
 
-**To run the classification performance experiments with Genestrip:**
-
 **Important:** `sh ./run_gendb_perf_exps_linux.sh` most have been
 run beforehand so that the necessary databases exist.
 
 1) Execute `sh ./run_match_ticks_perf_exps_linux.sh`.
 2) Execute `sh ./run_match_saliva_perf_exps_linux.sh`.
 
-Afterward, you will find log files like `match_tick-borne_tick1.log` etc. under `genestrip-db-exp/results/logs`.
-
-**To run the classification performance experiments with KrakenUniq:**
-
-1) Execute `sh ./run_ku_ticks_perf_exps_linux.sh`.
-2) Execute `sh ./run_ku_saliva_perf_exps_linux.sh`.
-
-Afterward, you will find log files like `match_ku_mb_tick1.log` etc. under `genestrip-db-exp/results/logs`.
+Afterward, you should find log files like `/logs/match_ku_mb_tick1.log` etc. under `genestrip-db-exp/results/logs`.
 
 **Note:** There are additional scripts, files and folders that are currently not needed to produce the experiments' results.
