@@ -24,7 +24,7 @@ Using later version of the RefSeq might bring (slightly) different results than 
 
 ## Experiment preparation
 
-You need at least 2,5 TB of disk space (ideally on SSD drive) for the experiments.
+You need about 2,5 TB of disk space (ideally on an SSD drive) for the experiments.
 You need excellent internet bandwidth in order to download over 1,5 TB of data.
 
 Please first install [Ganon 2](https://pirovc.github.io/ganon/start/#install),
