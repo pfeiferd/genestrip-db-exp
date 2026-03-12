@@ -127,7 +127,7 @@
 								<argument>-m</argument>
 								<argument>${gs.project.fqmap}</argument>
 								<argument>-C</argument>
-								<argument>minKMersForClass=${gs.project.minKMersForClass}</argument>
+								<argument>threads=9</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -180,6 +180,8 @@
 								<argument>writeKrakenStyleOut=true</argument>
 								<argument>-C</argument>
 								<argument>writeAll=false</argument>
+								<argument>-C</argument>
+								<argument>minKMersForClass=${gs.project.minKMersForClass}</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -201,6 +203,8 @@
 								<argument>${gs.project.goal}</argument>
 								<argument>-f</argument>
 								<argument>${gs.project.fqfile}</argument>
+								<argument>-C</argument>
+								<argument>threads=9</argument>
 							</arguments>
 						</configuration>
 					</execution>
