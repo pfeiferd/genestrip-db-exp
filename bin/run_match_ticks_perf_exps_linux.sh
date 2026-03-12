@@ -9,6 +9,8 @@ basedir=$(pwd)
 res_path=${basedir}/results
 file_path=${basedir}/data/fastq
 
+for x in ;
+do
 # Genestrip
 for t in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
   do
@@ -37,6 +39,8 @@ for t in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
   done
 
 ./cgmemtime/cgmemtime ./k2/kraken2/k2 classify --threads 10 --db ./k2/standard_db --output - --report ./k2/tick_perf_k2_allticks.tsv ${file_path}/tick1.fastq.gz ${file_path}/tick2.fastq.gz ${file_path}/tick3.fastq.gz ${file_path}/tick4.fastq.gz ${file_path}/tick5.fastq.gz ${file_path}/tick6.fastq.gz ${file_path}/tick7.fastq.gz ${file_path}/tick8.fastq.gz  > ${res_path}/logs/match_k2_std_allticks.log
+
+done
 
 # Ganon
 for t in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
