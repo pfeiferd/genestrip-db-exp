@@ -7,6 +7,7 @@ cd $scriptdir/..
 basedir=$(pwd)
 
 res_path=${basedir}/results
+file_path=${basedir}/data/fastq
 
 for x in ;
 do
@@ -22,7 +23,6 @@ for t in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
 ./cgmemtime/cgmemtime mvn exec:exec@match -Dname=tick-borne -Dgoal=match -Dfqmap=ticks.txt  > ${res_path}/logs/match_g_tick-borne_allticks.log
 
 # KrakenUniq
-file_path=${basedir}/data/fastq
 ps=96G
 # Beware: 10 Thread is correct here as Genestrip is configured with 9 consumer thread + 1 reading thread...
 for t in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
