@@ -36,6 +36,6 @@ for t in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
 for t in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
   do
     # Suppress a lot of output to be fair
-    ./cgmemtime/cgmemtime ganon classify --db-prefix ./ganon/viral_db -o ./ganon/viral_perf_ganon_${t} --threads 10 -s ./data/fastq/${t}_1.fastq.gz > ${res_path}/logs/match_ganon_viral_${t}.log
+    ./cgmemtime/cgmemtime ganon classify --db-prefix ${basedir}/ganon/viral_db -o ${basedir}/ganon/viral_perf_ganon_${t} --threads 10 -s ./data/fastq/${t}_1.fastq.gz > ${res_path}/logs/match_ganon_viral_${t}.log
   done
 
