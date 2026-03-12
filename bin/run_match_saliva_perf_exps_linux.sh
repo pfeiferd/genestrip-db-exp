@@ -7,6 +7,7 @@ cd $scriptdir/..
 basedir=$(pwd)
 
 res_path=${basedir}/results
+file_path=./data/fastq
 
 # Genestrip
 for t in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
@@ -17,7 +18,6 @@ for t in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
   done
 
 # KrakenUniq
-file_path=./data/fastq
 
 for t in ERR1395613 ERR1395610 SRR5571991 SRR5571990 SRR5571985;
   do
