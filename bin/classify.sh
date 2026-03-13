@@ -14,11 +14,11 @@ basedir=$(pwd)
 
 mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp.txt -DminKMersForClass=4
 mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp.txt -DminKMersForClass=4
-mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt -DminKMersForClass=4
-mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt -DminKMersForClass=4
-
 mvn exec:exec@matchrep -Dname=viral -Dgoal=match -Dfqmap=viral_acc_comp2.txt -DminKMersForClass=1
 mvn exec:exec@matchrep -Dname=human_virus -Dgoal=match -Dfqmap=viral_acc_comp2.txt -DminKMersForClass=1
+
+mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva.txt -DminKMersForClass=4
+mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva.txt -DminKMersForClass=4
 mvn exec:exec@matchrep2 -Dname=viral -Dgoal=match -Dfqmap=saliva2.txt -DminKMersForClass=1
 mvn exec:exec@matchrep2 -Dname=human_virus -Dgoal=match -Dfqmap=saliva2.txt  -DminKMersForClass=1
 
