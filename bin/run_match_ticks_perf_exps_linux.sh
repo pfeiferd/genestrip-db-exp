@@ -46,7 +46,7 @@ for t in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
 for t in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8;
   do
     # Suppress a lot of output to be fair
-    ./cgmemtime/cgmemtime ganon classify --rel-cutoff 0 --rel-filter 0 --db-prefix ${basedir}/ganon/tick-borne_db -o ${basedir}/ganon/tick_perf_ganon_${t} --threads 10 -s ${file_path}/${t}.fastq.gz > ${res_path}/logs/match_ganon_viral_${t}.log
+    ./cgmemtime/cgmemtime ganon classify --rel-cutoff 0 --rel-filter 0 --db-prefix ${basedir}/ganon/tick-borne_db -o ${basedir}/ganon/tick_perf_ganon_${t} --threads 10 -s ${file_path}/${t}.fastq.gz > ${res_path}/logs/match_ganon_tick-borne_${t}.log
   done
 
-./cgmemtime/cgmemtime ganon classify --rel-cutoff 0 --rel-filter 0 --db-prefix ${basedir}/ganon/tick-borne_db -o ${basedir}/ganon/tick_perf_ganon_allticks --threads 10 -s ${file_path}/tick2.fastq.gz ${file_path}/tick3.fastq.gz ${file_path}/tick4.fastq.gz ${file_path}/tick5.fastq.gz ${file_path}/tick6.fastq.gz ${file_path}/tick7.fastq.gz ${file_path}/tick8.fastq.gz > ${res_path}/logs/match_ganon_viral_allticks.log
+./cgmemtime/cgmemtime ganon classify --rel-cutoff 0 --rel-filter 0 --db-prefix ${basedir}/ganon/tick-borne_db -o ${basedir}/ganon/tick_perf_ganon_allticks --threads 10 -s ${file_path}/tick2.fastq.gz ${file_path}/tick3.fastq.gz ${file_path}/tick4.fastq.gz ${file_path}/tick5.fastq.gz ${file_path}/tick6.fastq.gz ${file_path}/tick7.fastq.gz ${file_path}/tick8.fastq.gz > ${res_path}/logs/match_ganon_tick-borne_allticks.log
