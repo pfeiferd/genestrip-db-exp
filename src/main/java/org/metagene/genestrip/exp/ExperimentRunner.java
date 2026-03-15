@@ -13,6 +13,7 @@ public class ExperimentRunner {
 
         KrakenMatchComparator c1 = new KrakenMatchComparator(new File("./data"), new File("./results"));
 
+        /*
         c1.writeUnfoldedTaxids("human_virus");
 
         System.out.println("** Appendix Figure 3 **");
@@ -45,7 +46,7 @@ public class ExperimentRunner {
         System.out.println("** Section \"The Databases \\texttt{MicrobialDB} and \\texttt{tb}\" **");
         c2.reportKMerComparisons("tick-borne", "microbial_db", null, false);
         c2.reportKMerComparisons("tick-borne", "microbial_db", "943", true);
-
+*/
         System.out.println("** Figure 7 and Figure 8 **");
         c1.compareWithKUResults("tick-borne", "microbial_db", "seventicks.txt", true, false);
         c1.aggregateCompareWithKUResults("tick-borne", "ticks.txt");

@@ -216,7 +216,7 @@ public class KrakenMatchComparator extends GenestripComparator {
                 if (full) {
                     ps.print("name;");
                 }
-                ps.println("taxid;rank;kmers 1;kmers 2;reads 1;reads 2;");
+                ps.println("taxid;rank;kmers 1;kmers 2;reads 1;reads 2");
                 for (SmallTaxTree.SmallTaxIdNode node : tree) {
                     String taxId = node.getTaxId();
                     if (full || kuTaxid2KMer.get(taxId) != null) {
