@@ -14,7 +14,7 @@ nanosimdir=${nanosim:-${basedir}/../NanoSim/src}
 
 if [ -e ./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna ]
 then
-    # Do nothing
+    echo Fna file exists # Do nothing
 else
   cp ./data/common/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna.gz ./data/projects/tick-borne/fasta
   gunzip ./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna.gz
