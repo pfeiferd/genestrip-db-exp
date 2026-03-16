@@ -97,11 +97,11 @@ public class AccuracyComparator extends GenestripComparator {
                 printCounts(ps, fastqKey, Sys.KRAKEN2, resK2.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, resK2HighConf.get(fastqKey), total);
 
-                int[] counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, nanoSim);
-                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
-
-                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree, nanoSim);
+                int[] counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_" + fastqKey + ".all", checkTree, nanoSim);
                 printCounts(ps, fastqKey, Sys.GANON, counts, total);
+
+                counts = accuracyForSimulatedReadsGanon(db, "ganon/" + db + "_lowfp_" + fastqKey + ".all", checkTree, nanoSim);
+                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, total);
 
                 printCounts(ps, fastqKey, Sys.GENESTRIP_HIGH_SENS, resGenestripHighSens.get(fastqKey), total);
                 printCounts(ps, fastqKey, Sys.GENESTRIP, geneStripCounts, total);
@@ -467,11 +467,11 @@ public class AccuracyComparator extends GenestripComparator {
                 counts = accuracyVia2ReportFiles("k2/" + db + "_highconf_" + fastqKey + ".tsv", "k2/" + checkDB + "_highconf_" + fastqKey + ".tsv", checkTree, true);
                 printCounts(ps, fastqKey, Sys.KRAKEN2_HIGH_CONF, counts, counts[5]);
 
-                counts = accuracyVia2ReportFiles("ganon/" + db + "_lowfp_" + fastqKey + ".all", "ganon/" + checkDB + "_lowfp_" + fastqKey + ".all", checkTree, false);
-                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, counts[5]);
-
                 counts = accuracyVia2ReportFiles("ganon/" + db + "_" + fastqKey + ".all", "ganon/" + checkDB + "_" + fastqKey + ".all", checkTree, false);
                 printCounts(ps, fastqKey, Sys.GANON, counts, counts[5]);
+
+                counts = accuracyVia2ReportFiles("ganon/" + db + "_lowfp_" + fastqKey + ".all", "ganon/" + checkDB + "_lowfp_" + fastqKey + ".all", checkTree, false);
+                printCounts(ps, fastqKey, Sys.GANON_LOWFP, counts, counts[5]);
 
                 counts = accuracyVia2ReportFiles(
                         "data/projects/" + db + "/krakenout/" + db + "_matchres_high_sens_" + fastqKey + ".out",
