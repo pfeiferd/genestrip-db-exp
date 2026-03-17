@@ -44,7 +44,7 @@ for file in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
 do
   ${nanosimdir}/read_analysis.py metagenome -q --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -i data/fastq/${file}.fastq.gz  -t 24
 
-  reads=1000000 #$(zcat data/fastq/${file}.fastq.gz | wc -l | awk '{print $1/4}')
+  reads=10000000 #$(zcat data/fastq/${file}.fastq.gz | wc -l | awk '{print $1/4}')
   sed -i "s/Abundance/$reads/g" training_quantification.tsv
   ${nanosimdir}/simulator.py metagenome --seed 42 --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -t 24 -a training_quantification.tsv
   mv simulated_sample0_aligned_reads.fastq data/fastq/${file}_sim.fastq
