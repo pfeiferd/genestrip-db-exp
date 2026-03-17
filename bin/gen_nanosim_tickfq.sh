@@ -12,6 +12,7 @@ nanosimdir=${nanosim:-${basedir}/../NanoSim/src}
 #conda init
 #conda activate nanosim
 
+for x in ; do
 if [ -e ./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna ]
 then
     echo Fna file exists # Do nothing
@@ -35,9 +36,9 @@ do
   rm training*
   rm reference_metagenome.fasta
 done
+done
 
 # Mixing in tick DNA - too complicated (for now) - we leave it as it is.
-for x in ; do
 # Generate fastq files with bacterial DNA only
 for file in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
 do
@@ -58,4 +59,3 @@ do
   cat data/fastq/${file}_sim.fastq data/fastq/${file}_tick_only_sim.fastq > data/fastq/${file}_mixed_sim.fastq
 done
 
-done
