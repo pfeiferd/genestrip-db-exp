@@ -12,7 +12,6 @@ nanosimdir=${nanosim:-${basedir}/../NanoSim/src}
 #conda init
 #conda activate nanosim
 
-for x in ; do
 if [ -e ./data/projects/tick-borne/fasta/GCF_016920785.2_ASM1692078v2_genomic.fna ]
 then
     echo Fna file exists # Do nothing
@@ -36,7 +35,6 @@ do
   rm training*
   rm reference_metagenome.fasta
 done
-done
 
 # Mixing in tick DNA - too complicated (for now) - we leave it as it is.
 # Generate fastq files with bacterial DNA only
@@ -44,6 +42,8 @@ for file in tick1 tick2 tick3 tick4 tick5 tick6 tick7 tick8
 do
   ${nanosimdir}/read_analysis.py metagenome -q --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -i data/fastq/${file}.fastq.gz  -t 24
 
+  # We need to set this much, i.e. 'reads=10000000', so that NanoSim creates enough reads. It deviates from
+  # this number by about two orders of magnitude less for unknown reasons.
   reads=10000000 #$(zcat data/fastq/${file}.fastq.gz | wc -l | awk '{print $1/4}')
   sed -i "s/Abundance/$reads/g" training_quantification.tsv
   ${nanosimdir}/simulator.py metagenome --seed 42 --fastq -gl data/projects/tick-borne/csv/tick-borne_nanosim.tsv -t 24 -a training_quantification.tsv
