@@ -567,7 +567,7 @@ public class AccuracyComparator extends GenestripComparator {
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println(Runtime.getRuntime().availableProcessors());
+        /*
         AccuracyComparator comp = new AccuracyComparator("viral", new File("./data"), new File("./results"), false, true);
 
         comp.writeReportFile("viral", null, "viral_acc_comp.txt", false);
@@ -582,7 +582,7 @@ public class AccuracyComparator extends GenestripComparator {
                 "SRR5571991",
                 "ERR1395610",
                 "SRR5571990");
-
+*/
         // Simulated tick files:
         AccuracyComparator comp2 = new AccuracyComparator("tick-borne", new File("./data"), new File("./results"), false, true);
         comp2.writeTickBorneSimReport();
