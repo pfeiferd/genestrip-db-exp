@@ -6,7 +6,7 @@ scriptdir=$(dirname "$0")
 cd $scriptdir/..
 basedir=$(pwd)
 
-# NONE of the following is needed (yet) - it does not get execute since the x-loop is empty.
+# NONE of the following is needed (yet) - it does not get executed since the x-loop is empty.
 for x in ; do
 for db in standard;
   # Kraken 2
